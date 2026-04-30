@@ -67,32 +67,32 @@
       box-shadow: 0 8px 40px rgba(0,0,0,0.85);
     }
 
-    /* Header: logo + brand + live badge */
+    /* Header: full-width logo with live badge overlaid */
     #sb-hdr {
-      padding: 0 14px;
-      height: 58px;
+      padding: 14px 14px 12px;
       border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      position: relative;
       flex-shrink: 0;
     }
 
     #logo {
-      height: 38px;
-      width: auto;
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 56px;
       object-fit: contain;
-      flex-shrink: 0;
-      flex: 1;
+      object-position: left center;
     }
 
-    /* Live badge */
+    /* Live badge — pinned top-right of header */
     #live-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 3px;
-      flex-shrink: 0;
     }
     .live-dot {
       width: 7px;
@@ -317,10 +317,11 @@
     /* Beta footer */
     #sb-footer {
       padding: 8px 14px;
-      border-top: 1px solid var(--border);
+      border-top: 1px solid #0e1e36;
+      background: #03080f;
       font-size: 9px;
-      color: var(--text3);
-      letter-spacing: 0.05em;
+      color: #2d5080;
+      letter-spacing: 0.07em;
       flex-shrink: 0;
       text-align: center;
     }
@@ -576,10 +577,9 @@
 
     <!-- Server filter -->
     <div id="server-filter">
-      <button class="sf-btn active" data-server="all"      onclick="setFilter(this,'all')">All</button>
       <button class="sf-btn"        data-server="expert"   onclick="setFilter(this,'expert')">Expert</button>
       <button class="sf-btn"        data-server="training" onclick="setFilter(this,'training')">Training</button>
-      <button class="sf-btn"        data-server="casual"   onclick="setFilter(this,'casual')">Casual</button>
+      <button class="sf-btn active" data-server="casual"   onclick="setFilter(this,'casual')">Casual</button>
     </div>
 
     <!-- Count + speed unit -->
@@ -704,7 +704,7 @@ const liveTrails     = {};
 const flightLastSeen = {};
 
 let selectedId    = null;
-let currentServer = 'all';
+let currentServer = 'casual';
 let searchQuery   = '';
 let speedUnit     = 'kn';
 let globe         = null;
