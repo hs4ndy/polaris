@@ -6,7 +6,7 @@
   <title>Polaris — Live Infinite Flight Tracker</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Exo:wght@600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/globe.gl/dist/globe.gl.min.js"></script>
 
   <style>
@@ -16,11 +16,11 @@
     /* ── Design tokens ─────────────────────────────────────────────────────── */
     :root {
       --black:    #000000;
-      --s1:       #080808;
-      --s2:       #101010;
-      --border:   #1c1c1c;
-      --border2:  #242424;
-      --text:     #e8edf3;
+      --s1:       #0d0d0d;   /* OLED: #121212 standard, kept darker for purity */
+      --s2:       #111111;
+      --border:   #1e1e1e;
+      --border2:  #2a2a2a;
+      --text:     #f0f4f8;   /* 7:1+ contrast on #000 per skill recommendation */
       --text2:    #7a8694;
       --text3:    #3d4450;
       --accent:   #4f8ef7;
@@ -28,6 +28,10 @@
       --purple:   #a855f7;
       --green:    #3fb950;
       --red:      #f85149;
+      /* Glow values for OLED accent style */
+      --glow-accent: rgba(79, 142, 247, 0.22);
+      --glow-amber:  rgba(245, 166, 35, 0.22);
+      --glow-purple: rgba(168, 85, 247, 0.22);
       --sidebar-w: 300px;
       --detail-w:  350px;
     }
@@ -96,7 +100,7 @@
       gap: 7px;
       transition: border-color 0.15s;
     }
-    .search-inner:focus-within { border-color: #2d3a4d; }
+    .search-inner:focus-within { border-color: #2d4a7f; box-shadow: 0 0 0 2px var(--glow-accent); }
     .search-icon {
       flex-shrink: 0;
       color: var(--text3);
@@ -134,14 +138,14 @@
       padding: 5px 0;
       border-radius: 4px;
       cursor: pointer;
-      transition: color 0.15s, border-color 0.15s, background 0.15s;
+      transition: color 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s;
       letter-spacing: 0.03em;
     }
     .sf-btn:hover { color: var(--text2); border-color: var(--border2); }
-    .sf-btn.active[data-server="all"]      { background: #0c1e3a; border-color: #2a4a7f; color: var(--accent); }
-    .sf-btn.active[data-server="expert"]   { background: #0c1e3a; border-color: #2a4a7f; color: var(--accent); }
-    .sf-btn.active[data-server="training"] { background: #1e1200; border-color: #5a3a00; color: var(--amber); }
-    .sf-btn.active[data-server="casual"]   { background: #190d30; border-color: #4a2070; color: var(--purple); }
+    .sf-btn.active[data-server="all"]      { background: #0c1e3a; border-color: #2a4a7f; color: var(--accent);  box-shadow: 0 0 10px var(--glow-accent); }
+    .sf-btn.active[data-server="expert"]   { background: #0c1e3a; border-color: #2a4a7f; color: var(--accent);  box-shadow: 0 0 10px var(--glow-accent); }
+    .sf-btn.active[data-server="training"] { background: #1e1200; border-color: #5a3a00; color: var(--amber);   box-shadow: 0 0 10px var(--glow-amber); }
+    .sf-btn.active[data-server="casual"]   { background: #190d30; border-color: #4a2070; color: var(--purple);  box-shadow: 0 0 10px var(--glow-purple); }
 
     /* Count + speed toggle */
     #sb-meta {
@@ -167,9 +171,9 @@
       border-radius: 4px;
       cursor: pointer;
       letter-spacing: 0.06em;
-      transition: border-color 0.15s, background 0.15s;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
     }
-    #speed-btn:hover { border-color: var(--accent); background: #0d1e38; }
+    #speed-btn:hover { border-color: var(--accent); background: #0d1e38; box-shadow: 0 0 8px var(--glow-accent); }
 
     /* Flight list */
     #flight-list {
@@ -185,7 +189,7 @@
       padding: 9px 14px 8px;
       border-bottom: 1px solid var(--border);
       cursor: pointer;
-      transition: background 0.12s;
+      transition: background 0.2s;
       position: relative;
     }
     .fl-item:hover    { background: var(--s1); }
@@ -193,6 +197,7 @@
       background: #09152c;
       border-left: 2px solid var(--accent);
       padding-left: 12px;
+      box-shadow: inset 4px 0 16px var(--glow-accent);
     }
     .fl-item.selected::after {
       content: '';
@@ -433,13 +438,14 @@
     #d-close:hover { color: var(--text); border-color: var(--border2); }
 
     #d-callsign {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Exo', sans-serif;
       font-size: 26px;
       font-weight: 800;
       letter-spacing: 0.03em;
       line-height: 1.1;
       padding-right: 36px;
       margin-bottom: 4px;
+      text-shadow: 0 0 20px var(--glow-accent);
     }
     #d-user {
       font-size: 12px;
@@ -474,9 +480,9 @@
       border: 1px solid var(--border);
       border-radius: 7px;
       padding: 9px 11px;
-      transition: border-color 0.15s;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .dg-card:hover { border-color: var(--border2); }
+    .dg-card:hover { border-color: var(--border2); box-shadow: 0 0 8px rgba(0,0,0,0.4); }
     .dg-lbl {
       font-size: 8px;
       color: var(--text3);
