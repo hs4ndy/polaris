@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Polaris — Live Infinite Flight Tracker</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #080b10;
+      --surface:  #0d1117;
+      --surface2: #161b22;
+      --border:   #21262d;
+      --text:     #e6edf3;
+      --text2:    #8b949e;
+      --accent:   #4f8ef7;
+      --amber:    #f5a623;
+      --purple:   #a855f7;
+      --green:    #3fb950;
+      --red:      #f85149;
+      --topbar-h: 48px;
+      --beta-h:   22px;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── Topbar ── */
+    #topbar {
+      height: var(--topbar-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      gap: 12px;
+      flex-shrink: 0;
+      z-index: 1000;
+    }
+
+    .tb-left  { display: flex; align-items: center; gap: 10px; }
+    .tb-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+
+    #logo { height: 30px; width: auto; }
+
+    .tb-center {
+      flex: 1;
+      text-align: center;
+      font-size: 11px;
+      color: var(--text2);
+      letter-spacing: 0.05em;
+    }
+
+    .search-wrap input {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      width: 210px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .search-wrap input:focus  { border-color: var(--accent); }
+    .search-wrap input::placeholder { color: var(--text2); }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--green);
+      letter-spacing: 0.08em;
+    }
+    .live-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.25; } }
+
+    #menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 2px 4px;
+    }
+
+    /* ── Beta banner ── */
+    #beta-banner {
+      height: var(--beta-h);
+      background: #0d1117;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: var(--text2);
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+    }
+
+    /* ── Main layout ── */
+    #main {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      width: 290px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      transition: margin-left 0.25s ease;
+    }
+    #sidebar.collapsed { margin-left: -290px; }
+
+    #sidebar-header {
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .sb-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    #flight-count {
+      background: var(--surface2);
+      border-radius: 10px;
+      padding: 1px 8px;
+      font-size: 11px;
+      color: var(--text2);
+    }
+    #speed-btn {
+      margin-left: auto;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+      letter-spacing: 0.05em;
+    }
+    #speed-btn:hover { border-color: var(--accent); }
+
+    /* ── Server filter ── */
+    #server-filter {
+      display: flex;
+      padding: 8px 10px;
+      gap: 6px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .sf-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+      flex: 1;
+    }
+    .sf-btn:hover { color: var(--text); border-color: var(--text2); }
+    .sf-btn.active[data-server="all"]      { background: #1a2744; border-color: var(--accent);  color: var(--accent); }
+    .sf-btn.active[data-server="expert"]   { background: #1a2744; border-color: var(--accent);  color: var(--accent); }
+    .sf-btn.active[data-server="training"] { background: #241800; border-color: var(--amber);   color: var(--amber); }
+    .sf-btn.active[data-server="casual"]   { background: #1a0d2e; border-color: var(--purple);  color: var(--purple); }
+
+    /* ── Flight list ── */
+    #flight-list {
+      overflow-y: auto;
+      flex: 1;
+    }
+    #flight-list::-webkit-scrollbar { width: 4px; }
+    #flight-list::-webkit-scrollbar-track { background: transparent; }
+    #flight-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .fl-item {
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .fl-item:hover    { background: var(--surface2); }
+    .fl-item.selected { background: #0d1f3c; border-left: 3px solid var(--accent); padding-left: 11px; }
+    .fl-row1 { display: flex; align-items: center; gap: 7px; }
+    .fl-dot  { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .fl-cs   { font-weight: 700; font-size: 13px; letter-spacing: 0.02em; }
+    .fl-sbadge {
+      margin-left: auto;
+      font-size: 10px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .fl-row2 {
+      font-size: 11px;
+      color: var(--text2);
+      margin-top: 3px;
+      padding-left: 15px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .fl-row3 {
+      font-size: 11px;
+      color: var(--text2);
+      margin-top: 2px;
+      padding-left: 15px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .fl-alt { color: var(--text); font-weight: 600; }
+    .state-badge {
+      font-size: 10px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+    .fl-empty {
+      padding: 24px 14px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text2);
+    }
+    .fl-overflow {
+      padding: 8px 14px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--text2);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Sidebar toggle tab ── */
+    #sidebar-tab {
+      width: 18px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-left: none;
+      border-radius: 0 4px 4px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text2);
+      font-size: 10px;
+      flex-shrink: 0;
+      transition: all 0.15s;
+      user-select: none;
+      position: relative;
+      z-index: 400;
+    }
+    #sidebar-tab:hover { color: var(--text); background: var(--surface); }
+
+    /* ── Map wrap ── */
+    #map-wrap {
+      flex: 1;
+      position: relative;
+    }
+    #map { width: 100%; height: 100%; }
+
+    /* ── Detail panel ── */
+    #detail {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 300px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      z-index: 500;
+      transform: translateX(calc(100% + 20px));
+      transition: transform 0.25s ease;
+      overflow-y: auto;
+      max-height: calc(100% - 20px);
+    }
+    #detail.open { transform: translateX(0); }
+
+    #detail-close {
+      position: absolute;
+      top: 10px; right: 10px;
+      background: none;
+      border: none;
+      color: var(--text2);
+      cursor: pointer;
+      font-size: 17px;
+      padding: 4px;
+      line-height: 1;
+    }
+    #detail-close:hover { color: var(--text); }
+
+    #d-callsign {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 3px;
+      margin-right: 28px;
+      letter-spacing: 0.03em;
+    }
+    #d-username {
+      font-size: 12px;
+      color: var(--text2);
+      margin-bottom: 10px;
+    }
+    #d-badges {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .dg-item {
+      background: var(--surface2);
+      border-radius: 6px;
+      padding: 8px 10px;
+    }
+    .dg-label {
+      font-size: 9px;
+      color: var(--text2);
+      letter-spacing: 0.12em;
+      margin-bottom: 5px;
+    }
+    .dg-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    #detail-server {
+      font-size: 11px;
+      color: var(--text2);
+      margin-top: 6px;
+    }
+
+    /* ── Map version tag ── */
+    #map-version {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      font-size: 10px;
+      color: var(--text2);
+      opacity: 0.45;
+      z-index: 400;
+      pointer-events: none;
+    }
+
+    /* ── Leaflet overrides ── */
+    .leaflet-control-zoom a {
+      background: var(--surface2) !important;
+      color: var(--text) !important;
+      border-color: var(--border) !important;
+    }
+    .leaflet-control-zoom a:hover { background: var(--surface) !important; }
+    .leaflet-control-attribution {
+      background: rgba(8,11,16,0.75) !important;
+      color: var(--text2) !important;
+      font-size: 9px !important;
+    }
+    .leaflet-control-attribution a { color: var(--text2) !important; }
+    .pl-tip {
+      background: var(--surface2) !important;
+      border-color: var(--border) !important;
+      color: var(--text) !important;
+      font-family: 'JetBrains Mono', monospace !important;
+      font-size: 11px !important;
+      font-weight: 600;
+      padding: 2px 7px !important;
+      box-shadow: none !important;
+    }
+    .pl-tip::before { display: none !important; }
+
+    /* ── Mobile ── */
+    @media (max-width: 768px) {
+      #menu-btn  { display: block; }
+      .tb-center { display: none; }
+      .search-wrap input { width: 140px; }
+
+      #sidebar {
+        position: absolute;
+        left: 0; top: 0;
+        height: 100%;
+        z-index: 300;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        margin-left: 0 !important;
+      }
+      #sidebar.mobile-open { transform: translateX(0); }
+      #sidebar-tab         { display: none; }
+
+      #detail { width: calc(100vw - 20px); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Topbar ── -->
+<div id="topbar">
+  <div class="tb-left">
+    <button id="menu-btn" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
+    <img id="logo" src="polaris-logo.png" alt="Polaris">
+  </div>
+  <div class="tb-center">Infinite Flight Live &mdash; Expert &nbsp;·&nbsp; Training &nbsp;·&nbsp; Casual</div>
+  <div class="tb-right">
+    <div class="search-wrap">
+      <input id="search" type="text" placeholder="Search callsign or pilot…" oninput="filterSearch(this.value)" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="live-badge">
+      <span class="live-dot"></span>
+      <span>LIVE</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── Beta banner ── -->
+<div id="beta-banner">Polaris is in Beta &mdash; expect bugs.</div>
+
+<!-- ── Main ── -->
+<div id="main">
+
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <div id="sidebar-header">
+      <span class="sb-title">Flights</span>
+      <span id="flight-count">0</span>
+      <button id="speed-btn" onclick="cycleSpeed()">kn</button>
+    </div>
+    <div id="server-filter">
+      <button class="sf-btn active" data-server="all"      onclick="setServerFilter(this,'all')">All</button>
+      <button class="sf-btn"        data-server="expert"   onclick="setServerFilter(this,'expert')">Expert</button>
+      <button class="sf-btn"        data-server="training" onclick="setServerFilter(this,'training')">Training</button>
+      <button class="sf-btn"        data-server="casual"   onclick="setServerFilter(this,'casual')">Casual</button>
+    </div>
+    <div id="flight-list"></div>
+  </div>
+
+  <!-- Sidebar toggle tab -->
+  <div id="sidebar-tab" onclick="toggleSidebar()">&#9664;</div>
+
+  <!-- Map + overlays -->
+  <div id="map-wrap">
+    <div id="map"></div>
+
+    <!-- Detail panel -->
+    <div id="detail">
+      <button id="detail-close" onclick="closeDetail()" aria-label="Close">&#x2715;</button>
+      <div id="d-callsign"></div>
+      <div id="d-username"></div>
+      <div id="d-badges"></div>
+      <div class="detail-grid">
+        <div class="dg-item"><div class="dg-label">ALTITUDE</div><div class="dg-val" id="d-alt">—</div></div>
+        <div class="dg-item"><div class="dg-label">SPEED</div><div class="dg-val" id="d-spd">—</div></div>
+        <div class="dg-item"><div class="dg-label">VERT SPEED</div><div class="dg-val" id="d-vs">—</div></div>
+        <div class="dg-item"><div class="dg-label">TRACK</div><div class="dg-val" id="d-hdg">—</div></div>
+        <div class="dg-item"><div class="dg-label">LATITUDE</div><div class="dg-val" id="d-lat">—</div></div>
+        <div class="dg-item"><div class="dg-label">LONGITUDE</div><div class="dg-val" id="d-lon">—</div></div>
+      </div>
+      <div id="detail-server"></div>
+    </div>
+
+    <div id="map-version">v0.1.0</div>
+  </div>
+
+</div><!-- #main -->
+
+<script>
+'use strict';
+
+// ── Update this after Railway deploy ──────────────────────────────────────────
+const WS_URL = location.hostname === 'localhost'
+  ? 'ws://localhost:3001'
+  : 'wss://polaris-proxy-production.up.railway.app';
+
+// ── Server config ─────────────────────────────────────────────────────────────
+const SERVER_COLOR = { expert: '#4f8ef7', training: '#f5a623', casual: '#a855f7' };
+
+const FLIGHT_STATE = {
+  0: { label: 'Unknown',   color: '#8b949e' },
+  1: { label: 'Preflight', color: '#8b949e' },
+  2: { label: 'Taxi',      color: '#f5a623' },
+  3: { label: 'Takeoff',   color: '#4f8ef7' },
+  4: { label: 'Cruise',    color: '#3fb950' },
+  5: { label: 'Approach',  color: '#f5a623' },
+  6: { label: 'Landing',   color: '#f85149' },
+  7: { label: 'Parked',    color: '#8b949e' },
+};
+
+const STALE_MS  = 5 * 60 * 1000; // 5 min — IF flights disappear when pilots quit
+const TRAIL_MAX = 300;
+const LIST_MAX  = 300; // cap sidebar entries for DOM performance
+
+// ── State ─────────────────────────────────────────────────────────────────────
+const flightData     = {}; // id → flight object
+const markers        = {}; // id → L.Marker
+const trailLines     = {}; // id → L.Polyline
+const liveTrails     = {}; // id → [[lat,lon], …]
+const flightLastSeen = {}; // id → Date.now()
+let selectedId    = null;
+let currentServer = 'all';
+let searchQuery   = '';
+let speedUnit     = 'kn';
+let sidebarOpen   = true;
+let map;
+
+// ── Utilities ─────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function sColor(server) { return SERVER_COLOR[server] || '#8b949e'; }
+function sState(n)      { return FLIGHT_STATE[n]      || FLIGHT_STATE[0]; }
+
+function fmtSpeed(kn) {
+  if (kn == null || isNaN(kn)) return '—';
+  if (speedUnit === 'mph')  return Math.round(kn * 1.15078) + ' mph';
+  if (speedUnit === 'km/h') return Math.round(kn * 1.852)   + ' km/h';
+  return Math.round(kn) + ' kn';
+}
+
+function fmtAlt(ft) {
+  if (ft == null) return '—';
+  const n = Math.round(ft);
+  if (n >= 18000) return 'FL' + Math.round(n / 100);
+  return n.toLocaleString() + ' ft';
+}
+
+function fmtVS(vs) {
+  if (vs == null) return '—';
+  const n = Math.round(vs);
+  return (n >= 0 ? '↑ ' : '↓ ') + Math.abs(n).toLocaleString() + ' ft/min';
+}
+
+// ── Marker icons ──────────────────────────────────────────────────────────────
+function makeIcon(server, onGround, track) {
+  const c   = sColor(server);
+  const rot = onGround ? 0 : (track || 0);
+
+  // Airplane SVG points NORTH — rotation applied directly via track (no offset needed)
+  const svg = onGround
+    ? `<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+        <circle cx="10" cy="10" r="6" fill="${c}" opacity="0.35"/>
+        <circle cx="10" cy="10" r="3" fill="${c}"/>
+       </svg>`
+    : `<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+        <polygon points="10,1 13,17 10,14 7,17" fill="${c}"/>
+        <polygon points="0,10 10,7 20,10 10,12.5" fill="${c}" opacity="0.9"/>
+        <polygon points="6.5,18 10,14 13.5,18 10,19.5" fill="${c}" opacity="0.75"/>
+       </svg>`;
+
+  const [w, h] = onGround ? [14, 14] : [20, 20];
+  return L.divIcon({
+    className: '',
+    html: `<div style="transform:rotate(${rot}deg);width:${w}px;height:${h}px;transform-origin:50% 50%">${svg}</div>`,
+    iconSize:   [w, h],
+    iconAnchor: [w / 2, h / 2],
+  });
+}
+
+// ── Trail management ──────────────────────────────────────────────────────────
+function appendTrail(id, lat, lon) {
+  if (!liveTrails[id]) liveTrails[id] = [];
+  liveTrails[id].push([lat, lon]);
+  if (liveTrails[id].length > TRAIL_MAX) liveTrails[id].shift();
+}
+
+function renderTrail(id, color) {
+  const pts = liveTrails[id];
+  if (!pts || pts.length < 2) return;
+  if (trailLines[id]) {
+    trailLines[id].setLatLngs(pts);
+  } else {
+    trailLines[id] = L.polyline(pts, {
+      color,
+      weight:    1.5,
+      opacity:   0.45,
+      dashArray: '5,4',
+    }).addTo(map);
+  }
+}
+
+// ── Marker upsert ─────────────────────────────────────────────────────────────
+function upsertMarker(f) {
+  const id = String(f.flightId);
+  if (f.latitude == null || f.longitude == null) return;
+
+  appendTrail(id, f.latitude, f.longitude);
+  const icon  = makeIcon(f.server, f.onGround, f.track);
+  const latlng = [f.latitude, f.longitude];
+
+  if (markers[id]) {
+    markers[id].setLatLng(latlng).setIcon(icon);
+  } else {
+    markers[id] = L.marker(latlng, {
+      icon,
+      zIndexOffset: f.onGround ? 0 : 100,
+    })
+    .addTo(map)
+    .on('click', () => selectFlight(id))
+    .bindTooltip(esc(f.callsign || f.username || id), {
+      permanent:  false,
+      direction:  'top',
+      className:  'pl-tip',
+    });
+  }
+
+  renderTrail(id, sColor(f.server));
+  if (id === selectedId) updateDetail(f);
+}
+
+function removeMarker(id) {
+  if (markers[id])     { markers[id].remove();     delete markers[id]; }
+  if (trailLines[id])  { trailLines[id].remove();  delete trailLines[id]; }
+  delete liveTrails[id];
+  delete flightLastSeen[id];
+  delete flightData[id];
+  if (id === selectedId) closeDetail();
+}
+
+// ── Stale cleanup ─────────────────────────────────────────────────────────────
+function cleanStale() {
+  const now = Date.now();
+  let removed = 0;
+  for (const id of Object.keys(flightLastSeen)) {
+    if (now - flightLastSeen[id] > STALE_MS) {
+      removeMarker(id);
+      removed++;
+    }
+  }
+  if (removed) buildList();
+}
+
+// ── Filtering ─────────────────────────────────────────────────────────────────
+function getVisible() {
+  return Object.values(flightData).filter(f => {
+    if (currentServer !== 'all' && f.server !== currentServer) return false;
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      return (f.callsign            || '').toLowerCase().includes(q)
+          || (f.username            || '').toLowerCase().includes(q)
+          || (f.virtualOrganization || '').toLowerCase().includes(q);
+    }
+    return true;
+  });
+}
+
+// ── Sidebar list ──────────────────────────────────────────────────────────────
+function buildList() {
+  const visible = getVisible();
+  document.getElementById('flight-count').textContent = visible.length;
+
+  const list = document.getElementById('flight-list');
+  if (!visible.length) {
+    list.innerHTML = '<div class="fl-empty">No flights</div>';
+    return;
+  }
+
+  // Airborne first, then by altitude desc
+  visible.sort((a, b) => {
+    if (Boolean(a.onGround) !== Boolean(b.onGround)) return a.onGround ? 1 : -1;
+    return (b.altitude || 0) - (a.altitude || 0);
+  });
+
+  const shown    = visible.slice(0, LIST_MAX);
+  const overflow = visible.length > LIST_MAX
+    ? `<div class="fl-overflow">Showing ${LIST_MAX} of ${visible.length} — use search to narrow</div>`
+    : '';
+
+  list.innerHTML = shown.map(f => {
+    const id       = String(f.flightId);
+    const color    = sColor(f.server);
+    const state    = sState(f.flightState);
+    const cs       = esc(f.callsign || '—');
+    const user     = esc(f.username || '');
+    const vo       = f.virtualOrganization ? ` [${esc(f.virtualOrganization)}]` : '';
+    const sName    = (f.serverName || f.server || '').replace(' Server', '');
+    const selCls   = id === selectedId ? ' selected' : '';
+
+    return `<div class="fl-item${selCls}" onclick="selectFlight('${id}')">
+  <div class="fl-row1">
+    <div class="fl-dot" style="background:${color}"></div>
+    <span class="fl-cs">${cs}</span>
+    <span class="fl-sbadge" style="background:${color}22;color:${color};border:1px solid ${color}44">${sName}</span>
+  </div>
+  <div class="fl-row2">${user}${vo}</div>
+  <div class="fl-row3">
+    <span class="fl-alt">${fmtAlt(f.altitude)}</span>
+    <span>·</span>
+    <span>${fmtSpeed(f.speed)}</span>
+    <span>·</span>
+    <span class="state-badge" style="background:${state.color}22;color:${state.color}">${state.label}</span>
+  </div>
+</div>`;
+  }).join('') + overflow;
+}
+
+// ── Detail panel ──────────────────────────────────────────────────────────────
+function selectFlight(id) {
+  id = String(id);
+  selectedId = id;
+  const f = flightData[id];
+  if (!f) return;
+
+  updateDetail(f);
+  document.getElementById('detail').classList.add('open');
+  buildList();
+
+  if (f.latitude != null && f.longitude != null) {
+    map.flyTo([f.latitude, f.longitude], Math.max(map.getZoom(), 6), { duration: 1.2 });
+  }
+}
+
+function updateDetail(f) {
+  const state  = sState(f.flightState);
+  const color  = sColor(f.server);
+  const vo     = f.virtualOrganization;
+
+  document.getElementById('d-callsign').textContent = f.callsign || '—';
+  document.getElementById('d-username').textContent = f.username || '';
+
+  let badges = `<span class="state-badge" style="background:${state.color}22;color:${state.color};border:1px solid ${state.color}44">${state.label}</span>`;
+  if (vo)        badges += ` <span class="state-badge" style="background:${color}15;color:${color};border:1px solid ${color}35">${esc(vo)}</span>`;
+  if (f.onGround) badges += ` <span class="state-badge" style="background:#f5a62322;color:#f5a623;border:1px solid #f5a62344">On Ground</span>`;
+  document.getElementById('d-badges').innerHTML = badges;
+
+  document.getElementById('d-alt').textContent = fmtAlt(f.altitude);
+  document.getElementById('d-spd').textContent = fmtSpeed(f.speed);
+  document.getElementById('d-vs').textContent  = fmtVS(f.verticalSpeed);
+  document.getElementById('d-hdg').textContent = f.track  != null ? Math.round(f.track)  + '°' : '—';
+  document.getElementById('d-lat').textContent = f.latitude  != null ? f.latitude.toFixed(4)  : '—';
+  document.getElementById('d-lon').textContent = f.longitude != null ? f.longitude.toFixed(4) : '—';
+
+  document.getElementById('detail-server').innerHTML =
+    `<span style="color:${color}">&#9632;</span> ${esc(f.serverName || f.server)}`;
+}
+
+function closeDetail() {
+  selectedId = null;
+  document.getElementById('detail').classList.remove('open');
+  buildList();
+}
+
+// ── Controls ──────────────────────────────────────────────────────────────────
+function filterSearch(val) {
+  searchQuery = val.trim();
+  buildList();
+}
+
+function setServerFilter(btn, server) {
+  currentServer = server;
+  document.querySelectorAll('.sf-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  buildList();
+}
+
+const SPEED_UNITS = ['kn', 'mph', 'km/h'];
+function cycleSpeed() {
+  const i = SPEED_UNITS.indexOf(speedUnit);
+  speedUnit = SPEED_UNITS[(i + 1) % SPEED_UNITS.length];
+  document.getElementById('speed-btn').textContent = speedUnit;
+  buildList();
+  if (selectedId && flightData[selectedId]) updateDetail(flightData[selectedId]);
+}
+
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const tab     = document.getElementById('sidebar-tab');
+  const mobile  = window.innerWidth <= 768;
+
+  if (mobile) {
+    sidebar.classList.toggle('mobile-open');
+  } else {
+    sidebarOpen = !sidebarOpen;
+    sidebar.classList.toggle('collapsed', !sidebarOpen);
+    tab.innerHTML = sidebarOpen ? '&#9664;' : '&#9654;';
+  }
+
+  setTimeout(() => map && map.invalidateSize(), 50);
+}
+
+// ── WebSocket ─────────────────────────────────────────────────────────────────
+function handleFlights(flights) {
+  const now = Date.now();
+  for (const f of (flights || [])) {
+    const id = String(f.flightId);
+    flightData[id]     = f;
+    flightLastSeen[id] = f.ts || now;
+    upsertMarker(f);
+  }
+  buildList();
+}
+
+let ws, wsRetry = 0;
+
+function connectWS() {
+  try { ws = new WebSocket(WS_URL); } catch { return; }
+
+  ws.onopen  = () => { wsRetry = 0; console.log('[ws] connected'); };
+  ws.onclose = () => {
+    const delay = Math.min(1000 * Math.pow(2, wsRetry++), 30000);
+    console.log(`[ws] closed — retry in ${delay}ms`);
+    setTimeout(connectWS, delay);
+  };
+  ws.onerror = () => ws.close();
+
+  ws.onmessage = e => {
+    try {
+      const msg = JSON.parse(e.data);
+      if (msg.type === 'snapshot' || msg.type === 'update') {
+        handleFlights(msg.flights);
+      }
+    } catch (err) {
+      console.error('[ws] parse error', err);
+    }
+  };
+}
+
+// ── Map init ──────────────────────────────────────────────────────────────────
+function initMap() {
+  map = L.map('map', {
+    center:          [20, 0],
+    zoom:            3,
+    worldCopyJump:   true,
+    zoomControl:     true,
+    attributionControl: true,
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom:    19,
+  }).addTo(map);
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  initMap();
+  connectWS();
+  setInterval(cleanStale, 60000);
+});
+</script>
+</body>
+</html>
