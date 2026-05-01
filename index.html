@@ -45,36 +45,69 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ── App shell: three columns ───────────────────────────────────────────── */
+    /* ── App shell: globe fills everything, sidebars float over it ─────────── */
     #app {
-      display: flex;
+      position: relative;
       height: 100vh;
       width: 100vw;
       overflow: hidden;
     }
 
     /* ════════════════════════════════════════════════════════════════════════
-       LEFT SIDEBAR
+       LEFT SIDEBAR — Liquid glass panel floating over the globe
     ════════════════════════════════════════════════════════════════════════ */
     #left-sb {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      bottom: 12px;
       width: var(--sidebar-w);
-      min-width: var(--sidebar-w);
-      background: var(--black);
-      border: 1px solid var(--border);
+      z-index: 20;
+
+      /* Frosted glass */
+      background: rgba(0, 0, 0, 0.44);
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
+
+      /* Glass border — very subtle white rim */
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 14px;
-      margin: 12px 0 12px 12px;
+      overflow: hidden;
+
+      /* Depth shadows + inner top-edge highlight */
+      box-shadow:
+        0 8px 48px rgba(0,0,0,0.65),
+        inset 0 1px 0 rgba(255,255,255,0.11),
+        inset 0 0 0 0.5px rgba(255,255,255,0.04);
+
       display: flex;
       flex-direction: column;
-      flex-shrink: 0;
-      z-index: 20;
-      overflow: hidden;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.85);
     }
 
-    /* Header: compact — logo fills 100% width, padding gives it breathing room */
+    /* Prism light catch — rainbow edge at the very top of the glass */
+    #left-sb::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1.5px;
+      background: linear-gradient(90deg,
+        rgba(79,142,247,0.55),
+        rgba(139,92,246,0.65),
+        rgba(56,189,248,0.5),
+        rgba(52,211,153,0.4),
+        rgba(251,191,36,0.35),
+        rgba(239,68,68,0.25),
+        transparent
+      );
+      border-radius: 14px 14px 0 0;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Header */
     #sb-hdr {
       padding: 8px 14px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
       flex-shrink: 0;
     }
 
@@ -87,20 +120,23 @@
     /* Search */
     #sb-search {
       padding: 10px 12px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
       flex-shrink: 0;
     }
     .search-inner {
       display: flex;
       align-items: center;
-      background: var(--s1);
-      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.09);
       border-radius: 6px;
       padding: 0 10px;
       gap: 7px;
-      transition: border-color 0.15s;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .search-inner:focus-within { border-color: #2d4a7f; box-shadow: 0 0 0 2px var(--glow-accent); }
+    .search-inner:focus-within {
+      border-color: rgba(79,142,247,0.45);
+      box-shadow: 0 0 0 2px rgba(79,142,247,0.12);
+    }
     .search-icon {
       flex-shrink: 0;
       color: var(--text3);
@@ -125,34 +161,34 @@
       display: flex;
       padding: 8px 10px;
       gap: 5px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
       flex-shrink: 0;
     }
     .sf-btn {
       flex: 1;
-      background: transparent;
-      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
       color: var(--text3);
       font-family: 'JetBrains Mono', monospace;
       font-size: 10px;
       padding: 5px 0;
-      border-radius: 4px;
+      border-radius: 5px;
       cursor: pointer;
       transition: color 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s;
       letter-spacing: 0.03em;
     }
-    .sf-btn:hover { color: var(--text2); border-color: var(--border2); }
-    .sf-btn.active[data-server="all"]      { background: #0c1e3a; border-color: #2a4a7f; color: var(--accent);  box-shadow: 0 0 10px var(--glow-accent); }
-    .sf-btn.active[data-server="expert"]   { background: #0c1e3a; border-color: #2a4a7f; color: var(--accent);  box-shadow: 0 0 10px var(--glow-accent); }
-    .sf-btn.active[data-server="training"] { background: #1e1200; border-color: #5a3a00; color: var(--amber);   box-shadow: 0 0 10px var(--glow-amber); }
-    .sf-btn.active[data-server="casual"]   { background: #190d30; border-color: #4a2070; color: var(--purple);  box-shadow: 0 0 10px var(--glow-purple); }
+    .sf-btn:hover { color: var(--text2); background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.12); }
+    .sf-btn.active[data-server="all"]      { background: rgba(79,142,247,0.14);  border-color: rgba(79,142,247,0.4);  color: var(--accent);  box-shadow: 0 0 12px rgba(79,142,247,0.2); }
+    .sf-btn.active[data-server="expert"]   { background: rgba(79,142,247,0.14);  border-color: rgba(79,142,247,0.4);  color: var(--accent);  box-shadow: 0 0 12px rgba(79,142,247,0.2); }
+    .sf-btn.active[data-server="training"] { background: rgba(245,166,35,0.12);  border-color: rgba(245,166,35,0.4);  color: var(--amber);   box-shadow: 0 0 12px rgba(245,166,35,0.2); }
+    .sf-btn.active[data-server="casual"]   { background: rgba(168,85,247,0.12);  border-color: rgba(168,85,247,0.4);  color: var(--purple);  box-shadow: 0 0 12px rgba(168,85,247,0.2); }
 
     /* Count + speed toggle */
     #sb-meta {
       display: flex;
       align-items: center;
       padding: 7px 14px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
       gap: 6px;
       flex-shrink: 0;
       font-size: 11px;
@@ -161,8 +197,8 @@
     #flight-count { font-weight: 700; color: var(--text); font-size: 12px; }
     #speed-btn {
       margin-left: auto;
-      background: transparent;
-      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.09);
       color: var(--accent);
       font-family: 'JetBrains Mono', monospace;
       font-size: 10px;
@@ -173,7 +209,7 @@
       letter-spacing: 0.06em;
       transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
     }
-    #speed-btn:hover { border-color: var(--accent); background: #0d1e38; box-shadow: 0 0 8px var(--glow-accent); }
+    #speed-btn:hover { border-color: rgba(79,142,247,0.4); background: rgba(79,142,247,0.1); box-shadow: 0 0 10px rgba(79,142,247,0.18); }
 
     /* Flight list */
     #flight-list {
@@ -183,21 +219,21 @@
     }
     #flight-list::-webkit-scrollbar       { width: 3px; }
     #flight-list::-webkit-scrollbar-track { background: transparent; }
-    #flight-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+    #flight-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
 
     .fl-item {
       padding: 9px 14px 8px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
       cursor: pointer;
       transition: background 0.2s;
       position: relative;
     }
-    .fl-item:hover    { background: var(--s1); }
+    .fl-item:hover    { background: rgba(255,255,255,0.04); }
     .fl-item.selected {
-      background: #09152c;
+      background: rgba(79,142,247,0.1);
       border-left: 2px solid var(--accent);
       padding-left: 12px;
-      box-shadow: inset 4px 0 16px var(--glow-accent);
+      box-shadow: inset 4px 0 16px rgba(79,142,247,0.1);
     }
     .fl-item.selected::after {
       content: '';
@@ -285,23 +321,23 @@
     /* Beta footer */
     #sb-footer {
       padding: 8px 14px;
-      border-top: 1px solid #0e1e36;
-      background: #03080f;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      background: rgba(3,8,20,0.5);
       font-size: 9px;
-      color: #2d5080;
+      color: rgba(79,142,247,0.45);
       letter-spacing: 0.07em;
       flex-shrink: 0;
       text-align: center;
     }
 
     /* ════════════════════════════════════════════════════════════════════════
-       GLOBE
+       GLOBE — fills full viewport so glass sidebars can blur it
     ════════════════════════════════════════════════════════════════════════ */
     #globe-wrap {
-      flex: 1;
-      position: relative;
+      position: absolute;
+      inset: 0;
+      z-index: 0;
       background: #000;
-      overflow: hidden;
     }
 
     /* Globe.gl fills the container */
@@ -379,51 +415,80 @@
     }
 
     /* ════════════════════════════════════════════════════════════════════════
-       RIGHT SIDEBAR — DETAIL PANEL
+       RIGHT SIDEBAR — Liquid glass detail panel, floats over the globe
     ════════════════════════════════════════════════════════════════════════ */
     #right-sb {
-      width: 0;
-      min-width: 0;
-      background: var(--black);
-      border-left: 1px solid transparent;
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      bottom: 12px;
+      width: var(--detail-w);
+      z-index: 20;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      flex-shrink: 0;
-      z-index: 20;
-      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                  min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                  border-color 0.3s;
+
+      /* Frosted glass — mirrors left sidebar */
+      background: rgba(0, 0, 0, 0.44);
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      box-shadow:
+        0 8px 48px rgba(0,0,0,0.65),
+        inset 0 1px 0 rgba(255,255,255,0.11),
+        inset 0 0 0 0.5px rgba(255,255,255,0.04);
+
+      /* Slide in from right */
+      transform: translateX(calc(100% + 24px));
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     }
     #right-sb.open {
-      width: var(--detail-w);
-      min-width: var(--detail-w);
-      border-left-color: var(--border);
+      transform: translateX(0);
     }
 
-    /* Fixed-width inner so content never reflows during animation */
+    /* Prism edge — reversed spectrum, right-to-left */
+    #right-sb::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1.5px;
+      background: linear-gradient(90deg,
+        transparent,
+        rgba(239,68,68,0.25),
+        rgba(251,191,36,0.35),
+        rgba(52,211,153,0.4),
+        rgba(56,189,248,0.5),
+        rgba(139,92,246,0.65),
+        rgba(79,142,247,0.55)
+      );
+      border-radius: 14px 14px 0 0;
+      pointer-events: none;
+      z-index: 2;
+    }
+
     #detail-inner {
-      width: var(--detail-w);
+      width: 100%;
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
       padding: 0 0 32px;
     }
     #detail-inner::-webkit-scrollbar       { width: 3px; }
-    #detail-inner::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+    #detail-inner::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
 
     /* Detail header */
     #d-hdr {
       padding: 16px 16px 14px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
       position: relative;
     }
     #d-close {
       position: absolute;
       top: 14px;
       right: 14px;
-      background: var(--s1);
-      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
       color: var(--text2);
       width: 26px;
       height: 26px;
@@ -433,9 +498,9 @@
       justify-content: center;
       cursor: pointer;
       font-size: 12px;
-      transition: color 0.15s, border-color 0.15s;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
     }
-    #d-close:hover { color: var(--text); border-color: var(--border2); }
+    #d-close:hover { color: var(--text); border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.1); }
 
     #d-callsign {
       font-family: 'Exo', sans-serif;
@@ -476,13 +541,13 @@
       gap: 6px;
     }
     .dg-card {
-      background: var(--s1);
-      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
       border-radius: 7px;
       padding: 9px 11px;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
     }
-    .dg-card:hover { border-color: var(--border2); box-shadow: 0 0 8px rgba(0,0,0,0.4); }
+    .dg-card:hover { border-color: rgba(255,255,255,0.12); background: rgba(255,255,255,0.06); box-shadow: inset 0 1px 0 rgba(255,255,255,0.06); }
     .dg-lbl {
       font-size: 8px;
       color: var(--text3);
@@ -504,11 +569,10 @@
       color: var(--text2);
     }
 
-    /* Mobile: hide sidebars, show hamburger */
+    /* Mobile: globe already fills viewport, just hide the sidebars */
     @media (max-width: 768px) {
-      #left-sb   { display: none; }
-      #right-sb  { display: none; }
-      #globe-wrap { width: 100vw; }
+      #left-sb  { display: none; }
+      #right-sb { display: none; }
     }
   </style>
 </head>
@@ -766,8 +830,7 @@ function hideLoading() {
 
 function resizeGlobe() {
   if (!globe) return;
-  const el = document.getElementById('globe-wrap');
-  globe.width(el.clientWidth).height(el.clientHeight);
+  globe.width(window.innerWidth).height(window.innerHeight);
 }
 
 /* ── Globe data refresh ─────────────────────────────────────────────────────── */
@@ -881,7 +944,6 @@ function selectFlight(id) {
   document.getElementById('right-sb').classList.add('open');
   buildList();
   updateGlobe();
-  setTimeout(resizeGlobe, 320);
 
   if (f.latitude != null && f.longitude != null) {
     globe?.pointOfView({ lat: f.latitude, lng: f.longitude, altitude: 1.8 }, 1200);
@@ -918,7 +980,6 @@ function closeDetail() {
   document.getElementById('right-sb').classList.remove('open');
   updateGlobe();
   buildList();
-  setTimeout(resizeGlobe, 320);
 }
 
 /* ── Controls ───────────────────────────────────────────────────────────────── */
