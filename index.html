@@ -765,6 +765,7 @@ let searchQuery   = '';
 let speedUnit     = 'kn';
 let globe         = null;
 let isOnline      = false;
+let _airplaneTex  = null;   // shared canvas texture, built once
 
 /* ── Utilities ──────────────────────────────────────────────────────────────── */
 const esc = s => String(s || '')
@@ -803,37 +804,59 @@ function initGlobe() {
     .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
     .atmosphereColor('#2d5cb8')
     .atmosphereAltitude(0.14)
-    // ── Flights as 3-D airplane shapes stuck to the globe surface
+    // ── Flights as flat canvas-texture icons stuck to the globe surface
     .customLayerData([])
     .customThreeObject(d => {
       const T = window.THREE;
       if (!T) return null;
+
+      // ── Build shared white airplane silhouette texture exactly once ──
+      if (!_airplaneTex) {
+        const sz  = 128;
+        const cv  = document.createElement('canvas');
+        cv.width  = sz; cv.height = sz;
+        const ctx = cv.getContext('2d');
+        // White fill on transparent canvas background
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        // Coordinate map: shape-space → canvas-space
+        //   • +x maps right (normal)
+        //   • +y maps DOWN (canvas y-axis is inverted vs shape y-axis)
+        //   This puts the nose (shape y=+1.2) at the BOTTOM of the canvas,
+        //   which after THREE flipY becomes UV v≈0 → PlaneGeometry -Y.
+        //   rotation.x = -π/2 then sends plane -Y → group +Z = fwd.  ✓
+        const p = (x, y) => [sz/2 + x * 46, sz/2 + y * 46];
+        ctx.moveTo(...p(0, 1.2));
+        ctx.bezierCurveTo(...p(0.14,0.9), ...p(0.18,0.5), ...p(0.18,0.28));
+        ctx.lineTo(...p(1.35,0.18));  ctx.lineTo(...p(1.1,-0.18));
+        ctx.lineTo(...p(0.18,0.02));  ctx.lineTo(...p(0.18,-0.28));
+        ctx.lineTo(...p(0.6,-0.88));  ctx.lineTo(...p(0.22,-0.82));
+        ctx.lineTo(...p(0,-0.68));
+        ctx.lineTo(...p(-0.22,-0.82)); ctx.lineTo(...p(-0.6,-0.88));
+        ctx.lineTo(...p(-0.18,-0.28)); ctx.lineTo(...p(-0.18,0.02));
+        ctx.lineTo(...p(-1.1,-0.18)); ctx.lineTo(...p(-1.35,0.18));
+        ctx.bezierCurveTo(...p(-0.18,0.5), ...p(-0.14,0.9), ...p(0,1.2));
+        ctx.closePath();
+        ctx.fill();
+        _airplaneTex = new T.CanvasTexture(cv);
+      }
+
       const dimmed = selectedId && String(d.flightId) !== selectedId;
-      const col = new T.Color(sColor(d.server));
       const mat = new T.MeshBasicMaterial({
-        color: col,
-        side: T.DoubleSide,
+        map:         _airplaneTex,
+        color:       new T.Color(sColor(d.server)), // tints the white texture
         transparent: true,
-        opacity: dimmed ? 0.2 : 0.95
+        alphaTest:   0.1,   // discard transparent pixels outside silhouette
+        opacity:     dimmed ? 0.2 : 1.0,
+        depthWrite:  false,
       });
 
-      // Flat top-down airplane silhouette (nose = +Y, lays in XY plane)
-      const s = new T.Shape();
-      s.moveTo(0, 1.2);                              // nose
-      s.bezierCurveTo(0.14, 0.9, 0.18, 0.5, 0.18, 0.28);
-      s.lineTo(1.35, 0.18);  s.lineTo(1.1, -0.18);  // right wing
-      s.lineTo(0.18, 0.02);  s.lineTo(0.18, -0.28);
-      s.lineTo(0.6, -0.88);  s.lineTo(0.22, -0.82); // right tail
-      s.lineTo(0, -0.68);                            // tail centre
-      s.lineTo(-0.22, -0.82); s.lineTo(-0.6, -0.88);// left tail
-      s.lineTo(-0.18, -0.28); s.lineTo(-0.18, 0.02);
-      s.lineTo(-1.1, -0.18); s.lineTo(-1.35, 0.18); // left wing
-      s.bezierCurveTo(-0.18, 0.5, -0.14, 0.9, 0, 1.2);
-
-      const geo = new T.ShapeGeometry(s);
+      // PlaneGeometry (XY plane, 3.2 × 3.2 world units)
+      // rotation.x = -π/2:
+      //   plane normal (+Z) → group +Y (outward from globe → front face toward camera ✓)
+      //   plane -Y (canvas-bottom = nose) → group +Z (= fwd in customThreeObjectUpdate ✓)
+      const geo  = new T.PlaneGeometry(3.2, 3.2);
       const mesh = new T.Mesh(geo, mat);
-      // Rotate flat shape (XY plane) to lie on globe surface (XZ plane)
-      // so +Y (nose) aligns with +Z (forward in world space)
       mesh.rotation.x = -Math.PI / 2;
 
       const group = new T.Group();
@@ -878,7 +901,7 @@ function initGlobe() {
     .pathPointLat(p => p[0])
     .pathPointLng(p => p[1])
     .pathColor(d => d.color)
-    .pathStroke(0.25)
+    .pathStroke(0.12)
     .pathDashLength(d => d.isDotted ? 0.4 : 0.05)
     .pathDashGap(d => d.isDotted ? 0.25 : 0.03)
     .pathDashAnimateTime(d => d.isDotted ? 0 : 24000)
