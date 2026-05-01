@@ -695,20 +695,20 @@
       </div>
 
       <!-- Flight plan info -->
-      <div class="d-section">
+      <div class="d-section" style="margin-top:12px">
         <div class="d-sec-label">Flight Plan</div>
         <div class="d-grid">
           <div class="dg-card">
+            <div class="dg-lbl">Departure</div>
+            <div class="dg-val" id="d-dep">—</div>
+          </div>
+          <div class="dg-card">
             <div class="dg-lbl">Destination</div>
-            <div class="dg-val" id="d-dest">N/A</div>
+            <div class="dg-val" id="d-dest">—</div>
           </div>
           <div class="dg-card">
-            <div class="dg-lbl">ETA</div>
-            <div class="dg-val" id="d-eta">N/A</div>
-          </div>
-          <div class="dg-card">
-            <div class="dg-lbl">Autopilot</div>
-            <div class="dg-val" id="d-ap">N/A</div>
+            <div class="dg-lbl">ETA (UTC)</div>
+            <div class="dg-val" id="d-eta">—</div>
           </div>
           <div class="dg-card">
             <div class="dg-lbl">On Ground</div>
@@ -810,29 +810,34 @@ function initGlobe() {
       if (!T) return null;
       const dimmed = selectedId && String(d.flightId) !== selectedId;
       const col = new T.Color(sColor(d.server));
-      const mat = new T.MeshLambertMaterial({
-        color: col, emissive: col,
-        emissiveIntensity: dimmed ? 0.08 : 0.6,
-        transparent: dimmed,
-        opacity: dimmed ? 0.22 : 1.0
+      const mat = new T.MeshBasicMaterial({
+        color: col,
+        side: T.DoubleSide,
+        transparent: true,
+        opacity: dimmed ? 0.2 : 0.95
       });
+
+      // Flat top-down airplane silhouette (nose = +Y, lays in XY plane)
+      const s = new T.Shape();
+      s.moveTo(0, 1.2);                              // nose
+      s.bezierCurveTo(0.14, 0.9, 0.18, 0.5, 0.18, 0.28);
+      s.lineTo(1.35, 0.18);  s.lineTo(1.1, -0.18);  // right wing
+      s.lineTo(0.18, 0.02);  s.lineTo(0.18, -0.28);
+      s.lineTo(0.6, -0.88);  s.lineTo(0.22, -0.82); // right tail
+      s.lineTo(0, -0.68);                            // tail centre
+      s.lineTo(-0.22, -0.82); s.lineTo(-0.6, -0.88);// left tail
+      s.lineTo(-0.18, -0.28); s.lineTo(-0.18, 0.02);
+      s.lineTo(-1.1, -0.18); s.lineTo(-1.35, 0.18); // left wing
+      s.bezierCurveTo(-0.18, 0.5, -0.14, 0.9, 0, 1.2);
+
+      const geo = new T.ShapeGeometry(s);
+      const mesh = new T.Mesh(geo, mat);
+      // Rotate flat shape (XY plane) to lie on globe surface (XZ plane)
+      // so +Y (nose) aligns with +Z (forward in world space)
+      mesh.rotation.x = -Math.PI / 2;
+
       const group = new T.Group();
-
-      // Fuselage — cone pointing forward (+Z in object space)
-      const fuse = new T.Mesh(new T.ConeGeometry(0.22, 1.8, 8), mat);
-      fuse.rotation.x = Math.PI / 2;
-      group.add(fuse);
-
-      // Wings
-      const wings = new T.Mesh(new T.BoxGeometry(2.8, 0.09, 0.5), mat);
-      wings.position.z = 0.18;
-      group.add(wings);
-
-      // Tail fin
-      const tail = new T.Mesh(new T.BoxGeometry(1.0, 0.09, 0.3), mat);
-      tail.position.z = -0.64;
-      group.add(tail);
-
+      group.add(mesh);
       return group;
     })
     .customThreeObjectUpdate((obj, d) => {
@@ -873,7 +878,7 @@ function initGlobe() {
     .pathPointLat(p => p[0])
     .pathPointLng(p => p[1])
     .pathColor(d => d.color)
-    .pathStroke(0.45)
+    .pathStroke(0.25)
     .pathDashLength(d => d.isDotted ? 0.4 : 0.05)
     .pathDashGap(d => d.isDotted ? 0.25 : 0.03)
     .pathDashAnimateTime(d => d.isDotted ? 0 : 24000)
@@ -902,6 +907,28 @@ function hideLoading() {
 function resizeGlobe() {
   if (!globe) return;
   globe.width(window.innerWidth).height(window.innerHeight);
+}
+
+/* ── Haversine distance in nautical miles ───────────────────────────────────── */
+function haversineNm(lat1, lon1, lat2, lon2) {
+  const R = 3440.065;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+/* ── Fetch flight plan from proxy ───────────────────────────────────────────── */
+async function fetchFlightPlan(flightId) {
+  const base = location.hostname === 'localhost'
+    ? 'http://localhost:3001'
+    : 'https://polaris-proxy-u3fw.onrender.com';
+  try {
+    const res = await fetch(`${base}/flightplan/${flightId}`);
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json?.result ?? null;
+  } catch { return null; }
 }
 
 /* ── Great-circle projection ahead from current position ────────────────────── */
@@ -1046,6 +1073,45 @@ function selectFlight(id) {
   if (f.latitude != null && f.longitude != null) {
     globe?.pointOfView({ lat: f.latitude, lng: f.longitude, altitude: 1.8 }, 1200);
   }
+
+  // Async: fetch flight plan from IF Live API via proxy
+  fetchFlightPlan(id).then(plan => {
+    // Guard — user may have switched away before this resolves
+    if (selectedId !== id) return;
+
+    const items = plan?.flightPlanItems;
+    if (!items?.length) {
+      document.getElementById('d-dep').textContent  = 'N/A';
+      document.getElementById('d-dest').textContent = 'N/A';
+      document.getElementById('d-eta').textContent  = 'N/A';
+      return;
+    }
+
+    // type 0 = origin airport, type 2 = destination airport
+    const dep = items.find(i => i.type === 0);
+    const dst = items.filter(i => i.type === 2).pop() || items[items.length - 1];
+
+    document.getElementById('d-dep').textContent  = dep?.name || 'N/A';
+    document.getElementById('d-dest').textContent = dst?.name || 'N/A';
+
+    const cur = flightData[id];
+    if (cur && cur.speed > 10 && dst?.location?.latitude != null && cur.latitude != null) {
+      const distNm  = haversineNm(cur.latitude, cur.longitude, dst.location.latitude, dst.location.longitude);
+      const etaMins = Math.round(distNm / cur.speed * 60);
+      const eta     = new Date(Date.now() + etaMins * 60_000);
+      // Format as HH:MMZ
+      document.getElementById('d-eta').textContent =
+        String(eta.getUTCHours()).padStart(2,'0') + ':' +
+        String(eta.getUTCMinutes()).padStart(2,'0') + 'Z';
+    } else {
+      document.getElementById('d-eta').textContent = 'N/A';
+    }
+  }).catch(() => {
+    if (selectedId !== id) return;
+    document.getElementById('d-dep').textContent  = 'N/A';
+    document.getElementById('d-dest').textContent = 'N/A';
+    document.getElementById('d-eta').textContent  = 'N/A';
+  });
 }
 
 function renderDetail(f) {
@@ -1069,10 +1135,10 @@ function renderDetail(f) {
   document.getElementById('d-lat').textContent = f.latitude  != null ? f.latitude.toFixed(4)  : '—';
   document.getElementById('d-lon').textContent = f.longitude != null ? f.longitude.toFixed(4) : '—';
 
-  // Flight plan fields — not provided by IF Live API
-  document.getElementById('d-dest').textContent = 'N/A';
-  document.getElementById('d-eta').textContent  = 'N/A';
-  document.getElementById('d-ap').textContent   = 'N/A';
+  // Flight plan fields — populated async by fetchFlightPlan; reset to loading here
+  document.getElementById('d-dep').textContent  = '…';
+  document.getElementById('d-dest').textContent = '…';
+  document.getElementById('d-eta').textContent  = '…';
   document.getElementById('d-gnd').textContent  = f.onGround ? 'Yes' : 'No';
 
   document.getElementById('d-server-row').innerHTML =
@@ -1097,6 +1163,7 @@ function setFilter(btn, server) {
   document.querySelectorAll('.sf-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   buildList();
+  updateGlobe();
 }
 
 const SPEED_CYCLE = ['kn', 'mph', 'km/h'];

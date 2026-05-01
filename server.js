@@ -86,6 +86,7 @@ async function poll() {
             onGround:            f.onGround,
             server,
             serverName:          session.name,
+            sessionId:           session.id,   // needed for flightplan lookup
             ts:                  now,
           };
         }
@@ -111,10 +112,41 @@ async function poll() {
   }
 }
 
-// ── HTTP server (Railway health check) ────────────────────────────────────────
-const server = http.createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('Polaris IF Proxy running');
+// ── HTTP server ────────────────────────────────────────────────────────────────
+const server = http.createServer(async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET');
+
+  // Health check
+  if (req.url === '/' || req.url === '') {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Polaris IF Proxy running');
+    return;
+  }
+
+  // Flight plan proxy: GET /flightplan/:flightId
+  const fpMatch = req.url.match(/^\/flightplan\/([^/?]+)/);
+  if (fpMatch) {
+    const flightId = fpMatch[1];
+    const cached = cache[flightId];
+    if (!cached || !cached.sessionId) {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'flight not in cache' }));
+      return;
+    }
+    try {
+      const data = await apiGet(`/sessions/${cached.sessionId}/flights/${flightId}/flightplan`);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(data));
+    } catch (e) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  res.writeHead(404);
+  res.end('Not found');
 });
 
 // ── WebSocket server ───────────────────────────────────────────────────────────
