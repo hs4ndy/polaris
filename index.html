@@ -7,7 +7,14 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Exo:wght@600;700;800&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/three@0.170.0/build/three.min.js"></script>
+  <!-- THREE must be global before customThreeObject callbacks run.
+       three.min.js was removed in r152, so we use the module build and
+       expose it as window.THREE. Module scripts run before DOMContentLoaded,
+       so the reference is ready before any flight data arrives. -->
+  <script type="module">
+    import * as THREE from 'https://unpkg.com/three@0.170.0/build/three.module.js';
+    window.THREE = THREE;
+  </script>
   <script src="https://unpkg.com/globe.gl/dist/globe.gl.min.js"></script>
 
   <style>
@@ -687,6 +694,29 @@
         </div>
       </div>
 
+      <!-- Flight plan info -->
+      <div class="d-section">
+        <div class="d-sec-label">Flight Plan</div>
+        <div class="d-grid">
+          <div class="dg-card">
+            <div class="dg-lbl">Destination</div>
+            <div class="dg-val" id="d-dest">N/A</div>
+          </div>
+          <div class="dg-card">
+            <div class="dg-lbl">ETA</div>
+            <div class="dg-val" id="d-eta">N/A</div>
+          </div>
+          <div class="dg-card">
+            <div class="dg-lbl">Autopilot</div>
+            <div class="dg-val" id="d-ap">N/A</div>
+          </div>
+          <div class="dg-card">
+            <div class="dg-lbl">On Ground</div>
+            <div class="dg-val" id="d-gnd">—</div>
+          </div>
+        </div>
+      </div>
+
       <!-- Server -->
       <div id="d-server-row"></div>
 
@@ -776,28 +806,38 @@ function initGlobe() {
     // ── Flights as 3-D airplane shapes stuck to the globe surface
     .customLayerData([])
     .customThreeObject(d => {
-      const col = new THREE.Color(sColor(d.server));
-      const mat = new THREE.MeshLambertMaterial({ color: col, emissive: col, emissiveIntensity: 0.55 });
-      const group = new THREE.Group();
+      const T = window.THREE;
+      if (!T) return null;
+      const dimmed = selectedId && String(d.flightId) !== selectedId;
+      const col = new T.Color(sColor(d.server));
+      const mat = new T.MeshLambertMaterial({
+        color: col, emissive: col,
+        emissiveIntensity: dimmed ? 0.08 : 0.6,
+        transparent: dimmed,
+        opacity: dimmed ? 0.22 : 1.0
+      });
+      const group = new T.Group();
 
       // Fuselage — cone pointing forward (+Z in object space)
-      const fuse = new THREE.Mesh(new THREE.ConeGeometry(0.22, 1.8, 8), mat);
+      const fuse = new T.Mesh(new T.ConeGeometry(0.22, 1.8, 8), mat);
       fuse.rotation.x = Math.PI / 2;
       group.add(fuse);
 
       // Wings
-      const wings = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.09, 0.5), mat);
+      const wings = new T.Mesh(new T.BoxGeometry(2.8, 0.09, 0.5), mat);
       wings.position.z = 0.18;
       group.add(wings);
 
       // Tail fin
-      const tail = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.09, 0.3), mat);
+      const tail = new T.Mesh(new T.BoxGeometry(1.0, 0.09, 0.3), mat);
       tail.position.z = -0.64;
       group.add(tail);
 
       return group;
     })
     .customThreeObjectUpdate((obj, d) => {
+      const T = window.THREE;
+      if (!T) return;
       const lat = d.latitude  * Math.PI / 180;
       const lng = d.longitude * Math.PI / 180;
       const hdg = (d.track || 0) * Math.PI / 180;
@@ -811,30 +851,20 @@ function initGlobe() {
       );
 
       // Orthonormal surface basis at this lat/lng
-      const up = new THREE.Vector3(
-        Math.cos(lat) * Math.sin(lng),
-        Math.sin(lat),
-        Math.cos(lat) * Math.cos(lng)
-      );
-      const east  = new THREE.Vector3(Math.cos(lng), 0, -Math.sin(lng));
-      const north = new THREE.Vector3(
-        -Math.sin(lat) * Math.sin(lng),
-         Math.cos(lat),
-        -Math.sin(lat) * Math.cos(lng)
-      );
+      const up    = new T.Vector3(Math.cos(lat)*Math.sin(lng), Math.sin(lat), Math.cos(lat)*Math.cos(lng));
+      const east  = new T.Vector3(Math.cos(lng), 0, -Math.sin(lng));
+      const north = new T.Vector3(-Math.sin(lat)*Math.sin(lng), Math.cos(lat), -Math.sin(lat)*Math.cos(lng));
 
       // Forward direction on the surface at this heading (0°=N, 90°=E)
-      const fwd = new THREE.Vector3()
+      const fwd = new T.Vector3()
         .addScaledVector(north, Math.cos(hdg))
         .addScaledVector(east,  Math.sin(hdg))
         .normalize();
 
-      const right = new THREE.Vector3().crossVectors(fwd, up).normalize();
+      const right = new T.Vector3().crossVectors(fwd, up).normalize();
 
       // Quaternion from basis matrix — avoids gimbal lock
-      obj.quaternion.setFromRotationMatrix(
-        new THREE.Matrix4().makeBasis(right, up, fwd)
-      );
+      obj.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(right, up, fwd));
     })
     .onCustomLayerClick(d => selectFlight(String(d.flightId)))
     // ── Trails as animated dashed paths
@@ -844,9 +874,9 @@ function initGlobe() {
     .pathPointLng(p => p[1])
     .pathColor(d => d.color)
     .pathStroke(0.45)
-    .pathDashLength(0.05)
-    .pathDashGap(0.03)
-    .pathDashAnimateTime(24000)
+    .pathDashLength(d => d.isDotted ? 0.4 : 0.05)
+    .pathDashGap(d => d.isDotted ? 0.25 : 0.03)
+    .pathDashAnimateTime(d => d.isDotted ? 0 : 24000)
     // ── Pulsing ring on selected flight
     .ringsData([])
     .ringLat(d => d.lat)
@@ -874,6 +904,23 @@ function resizeGlobe() {
   globe.width(window.innerWidth).height(window.innerHeight);
 }
 
+/* ── Great-circle projection ahead from current position ────────────────────── */
+function projectAhead(lat, lng, trackDeg, speedKt) {
+  const distKm = Math.min(Math.max((speedKt || 450) * 1.852 * 1.5, 500), 2200);
+  const R = 6371, d = distKm / R;
+  const lat1 = lat * Math.PI / 180;
+  const lng1 = lng * Math.PI / 180;
+  const brng = trackDeg * Math.PI / 180;
+  const pts = [];
+  for (let i = 0; i <= 40; i++) {
+    const f = i / 40;
+    const φ = Math.asin(Math.sin(lat1)*Math.cos(f*d) + Math.cos(lat1)*Math.sin(f*d)*Math.cos(brng));
+    const λ = lng1 + Math.atan2(Math.sin(brng)*Math.sin(f*d)*Math.cos(lat1), Math.cos(f*d)-Math.sin(lat1)*Math.sin(φ));
+    pts.push([φ * 180/Math.PI, λ * 180/Math.PI]);
+  }
+  return pts;
+}
+
 /* ── Globe data refresh ─────────────────────────────────────────────────────── */
 function updateGlobe() {
   if (!globe) return;
@@ -884,9 +931,17 @@ function updateGlobe() {
   );
   globe.customLayerData(visible);
 
-  const trails = Object.keys(liveTrails)
-    .filter(id => liveTrails[id]?.length >= 2 && flightData[id] && flightData[id].server === currentServer)
-    .map(id => ({ id, color: sColor(flightData[id].server), coords: liveTrails[id] }));
+  // Trails: only for the selected flight + a dotted projection ahead
+  const trails = [];
+  if (selectedId && flightData[selectedId]) {
+    const sf = flightData[selectedId];
+    if (liveTrails[selectedId]?.length >= 2) {
+      trails.push({ id: selectedId, color: sColor(sf.server), coords: liveTrails[selectedId], isDotted: false });
+    }
+    if (sf.latitude != null && sf.track != null) {
+      trails.push({ id: selectedId + '_proj', color: sColor(sf.server), coords: projectAhead(sf.latitude, sf.longitude, sf.track, sf.speed), isDotted: true });
+    }
+  }
   globe.pathsData(trails);
 
   if (selectedId && flightData[selectedId]) {
@@ -1013,6 +1068,12 @@ function renderDetail(f) {
   document.getElementById('d-trk').textContent = f.track != null ? Math.round(f.track) + '°' : '—';
   document.getElementById('d-lat').textContent = f.latitude  != null ? f.latitude.toFixed(4)  : '—';
   document.getElementById('d-lon').textContent = f.longitude != null ? f.longitude.toFixed(4) : '—';
+
+  // Flight plan fields — not provided by IF Live API
+  document.getElementById('d-dest').textContent = 'N/A';
+  document.getElementById('d-eta').textContent  = 'N/A';
+  document.getElementById('d-ap').textContent   = 'N/A';
+  document.getElementById('d-gnd').textContent  = f.onGround ? 'Yes' : 'No';
 
   document.getElementById('d-server-row').innerHTML =
     `<span style="color:${col}">■</span>&nbsp;${esc(f.serverName || f.server || '')}`;
