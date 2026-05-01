@@ -7,15 +7,8 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Exo:wght@600;700;800&display=swap" rel="stylesheet">
-  <!-- THREE must be global before customThreeObject callbacks run.
-       three.min.js was removed in r152, so we use the module build and
-       expose it as window.THREE. Module scripts run before DOMContentLoaded,
-       so the reference is ready before any flight data arrives. -->
-  <script type="module">
-    import * as THREE from 'https://unpkg.com/three@0.170.0/build/three.module.js';
-    window.THREE = THREE;
-  </script>
-  <script src="https://unpkg.com/globe.gl/dist/globe.gl.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <style>
     /* ── Reset ─────────────────────────────────────────────────────────────── */
@@ -24,11 +17,11 @@
     /* ── Design tokens ─────────────────────────────────────────────────────── */
     :root {
       --black:    #000000;
-      --s1:       #0d0d0d;   /* OLED: #121212 standard, kept darker for purity */
+      --s1:       #0d0d0d;
       --s2:       #111111;
       --border:   #1e1e1e;
       --border2:  #2a2a2a;
-      --text:     #f0f4f8;   /* 7:1+ contrast on #000 per skill recommendation */
+      --text:     #f0f4f8;
       --text2:    #7a8694;
       --text3:    #3d4450;
       --accent:   #4f8ef7;
@@ -36,10 +29,9 @@
       --purple:   #a855f7;
       --green:    #3fb950;
       --red:      #f85149;
-      /* Glow values for OLED accent style */
-      --glow-accent: rgba(79, 142, 247, 0.22);
-      --glow-amber:  rgba(245, 166, 35, 0.22);
-      --glow-purple: rgba(168, 85, 247, 0.22);
+      --glow-accent:  rgba(79, 142, 247, 0.22);
+      --glow-amber:   rgba(245, 166, 35, 0.22);
+      --glow-purple:  rgba(168, 85, 247, 0.22);
       --sidebar-w: 300px;
       --detail-w:  350px;
     }
@@ -53,7 +45,6 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ── App shell: globe fills everything, sidebars float over it ─────────── */
     #app {
       position: relative;
       height: 100vh;
@@ -62,7 +53,110 @@
     }
 
     /* ════════════════════════════════════════════════════════════════════════
-       LEFT SIDEBAR — Liquid glass panel floating over the globe
+       MAP — fills full viewport, sidebars float over it
+    ════════════════════════════════════════════════════════════════════════ */
+    #map {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: #060a0f;
+    }
+
+    /* ── Leaflet dark-theme overrides ── */
+    .leaflet-container           { background: #060a0f; }
+    .leaflet-tile-pane           { filter: brightness(0.88) saturate(0.8); }
+
+    .leaflet-control-attribution {
+      background: rgba(0,0,0,0.5) !important;
+      backdrop-filter: blur(8px);
+      color: rgba(255,255,255,0.18) !important;
+      font-size: 8px !important;
+      border-radius: 6px 0 0 0 !important;
+      padding: 2px 6px !important;
+    }
+    .leaflet-control-attribution a { color: rgba(255,255,255,0.28) !important; }
+
+    .leaflet-control-zoom {
+      border: none !important;
+      box-shadow: none !important;
+      margin-right: 16px !important;
+      margin-bottom: 16px !important;
+    }
+    .leaflet-control-zoom a {
+      width: 32px !important;
+      height: 32px !important;
+      line-height: 32px !important;
+      background: rgba(0,0,0,0.58) !important;
+      backdrop-filter: blur(16px) saturate(140%);
+      color: var(--text2) !important;
+      border: 1px solid rgba(255,255,255,0.09) !important;
+      font-size: 18px !important;
+      font-weight: 300 !important;
+      transition: background 0.18s, color 0.18s !important;
+    }
+    .leaflet-control-zoom a:hover {
+      background: rgba(79,142,247,0.18) !important;
+      color: var(--accent) !important;
+      border-color: rgba(79,142,247,0.3) !important;
+    }
+    .leaflet-control-zoom-in  { border-radius: 7px 7px 0 0 !important; }
+    .leaflet-control-zoom-out { border-radius: 0 0 7px 7px !important; border-top: 1px solid rgba(255,255,255,0.05) !important; }
+
+    /* No native popups — we use our own detail panel */
+    .leaflet-popup { display: none !important; }
+
+    /* Aircraft div-icon wrapper */
+    .ac-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+    .ac-icon svg { overflow: visible; }
+
+    /* Version tag */
+    #map-ver {
+      position: absolute;
+      bottom: 10px;
+      right: 52px;   /* clear of zoom control */
+      font-size: 9px;
+      color: var(--text3);
+      opacity: 0.45;
+      pointer-events: none;
+      letter-spacing: 0.06em;
+      z-index: 5;
+    }
+
+    /* Loading overlay */
+    #map-loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      background: #000;
+      z-index: 30;
+      transition: opacity 0.7s ease;
+    }
+    #map-loading.hidden { opacity: 0; pointer-events: none; }
+
+    .load-rings { position: relative; width: 36px; height: 36px; }
+    .load-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1px solid transparent;
+    }
+    .load-ring:nth-child(1) { border-top-color: var(--accent); animation: spin 1.2s linear infinite; }
+    .load-ring:nth-child(2) { inset: 6px; border-right-color: #2d4a7f; animation: spin 1.8s linear infinite reverse; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .load-txt { font-size: 11px; color: var(--text3); letter-spacing: 0.14em; }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       LEFT SIDEBAR — Liquid glass panel floating over the map
     ════════════════════════════════════════════════════════════════════════ */
     #left-sb {
       position: absolute;
@@ -70,19 +164,15 @@
       left: 12px;
       bottom: 12px;
       width: var(--sidebar-w);
-      z-index: 20;
+      z-index: 400;
 
-      /* Frosted glass */
       background: rgba(0, 0, 0, 0.44);
       backdrop-filter: blur(28px) saturate(160%);
       -webkit-backdrop-filter: blur(28px) saturate(160%);
-
-      /* Glass border — very subtle white rim */
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 14px;
       overflow: hidden;
 
-      /* Depth shadows + inner top-edge highlight */
       box-shadow:
         0 8px 48px rgba(0,0,0,0.65),
         inset 0 1px 0 rgba(255,255,255,0.11),
@@ -92,20 +182,16 @@
       flex-direction: column;
     }
 
-    /* Prism light catch — rainbow edge at the very top of the glass */
+    /* Prism rainbow top edge */
     #left-sb::after {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 1.5px;
       background: linear-gradient(90deg,
-        rgba(79,142,247,0.55),
-        rgba(139,92,246,0.65),
-        rgba(56,189,248,0.5),
-        rgba(52,211,153,0.4),
-        rgba(251,191,36,0.35),
-        rgba(239,68,68,0.25),
-        transparent
+        rgba(79,142,247,0.55), rgba(139,92,246,0.65),
+        rgba(56,189,248,0.5),  rgba(52,211,153,0.4),
+        rgba(251,191,36,0.35), rgba(239,68,68,0.25), transparent
       );
       border-radius: 14px 14px 0 0;
       pointer-events: none;
@@ -118,12 +204,7 @@
       border-bottom: 1px solid rgba(255,255,255,0.06);
       flex-shrink: 0;
     }
-
-    #logo {
-      display: block;
-      width: 100%;
-      height: auto;
-    }
+    #logo { display: block; width: 100%; height: auto; }
 
     /* Search */
     #sb-search {
@@ -145,13 +226,7 @@
       border-color: rgba(79,142,247,0.45);
       box-shadow: 0 0 0 2px rgba(79,142,247,0.12);
     }
-    .search-icon {
-      flex-shrink: 0;
-      color: var(--text3);
-      font-size: 12px;
-      pointer-events: none;
-      padding-top: 1px;
-    }
+    .search-icon { flex-shrink: 0; color: var(--text3); font-size: 12px; pointer-events: none; padding-top: 1px; }
     #search-input {
       flex: 1;
       background: transparent;
@@ -220,11 +295,7 @@
     #speed-btn:hover { border-color: rgba(79,142,247,0.4); background: rgba(79,142,247,0.1); box-shadow: 0 0 10px rgba(79,142,247,0.18); }
 
     /* Flight list */
-    #flight-list {
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
+    #flight-list { flex: 1; overflow-y: auto; overflow-x: hidden; }
     #flight-list::-webkit-scrollbar       { width: 3px; }
     #flight-list::-webkit-scrollbar-track { background: transparent; }
     #flight-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
@@ -246,85 +317,28 @@
     .fl-item.selected::after {
       content: '';
       position: absolute;
-      inset: 0;
-      left: auto;
+      inset: 0; left: auto;
       width: 28px;
       background: linear-gradient(to left, #09152c, transparent);
       pointer-events: none;
     }
 
-    /* Row 1: dot + callsign + server tag */
     .fl-r1 { display: flex; align-items: center; gap: 7px; }
-    .fl-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .fl-cs {
-      font-weight: 700;
-      font-size: 13px;
-      flex: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      letter-spacing: 0.02em;
-    }
+    .fl-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .fl-cs  { font-weight: 700; font-size: 13px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: 0.02em; }
     .fl-stag {
-      font-size: 8px;
-      font-weight: 600;
-      padding: 2px 5px;
-      border-radius: 3px;
-      letter-spacing: 0.04em;
-      flex-shrink: 0;
+      font-size: 8px; font-weight: 600;
+      padding: 2px 5px; border-radius: 3px;
+      letter-spacing: 0.04em; flex-shrink: 0;
     }
-
-    /* Row 2: username */
-    .fl-r2 {
-      font-size: 11px;
-      color: var(--text2);
-      margin-top: 2px;
-      padding-left: 13px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* Row 3: alt · spd · state */
-    .fl-r3 {
-      font-size: 11px;
-      color: var(--text2);
-      margin-top: 2px;
-      padding-left: 13px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      flex-wrap: nowrap;
-    }
+    .fl-r2  { font-size: 11px; color: var(--text2); margin-top: 2px; padding-left: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .fl-r3  { font-size: 11px; color: var(--text2); margin-top: 2px; padding-left: 13px; display: flex; align-items: center; gap: 5px; flex-wrap: nowrap; }
     .fl-alt { color: var(--text); font-weight: 600; }
     .fl-sep { color: var(--text3); }
-    .s-badge {
-      font-size: 9px;
-      padding: 1px 5px;
-      border-radius: 3px;
-      line-height: 1.5;
-    }
+    .s-badge { font-size: 9px; padding: 1px 5px; border-radius: 3px; line-height: 1.5; }
 
-    /* Empty / overflow */
-    .fl-empty {
-      padding: 36px 14px;
-      text-align: center;
-      font-size: 12px;
-      color: var(--text3);
-      letter-spacing: 0.04em;
-    }
-    .fl-overflow {
-      padding: 8px 14px;
-      text-align: center;
-      font-size: 10px;
-      color: var(--text3);
-      border-top: 1px solid var(--border);
-    }
+    .fl-empty   { padding: 36px 14px; text-align: center; font-size: 12px; color: var(--text3); letter-spacing: 0.04em; }
+    .fl-overflow{ padding: 8px 14px; text-align: center; font-size: 10px; color: var(--text3); border-top: 1px solid var(--border); }
 
     /* Beta footer */
     #sb-footer {
@@ -339,91 +353,7 @@
     }
 
     /* ════════════════════════════════════════════════════════════════════════
-       GLOBE — fills full viewport so glass sidebars can blur it
-    ════════════════════════════════════════════════════════════════════════ */
-    #globe-wrap {
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      background: #000;
-    }
-
-    /* Globe.gl fills the container */
-    #globe-wrap canvas { display: block; }
-
-    /* Drag hint */
-    #globe-hint {
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 10px;
-      color: var(--text3);
-      letter-spacing: 0.07em;
-      pointer-events: none;
-      white-space: nowrap;
-      opacity: 0.6;
-      z-index: 5;
-    }
-
-    /* Version tag */
-    #globe-ver {
-      position: absolute;
-      bottom: 10px;
-      right: 12px;
-      font-size: 9px;
-      color: var(--text3);
-      opacity: 0.4;
-      pointer-events: none;
-      letter-spacing: 0.06em;
-      z-index: 5;
-    }
-
-    /* Loading overlay */
-    #globe-loading {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 14px;
-      background: #000;
-      z-index: 30;
-      transition: opacity 0.7s ease;
-    }
-    #globe-loading.hidden { opacity: 0; pointer-events: none; }
-
-    .load-rings {
-      position: relative;
-      width: 36px;
-      height: 36px;
-    }
-    .load-ring {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      border: 1px solid transparent;
-    }
-    .load-ring:nth-child(1) {
-      border-top-color: var(--accent);
-      animation: spin 1.2s linear infinite;
-    }
-    .load-ring:nth-child(2) {
-      inset: 6px;
-      border-right-color: #2d4a7f;
-      animation: spin 1.8s linear infinite reverse;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .load-txt {
-      font-size: 11px;
-      color: var(--text3);
-      letter-spacing: 0.14em;
-    }
-
-    /* ════════════════════════════════════════════════════════════════════════
-       RIGHT SIDEBAR — Liquid glass detail panel, floats over the globe
+       RIGHT SIDEBAR — Detail panel, slides in from right
     ════════════════════════════════════════════════════════════════════════ */
     #right-sb {
       position: absolute;
@@ -431,12 +361,11 @@
       right: 12px;
       bottom: 12px;
       width: var(--detail-w);
-      z-index: 20;
+      z-index: 400;
       display: flex;
       flex-direction: column;
       overflow: hidden;
 
-      /* Frosted glass — mirrors left sidebar */
       background: rgba(0, 0, 0, 0.44);
       backdrop-filter: blur(28px) saturate(160%);
       -webkit-backdrop-filter: blur(28px) saturate(160%);
@@ -447,28 +376,21 @@
         inset 0 1px 0 rgba(255,255,255,0.11),
         inset 0 0 0 0.5px rgba(255,255,255,0.04);
 
-      /* Slide in from right */
       transform: translateX(calc(100% + 24px));
       transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    #right-sb.open {
-      transform: translateX(0);
-    }
+    #right-sb.open { transform: translateX(0); }
 
-    /* Prism edge — reversed spectrum, right-to-left */
+    /* Prism edge — reversed */
     #right-sb::after {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 1.5px;
       background: linear-gradient(90deg,
-        transparent,
-        rgba(239,68,68,0.25),
-        rgba(251,191,36,0.35),
-        rgba(52,211,153,0.4),
-        rgba(56,189,248,0.5),
-        rgba(139,92,246,0.65),
-        rgba(79,142,247,0.55)
+        transparent, rgba(239,68,68,0.25), rgba(251,191,36,0.35),
+        rgba(52,211,153,0.4), rgba(56,189,248,0.5),
+        rgba(139,92,246,0.65), rgba(79,142,247,0.55)
       );
       border-radius: 14px 14px 0 0;
       pointer-events: none;
@@ -493,17 +415,13 @@
     }
     #d-close {
       position: absolute;
-      top: 14px;
-      right: 14px;
+      top: 14px; right: 14px;
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.1);
       color: var(--text2);
-      width: 26px;
-      height: 26px;
+      width: 26px; height: 26px;
       border-radius: 5px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       cursor: pointer;
       font-size: 12px;
       transition: color 0.15s, border-color 0.15s, background 0.15s;
@@ -520,22 +438,11 @@
       margin-bottom: 4px;
       text-shadow: 0 0 20px var(--glow-accent);
     }
-    #d-user {
-      font-size: 12px;
-      color: var(--text2);
-      min-height: 17px;
-      margin-bottom: 10px;
-    }
-    #d-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
+    #d-user   { font-size: 12px; color: var(--text2); min-height: 17px; margin-bottom: 10px; }
+    #d-badges { display: flex; flex-wrap: wrap; gap: 6px; }
 
     /* Data sections */
-    .d-section {
-      padding: 14px 16px 0;
-    }
+    .d-section { padding: 14px 16px 0; }
     .d-sec-label {
       font-size: 9px;
       color: var(--text3);
@@ -543,11 +450,7 @@
       text-transform: uppercase;
       margin-bottom: 8px;
     }
-    .d-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-    }
+    .d-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
     .dg-card {
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.07);
@@ -556,28 +459,13 @@
       transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
     }
     .dg-card:hover { border-color: rgba(255,255,255,0.12); background: rgba(255,255,255,0.06); box-shadow: inset 0 1px 0 rgba(255,255,255,0.06); }
-    .dg-lbl {
-      font-size: 8px;
-      color: var(--text3);
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      margin-bottom: 5px;
-    }
-    .dg-val {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text);
-      white-space: nowrap;
-    }
+    .dg-lbl { font-size: 8px; color: var(--text3); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 5px; }
+    .dg-val { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; }
 
     /* Server row */
-    #d-server-row {
-      padding: 12px 16px 0;
-      font-size: 11px;
-      color: var(--text2);
-    }
+    #d-server-row { padding: 12px 16px 0; font-size: 11px; color: var(--text2); }
 
-    /* Mobile: globe already fills viewport, just hide the sidebars */
+    /* Mobile */
     @media (max-width: 768px) {
       #left-sb  { display: none; }
       #right-sb { display: none; }
@@ -587,15 +475,25 @@
 <body>
 <div id="app">
 
+  <!-- ══════════════ MAP ══════════════ -->
+  <div id="map">
+    <div id="map-loading">
+      <div class="load-rings">
+        <div class="load-ring"></div>
+        <div class="load-ring"></div>
+      </div>
+      <span class="load-txt">CONNECTING…</span>
+    </div>
+  </div>
+  <div id="map-ver">v0.1.0</div>
+
   <!-- ══════════════ LEFT SIDEBAR ══════════════ -->
   <div id="left-sb">
 
-    <!-- Brand header -->
     <div id="sb-hdr">
       <img id="logo" src="polaris-logo.png" alt="Polaris">
     </div>
 
-    <!-- Search -->
     <div id="sb-search">
       <div class="search-inner">
         <span class="search-icon">
@@ -608,47 +506,29 @@
       </div>
     </div>
 
-    <!-- Server filter -->
     <div id="server-filter">
       <button class="sf-btn"        data-server="expert"   onclick="setFilter(this,'expert')">Expert</button>
       <button class="sf-btn"        data-server="training" onclick="setFilter(this,'training')">Training</button>
       <button class="sf-btn active" data-server="casual"   onclick="setFilter(this,'casual')">Casual</button>
     </div>
 
-    <!-- Count + speed unit -->
     <div id="sb-meta">
       <span id="flight-count">0</span>
       <span style="color:var(--text3)">flights</span>
       <button id="speed-btn" onclick="cycleSpeed()">kn</button>
     </div>
 
-    <!-- Flight list -->
     <div id="flight-list">
       <div class="fl-empty">Connecting…</div>
     </div>
 
-    <!-- Beta footer -->
     <div id="sb-footer">Beta — expect bugs &nbsp;·&nbsp; v0.1.0</div>
-  </div>
-
-  <!-- ══════════════ GLOBE ══════════════ -->
-  <div id="globe-wrap">
-    <div id="globe-loading">
-      <div class="load-rings">
-        <div class="load-ring"></div>
-        <div class="load-ring"></div>
-      </div>
-      <span class="load-txt">LOADING GLOBE…</span>
-    </div>
-    <div id="globe-hint">drag to rotate &nbsp;·&nbsp; scroll to zoom</div>
-    <div id="globe-ver">v0.1.0</div>
   </div>
 
   <!-- ══════════════ RIGHT SIDEBAR (DETAIL) ══════════════ -->
   <div id="right-sb">
     <div id="detail-inner">
 
-      <!-- Callsign / user / badges -->
       <div id="d-hdr">
         <button id="d-close" onclick="closeDetail()" aria-label="Close">✕</button>
         <div id="d-callsign">—</div>
@@ -656,68 +536,34 @@
         <div id="d-badges"></div>
       </div>
 
-      <!-- Navigation data -->
       <div class="d-section" style="margin-top:14px">
         <div class="d-sec-label">Navigation</div>
         <div class="d-grid">
-          <div class="dg-card">
-            <div class="dg-lbl">Altitude</div>
-            <div class="dg-val" id="d-alt">—</div>
-          </div>
-          <div class="dg-card">
-            <div class="dg-lbl">Speed</div>
-            <div class="dg-val" id="d-spd">—</div>
-          </div>
-          <div class="dg-card">
-            <div class="dg-lbl">Vert Speed</div>
-            <div class="dg-val" id="d-vs">—</div>
-          </div>
-          <div class="dg-card">
-            <div class="dg-lbl">Track</div>
-            <div class="dg-val" id="d-trk">—</div>
-          </div>
+          <div class="dg-card"><div class="dg-lbl">Altitude</div><div class="dg-val" id="d-alt">—</div></div>
+          <div class="dg-card"><div class="dg-lbl">Speed</div><div class="dg-val" id="d-spd">—</div></div>
+          <div class="dg-card"><div class="dg-lbl">Vert Speed</div><div class="dg-val" id="d-vs">—</div></div>
+          <div class="dg-card"><div class="dg-lbl">Track</div><div class="dg-val" id="d-trk">—</div></div>
         </div>
       </div>
 
-      <!-- Position data -->
       <div class="d-section" style="margin-top:12px">
         <div class="d-sec-label">Position</div>
         <div class="d-grid">
-          <div class="dg-card">
-            <div class="dg-lbl">Latitude</div>
-            <div class="dg-val" id="d-lat">—</div>
-          </div>
-          <div class="dg-card">
-            <div class="dg-lbl">Longitude</div>
-            <div class="dg-val" id="d-lon">—</div>
-          </div>
+          <div class="dg-card"><div class="dg-lbl">Latitude</div><div class="dg-val" id="d-lat">—</div></div>
+          <div class="dg-card"><div class="dg-lbl">Longitude</div><div class="dg-val" id="d-lon">—</div></div>
         </div>
       </div>
 
-      <!-- Flight plan info -->
       <div class="d-section" style="margin-top:12px">
         <div class="d-sec-label">Flight Plan</div>
         <div class="d-grid">
-          <div class="dg-card">
-            <div class="dg-lbl">Departure</div>
-            <div class="dg-val" id="d-dep">—</div>
-          </div>
-          <div class="dg-card">
-            <div class="dg-lbl">Destination</div>
-            <div class="dg-val" id="d-dest">—</div>
-          </div>
-          <div class="dg-card">
-            <div class="dg-lbl">ETA (UTC)</div>
-            <div class="dg-val" id="d-eta">—</div>
-          </div>
-          <div class="dg-card">
-            <div class="dg-lbl">On Ground</div>
-            <div class="dg-val" id="d-gnd">—</div>
-          </div>
+          <div class="dg-card"><div class="dg-lbl">Departure</div><div class="dg-val" id="d-dep">—</div></div>
+          <div class="dg-card"><div class="dg-lbl">Destination</div><div class="dg-val" id="d-dest">—</div></div>
+          <div class="dg-card"><div class="dg-lbl">ETA (UTC)</div><div class="dg-val" id="d-eta">—</div></div>
+          <div class="dg-card"><div class="dg-lbl">On Ground</div><div class="dg-val" id="d-gnd">—</div></div>
         </div>
       </div>
 
-      <!-- Server -->
       <div id="d-server-row"></div>
 
     </div>
@@ -732,6 +578,10 @@
 const WS_URL = location.hostname === 'localhost'
   ? 'ws://localhost:3001'
   : 'wss://polaris-proxy-u3fw.onrender.com';
+
+const PROXY_BASE = location.hostname === 'localhost'
+  ? 'http://localhost:3001'
+  : 'https://polaris-proxy-u3fw.onrender.com';
 
 const SERVER_COLOR = {
   expert:   '#4f8ef7',
@@ -751,21 +601,23 @@ const FLIGHT_STATE = {
 };
 
 const STALE_MS  = 5 * 60 * 1000;
-const TRAIL_MAX = 180;
+const TRAIL_MAX = 200;
 const LIST_MAX  = 300;
 
 /* ── State ──────────────────────────────────────────────────────────────────── */
-const flightData     = {};
-const liveTrails     = {};
-const flightLastSeen = {};
+const flightData     = {};  // flightId → flight object
+const liveTrails     = {};  // flightId → [[lat, lng], ...]
+const flightLastSeen = {};  // flightId → timestamp
+const markers        = {};  // flightId → L.Marker
 
 let selectedId    = null;
 let currentServer = 'casual';
 let searchQuery   = '';
 let speedUnit     = 'kn';
-let globe         = null;
+let map           = null;
+let trailLine     = null;   // L.Polyline — selected flight history
+let projLine      = null;   // L.Polyline — projected path ahead
 let isOnline      = false;
-let _airplaneTex  = null;   // shared canvas texture, built once
 
 /* ── Utilities ──────────────────────────────────────────────────────────────── */
 const esc = s => String(s || '')
@@ -793,232 +645,214 @@ function fmtVS(vs) {
   return (n >= 0 ? '↑ ' : '↓ ') + Math.abs(n).toLocaleString() + ' fpm';
 }
 
+/* ── Airplane icon (SVG divIcon) ─────────────────────────────────────────────── */
+//  Top-down silhouette. Nose points UP (north) when heading = 0.
+//  CSS transform: rotate(heading deg) turns it to the right direction.
+const PLANE_PATH = `M0,-11 C1,-8 1.5,-3.5 1.5,-1.5
+  L13,3 11.5,6.5 1.5,2.5 1.5,7
+  L5,11 2.5,12.5 0,9.5 -2.5,12.5 -5,11
+  L-1.5,7 -1.5,2.5 -11.5,6.5 -13,3
+  C-1.5,-3.5 -1,-8 0,-11 Z`;
 
-/* ── Globe init ─────────────────────────────────────────────────────────────── */
-function initGlobe() {
-  const el = document.getElementById('globe-wrap');
+function makeIcon(f) {
+  const id      = String(f.flightId);
+  const isSel   = id === selectedId;
+  const dimmed  = selectedId && !isSel;
+  const color   = sColor(f.server);
+  const hdg     = f.track || 0;
+  const opacity = dimmed ? 0.18 : 1.0;
 
-  globe = Globe()(el)
-    .backgroundColor('#000000')
-    .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
-    .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
-    .atmosphereColor('#2d5cb8')
-    .atmosphereAltitude(0.14)
-    // ── Flights as flat canvas-texture icons stuck to the globe surface
-    .customLayerData([])
-    .customThreeObject(d => {
-      const T = window.THREE;
-      if (!T) return null;
+  if (f.onGround) {
+    // Tiny filled square for ground traffic
+    const sz = isSel ? 10 : 7;
+    return L.divIcon({
+      html: `<div class="ac-icon" style="width:${sz}px;height:${sz}px;opacity:${opacity}">
+               <div style="width:${sz}px;height:${sz}px;border-radius:2px;
+                           background:${color};box-shadow:0 0 6px ${color}80"></div>
+             </div>`,
+      className: '',
+      iconSize:   [sz, sz],
+      iconAnchor: [sz/2, sz/2],
+    });
+  }
 
-      // ── Build shared white airplane silhouette texture exactly once ──
-      if (!_airplaneTex) {
-        const sz  = 128;
-        const cv  = document.createElement('canvas');
-        cv.width  = sz; cv.height = sz;
-        const ctx = cv.getContext('2d');
-        // White fill on transparent canvas background
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        // Coordinate map: shape-space → canvas-space
-        //   • +x maps right (normal)
-        //   • +y maps DOWN (canvas y-axis is inverted vs shape y-axis)
-        //   This puts the nose (shape y=+1.2) at the BOTTOM of the canvas,
-        //   which after THREE flipY becomes UV v≈0 → PlaneGeometry -Y.
-        //   rotation.x = -π/2 then sends plane -Y → group +Z = fwd.  ✓
-        const p = (x, y) => [sz/2 + x * 46, sz/2 + y * 46];
-        ctx.moveTo(...p(0, 1.2));
-        ctx.bezierCurveTo(...p(0.14,0.9), ...p(0.18,0.5), ...p(0.18,0.28));
-        ctx.lineTo(...p(1.35,0.18));  ctx.lineTo(...p(1.1,-0.18));
-        ctx.lineTo(...p(0.18,0.02));  ctx.lineTo(...p(0.18,-0.28));
-        ctx.lineTo(...p(0.6,-0.88));  ctx.lineTo(...p(0.22,-0.82));
-        ctx.lineTo(...p(0,-0.68));
-        ctx.lineTo(...p(-0.22,-0.82)); ctx.lineTo(...p(-0.6,-0.88));
-        ctx.lineTo(...p(-0.18,-0.28)); ctx.lineTo(...p(-0.18,0.02));
-        ctx.lineTo(...p(-1.1,-0.18)); ctx.lineTo(...p(-1.35,0.18));
-        ctx.bezierCurveTo(...p(-0.18,0.5), ...p(-0.14,0.9), ...p(0,1.2));
-        ctx.closePath();
-        ctx.fill();
-        _airplaneTex = new T.CanvasTexture(cv);
-      }
+  const sz   = isSel ? 32 : 24;
+  const glow = isSel ? `filter:drop-shadow(0 0 5px ${color}) drop-shadow(0 0 10px ${color}60)` : '';
 
-      const dimmed = selectedId && String(d.flightId) !== selectedId;
-      const mat = new T.MeshBasicMaterial({
-        map:         _airplaneTex,
-        color:       new T.Color(sColor(d.server)), // tints the white texture
-        transparent: true,
-        alphaTest:   0.1,   // discard transparent pixels outside silhouette
-        opacity:     dimmed ? 0.2 : 1.0,
-        depthWrite:  false,
-      });
-
-      // PlaneGeometry (XY plane, 3.2 × 3.2 world units)
-      // rotation.x = -π/2:
-      //   plane normal (+Z) → group +Y (outward from globe → front face toward camera ✓)
-      //   plane -Y (canvas-bottom = nose) → group +Z (= fwd in customThreeObjectUpdate ✓)
-      const geo  = new T.PlaneGeometry(3.2, 3.2);
-      const mesh = new T.Mesh(geo, mat);
-      mesh.rotation.x = -Math.PI / 2;
-
-      const group = new T.Group();
-      group.add(mesh);
-      return group;
-    })
-    .customThreeObjectUpdate((obj, d) => {
-      const T = window.THREE;
-      if (!T) return;
-      const lat = d.latitude  * Math.PI / 180;
-      const lng = d.longitude * Math.PI / 180;
-      const hdg = (d.track || 0) * Math.PI / 180;
-
-      // Globe.gl world-space radius is 100 units
-      const R = 100;
-      obj.position.set(
-        R * Math.cos(lat) * Math.sin(lng),
-        R * Math.sin(lat),
-        R * Math.cos(lat) * Math.cos(lng)
-      );
-
-      // Orthonormal surface basis at this lat/lng
-      const up    = new T.Vector3(Math.cos(lat)*Math.sin(lng), Math.sin(lat), Math.cos(lat)*Math.cos(lng));
-      const east  = new T.Vector3(Math.cos(lng), 0, -Math.sin(lng));
-      const north = new T.Vector3(-Math.sin(lat)*Math.sin(lng), Math.cos(lat), -Math.sin(lat)*Math.cos(lng));
-
-      // Forward direction on the surface at this heading (0°=N, 90°=E)
-      const fwd = new T.Vector3()
-        .addScaledVector(north, Math.cos(hdg))
-        .addScaledVector(east,  Math.sin(hdg))
-        .normalize();
-
-      const right = new T.Vector3().crossVectors(fwd, up).normalize();
-
-      // Quaternion from basis matrix — avoids gimbal lock
-      obj.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(right, up, fwd));
-    })
-    .onCustomLayerClick(d => selectFlight(String(d.flightId)))
-    // ── Trails as animated dashed paths
-    .pathsData([])
-    .pathPoints(d => d.coords)
-    .pathPointLat(p => p[0])
-    .pathPointLng(p => p[1])
-    .pathColor(d => d.color)
-    .pathStroke(0.12)
-    .pathDashLength(d => d.isDotted ? 0.4 : 0.05)
-    .pathDashGap(d => d.isDotted ? 0.25 : 0.03)
-    .pathDashAnimateTime(d => d.isDotted ? 0 : 24000)
-    // ── Pulsing ring on selected flight
-    .ringsData([])
-    .ringLat(d => d.lat)
-    .ringLng(d => d.lng)
-    .ringColor(d => d.color)
-    .ringMaxRadius(1.6)
-    .ringPropagationSpeed(1.4)
-    .ringRepeatPeriod(1300)
-    .ringAltitude(0.002);
-
-  globe.pointOfView({ lat: 25, lng: 15, altitude: 1.6 });
-
-  window.addEventListener('resize', resizeGlobe);
-
-  if (globe.onGlobeReady) globe.onGlobeReady(hideLoading);
-  setTimeout(hideLoading, 2200);
+  return L.divIcon({
+    html: `<div class="ac-icon" style="width:${sz}px;height:${sz}px;
+               transform:rotate(${hdg}deg);opacity:${opacity};${glow}">
+             <svg xmlns="http://www.w3.org/2000/svg"
+                  viewBox="-15 -14 30 28" width="${sz}" height="${sz}">
+               <path d="${PLANE_PATH}" fill="${color}"/>
+             </svg>
+           </div>`,
+    className: '',
+    iconSize:   [sz, sz],
+    iconAnchor: [sz/2, sz/2],
+  });
 }
 
-function hideLoading() {
-  document.getElementById('globe-loading')?.classList.add('hidden');
+/* ── Great-circle projection ─────────────────────────────────────────────────── */
+function projectAhead(lat, lng, trackDeg, speedKt) {
+  const distKm = Math.min(Math.max((speedKt || 450) * 1.852 * 1.5, 400), 2200);
+  const R = 6371, d = distKm / R;
+  const lat1 = lat * Math.PI / 180;
+  const lng1 = lng * Math.PI / 180;
+  const brng  = trackDeg * Math.PI / 180;
+  const pts = [];
+  for (let i = 0; i <= 40; i++) {
+    const f = i / 40;
+    const φ = Math.asin(
+      Math.sin(lat1)*Math.cos(f*d) + Math.cos(lat1)*Math.sin(f*d)*Math.cos(brng)
+    );
+    const λ = lng1 + Math.atan2(
+      Math.sin(brng)*Math.sin(f*d)*Math.cos(lat1),
+      Math.cos(f*d)-Math.sin(lat1)*Math.sin(φ)
+    );
+    pts.push([φ * 180/Math.PI, λ * 180/Math.PI]);
+  }
+  return pts;
 }
 
-function resizeGlobe() {
-  if (!globe) return;
-  globe.width(window.innerWidth).height(window.innerHeight);
-}
-
-/* ── Haversine distance in nautical miles ───────────────────────────────────── */
+/* ── Haversine ───────────────────────────────────────────────────────────────── */
 function haversineNm(lat1, lon1, lat2, lon2) {
   const R = 3440.065;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)**2;
+  const a = Math.sin(dLat/2)**2
+          + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)**2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-/* ── Fetch flight plan from proxy ───────────────────────────────────────────── */
+/* ── Fetch flight plan from proxy ────────────────────────────────────────────── */
 async function fetchFlightPlan(flightId) {
-  const base = location.hostname === 'localhost'
-    ? 'http://localhost:3001'
-    : 'https://polaris-proxy-u3fw.onrender.com';
   try {
-    const res = await fetch(`${base}/flightplan/${flightId}`);
+    const res = await fetch(`${PROXY_BASE}/flightplan/${flightId}`);
     if (!res.ok) return null;
     const json = await res.json();
     return json?.result ?? null;
   } catch { return null; }
 }
 
-/* ── Great-circle projection ahead from current position ────────────────────── */
-function projectAhead(lat, lng, trackDeg, speedKt) {
-  const distKm = Math.min(Math.max((speedKt || 450) * 1.852 * 1.5, 500), 2200);
-  const R = 6371, d = distKm / R;
-  const lat1 = lat * Math.PI / 180;
-  const lng1 = lng * Math.PI / 180;
-  const brng = trackDeg * Math.PI / 180;
-  const pts = [];
-  for (let i = 0; i <= 40; i++) {
-    const f = i / 40;
-    const φ = Math.asin(Math.sin(lat1)*Math.cos(f*d) + Math.cos(lat1)*Math.sin(f*d)*Math.cos(brng));
-    const λ = lng1 + Math.atan2(Math.sin(brng)*Math.sin(f*d)*Math.cos(lat1), Math.cos(f*d)-Math.sin(lat1)*Math.sin(φ));
-    pts.push([φ * 180/Math.PI, λ * 180/Math.PI]);
-  }
-  return pts;
+/* ── Map init ────────────────────────────────────────────────────────────────── */
+function initMap() {
+  map = L.map('map', {
+    zoomControl:       false,
+    attributionControl: true,
+    center:    [25, 15],
+    zoom:      3,
+    minZoom:   2,
+    maxZoom:   16,
+    worldCopyJump: true,
+    preferCanvas: true,   // faster rendering for many markers
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains:  'abcd',
+    maxZoom:     19,
+  }).addTo(map);
+
+  L.control.zoom({ position: 'bottomright' }).addTo(map);
 }
 
-/* ── Globe data refresh ─────────────────────────────────────────────────────── */
-function updateGlobe() {
-  if (!globe) return;
+/* ── Trail lines ─────────────────────────────────────────────────────────────── */
+function updateTrails() {
+  if (trailLine) { map.removeLayer(trailLine); trailLine = null; }
+  if (projLine)  { map.removeLayer(projLine);  projLine  = null; }
 
-  // Only show flights matching the active server filter
-  const visible = Object.values(flightData).filter(f =>
-    f.server === currentServer && f.latitude != null && f.longitude != null
+  if (!selectedId || !flightData[selectedId] || !map) return;
+
+  const f     = flightData[selectedId];
+  const color = sColor(f.server);
+  const trail = liveTrails[selectedId];
+
+  if (trail?.length >= 2) {
+    trailLine = L.polyline(trail, {
+      color,
+      weight:  2,
+      opacity: 0.75,
+    }).addTo(map);
+  }
+
+  if (f.latitude != null && f.track != null && !f.onGround) {
+    projLine = L.polyline(projectAhead(f.latitude, f.longitude, f.track, f.speed), {
+      color,
+      weight:    1.5,
+      opacity:   0.45,
+      dashArray: '8 10',
+    }).addTo(map);
+  }
+}
+
+/* ── Marker update ───────────────────────────────────────────────────────────── */
+function updateMarkers() {
+  if (!map) return;
+
+  // IDs that should be visible right now
+  const visibleIds = new Set(
+    Object.values(flightData)
+      .filter(f =>
+        (currentServer === 'all' || f.server === currentServer) &&
+        f.latitude != null && f.longitude != null
+      )
+      .map(f => String(f.flightId))
   );
-  globe.customLayerData(visible);
 
-  // Trails: only for the selected flight + a dotted projection ahead
-  const trails = [];
-  if (selectedId && flightData[selectedId]) {
-    const sf = flightData[selectedId];
-    if (liveTrails[selectedId]?.length >= 2) {
-      trails.push({ id: selectedId, color: sColor(sf.server), coords: liveTrails[selectedId], isDotted: false });
-    }
-    if (sf.latitude != null && sf.track != null) {
-      trails.push({ id: selectedId + '_proj', color: sColor(sf.server), coords: projectAhead(sf.latitude, sf.longitude, sf.track, sf.speed), isDotted: true });
+  // Remove markers no longer in view
+  for (const id of Object.keys(markers)) {
+    if (!visibleIds.has(id)) {
+      map.removeLayer(markers[id]);
+      delete markers[id];
     }
   }
-  globe.pathsData(trails);
 
-  if (selectedId && flightData[selectedId]) {
-    const f = flightData[selectedId];
-    if (f.latitude != null) {
-      globe.ringsData([{ lat: f.latitude, lng: f.longitude, color: sColor(f.server) }]);
-    } else { globe.ringsData([]); }
-  } else { globe.ringsData([]); }
+  // Add or update markers
+  for (const id of visibleIds) {
+    const f   = flightData[id];
+    const pos = [f.latitude, f.longitude];
+    const ico = makeIcon(f);
+
+    if (markers[id]) {
+      markers[id].setLatLng(pos);
+      markers[id].setIcon(ico);
+      if (id === selectedId) markers[id].setZIndexOffset(1000);
+      else                   markers[id].setZIndexOffset(0);
+    } else {
+      const m = L.marker(pos, {
+        icon:          ico,
+        zIndexOffset:  id === selectedId ? 1000 : 0,
+        keyboard:      false,
+        riseOnHover:   true,
+      });
+      m.on('click', () => selectFlight(id));
+      m.addTo(map);
+      markers[id] = m;
+    }
+  }
+
+  updateTrails();
 }
 
-/* ── Stale cleanup ──────────────────────────────────────────────────────────── */
+/* ── Stale cleanup ───────────────────────────────────────────────────────────── */
 function cleanStale() {
   const now = Date.now();
-  let n = 0;
+  let dirty = false;
   for (const id of Object.keys(flightLastSeen)) {
     if (now - flightLastSeen[id] > STALE_MS) {
+      if (markers[id]) { map?.removeLayer(markers[id]); delete markers[id]; }
       delete flightData[id];
       delete liveTrails[id];
       delete flightLastSeen[id];
       if (id === selectedId) closeDetail();
-      n++;
+      dirty = true;
     }
   }
-  if (n) { updateGlobe(); buildList(); }
+  if (dirty) buildList();
 }
 
-/* ── Filtering ──────────────────────────────────────────────────────────────── */
+/* ── Filtering helpers ───────────────────────────────────────────────────────── */
 function getVisible() {
   return Object.values(flightData).filter(f => {
     if (currentServer !== 'all' && f.server !== currentServer) return false;
@@ -1032,7 +866,7 @@ function getVisible() {
   });
 }
 
-/* ── Sidebar list ───────────────────────────────────────────────────────────── */
+/* ── Sidebar list ────────────────────────────────────────────────────────────── */
 function buildList() {
   const vis = getVisible();
   document.getElementById('flight-count').textContent = vis.length.toLocaleString();
@@ -1081,7 +915,7 @@ function buildList() {
   }).join('') + more;
 }
 
-/* ── Detail panel ───────────────────────────────────────────────────────────── */
+/* ── Detail panel ────────────────────────────────────────────────────────────── */
 function selectFlight(id) {
   id = String(id);
   selectedId = id;
@@ -1091,17 +925,18 @@ function selectFlight(id) {
   renderDetail(f);
   document.getElementById('right-sb').classList.add('open');
   buildList();
-  updateGlobe();
+  updateMarkers();   // re-dims other markers, shows glow on selected
 
   if (f.latitude != null && f.longitude != null) {
-    globe?.pointOfView({ lat: f.latitude, lng: f.longitude, altitude: 1.8 }, 1200);
+    map?.flyTo([f.latitude, f.longitude], Math.max(map.getZoom(), 6), {
+      duration: 1.2,
+      easeLinearity: 0.4,
+    });
   }
 
-  // Async: fetch flight plan from IF Live API via proxy
+  // Async: get real departure / destination / ETA from IF Live API
   fetchFlightPlan(id).then(plan => {
-    // Guard — user may have switched away before this resolves
     if (selectedId !== id) return;
-
     const items = plan?.flightPlanItems;
     if (!items?.length) {
       document.getElementById('d-dep').textContent  = 'N/A';
@@ -1109,20 +944,15 @@ function selectFlight(id) {
       document.getElementById('d-eta').textContent  = 'N/A';
       return;
     }
-
-    // type 0 = origin airport, type 2 = destination airport
     const dep = items.find(i => i.type === 0);
     const dst = items.filter(i => i.type === 2).pop() || items[items.length - 1];
-
     document.getElementById('d-dep').textContent  = dep?.name || 'N/A';
     document.getElementById('d-dest').textContent = dst?.name || 'N/A';
-
     const cur = flightData[id];
     if (cur && cur.speed > 10 && dst?.location?.latitude != null && cur.latitude != null) {
       const distNm  = haversineNm(cur.latitude, cur.longitude, dst.location.latitude, dst.location.longitude);
       const etaMins = Math.round(distNm / cur.speed * 60);
       const eta     = new Date(Date.now() + etaMins * 60_000);
-      // Format as HH:MMZ
       document.getElementById('d-eta').textContent =
         String(eta.getUTCHours()).padStart(2,'0') + ':' +
         String(eta.getUTCMinutes()).padStart(2,'0') + 'Z';
@@ -1145,9 +975,10 @@ function renderDetail(f) {
   document.getElementById('d-user').textContent     = f.username || '';
 
   const b = (txt, bg, fg, br) =>
-    `<span style="display:inline-block;font-size:10px;padding:3px 9px;border-radius:4px;background:${bg};color:${fg};border:1px solid ${br};line-height:1.6">${txt}</span>`;
+    `<span style="display:inline-block;font-size:10px;padding:3px 9px;border-radius:4px;
+      background:${bg};color:${fg};border:1px solid ${br};line-height:1.6">${txt}</span>`;
   let badges = b(state.label, state.color + '20', state.color, state.color + '40');
-  if (f.virtualOrganization) badges += ' ' + b(esc(f.virtualOrganization), col + '18', col, col + '35');
+  if (f.virtualOrganization) badges += ' ' + b(esc(f.virtualOrganization), col+'18', col, col+'35');
   if (f.onGround) badges += ' ' + b('On Ground', '#f5a62318', '#f5a623', '#f5a62340');
   document.getElementById('d-badges').innerHTML = badges;
 
@@ -1158,7 +989,7 @@ function renderDetail(f) {
   document.getElementById('d-lat').textContent = f.latitude  != null ? f.latitude.toFixed(4)  : '—';
   document.getElementById('d-lon').textContent = f.longitude != null ? f.longitude.toFixed(4) : '—';
 
-  // Flight plan fields — populated async by fetchFlightPlan; reset to loading here
+  // Flight plan — set loading state; async update fills in real values
   document.getElementById('d-dep').textContent  = '…';
   document.getElementById('d-dest').textContent = '…';
   document.getElementById('d-eta').textContent  = '…';
@@ -1171,11 +1002,13 @@ function renderDetail(f) {
 function closeDetail() {
   selectedId = null;
   document.getElementById('right-sb').classList.remove('open');
-  updateGlobe();
+  if (trailLine) { map?.removeLayer(trailLine); trailLine = null; }
+  if (projLine)  { map?.removeLayer(projLine);  projLine  = null; }
+  updateMarkers();
   buildList();
 }
 
-/* ── Controls ───────────────────────────────────────────────────────────────── */
+/* ── Controls ────────────────────────────────────────────────────────────────── */
 function filterSearch(val) {
   searchQuery = val.trim();
   buildList();
@@ -1185,8 +1018,13 @@ function setFilter(btn, server) {
   currentServer = server;
   document.querySelectorAll('.sf-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  // Remove all markers and rebuild for new server
+  for (const id of Object.keys(markers)) {
+    map?.removeLayer(markers[id]);
+    delete markers[id];
+  }
   buildList();
-  updateGlobe();
+  updateMarkers();
 }
 
 const SPEED_CYCLE = ['kn', 'mph', 'km/h'];
@@ -1197,10 +1035,12 @@ function cycleSpeed() {
   if (selectedId && flightData[selectedId]) renderDetail(flightData[selectedId]);
 }
 
-/* ── Connection status ──────────────────────────────────────────────────────── */
-function setOnline(v) { isOnline = v; }
+/* ── Loading overlay ─────────────────────────────────────────────────────────── */
+function hideLoading() {
+  document.getElementById('map-loading')?.classList.add('hidden');
+}
 
-/* ── WebSocket ──────────────────────────────────────────────────────────────── */
+/* ── WebSocket ───────────────────────────────────────────────────────────────── */
 function handleFlights(flights) {
   const now = Date.now();
   for (const f of flights || []) {
@@ -1212,7 +1052,7 @@ function handleFlights(flights) {
       if (liveTrails[id].length > TRAIL_MAX) liveTrails[id].shift();
     }
   }
-  updateGlobe();
+  updateMarkers();
   buildList();
   if (selectedId && flightData[selectedId]) renderDetail(flightData[selectedId]);
   hideLoading();
@@ -1221,9 +1061,9 @@ function handleFlights(flights) {
 let ws, wsRetry = 0;
 
 function connectWS() {
-  setOnline(false);
+  isOnline = false;
   try { ws = new WebSocket(WS_URL); } catch { retry(); return; }
-  ws.onopen    = () => { wsRetry = 0; setOnline(true); };
+  ws.onopen    = () => { wsRetry = 0; isOnline = true; };
   ws.onclose   = retry;
   ws.onerror   = () => ws.close();
   ws.onmessage = ({ data }) => {
@@ -1235,13 +1075,13 @@ function connectWS() {
 }
 
 function retry() {
-  setOnline(false);
-  setTimeout(connectWS, Math.min(1000 * 2 ** wsRetry++, 30000));
+  isOnline = false;
+  setTimeout(connectWS, Math.min(1000 * 2 ** wsRetry++, 30_000));
 }
 
-/* ── Boot ───────────────────────────────────────────────────────────────────── */
+/* ── Boot ────────────────────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
-  initGlobe();
+  initMap();
   connectWS();
   setInterval(cleanStale, 60_000);
 });
