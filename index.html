@@ -618,6 +618,7 @@ let map           = null;
 let trailLine     = null;   // L.Polyline — selected flight history
 let projLine      = null;   // L.Polyline — projected path ahead
 let isOnline      = false;
+let planeSvg      = null;   // cached SVG markup from plane.svg, loaded once at boot
 
 /* ── Utilities ──────────────────────────────────────────────────────────────── */
 const esc = s => String(s || '')
@@ -677,15 +678,28 @@ function makeIcon(f) {
   }
 
   const sz   = isSel ? 32 : 24;
-  const glow = isSel ? `filter:drop-shadow(0 0 5px ${color}) drop-shadow(0 0 10px ${color}60)` : '';
+  const glow = isSel
+    ? `filter:drop-shadow(0 0 5px ${color}) drop-shadow(0 0 10px ${color}60)` : '';
+
+  // Use external plane.svg if loaded; fall back to built-in PLANE_PATH
+  let innerHtml;
+  if (planeSvg) {
+    // Resize the cached SVG to sz×sz; CSS `color:${color}` on wrapper drives currentColor fills
+    const sized = planeSvg
+      .replace(/(<svg[^>]*)\s+width="[^"]*"/i,  `$1 width="${sz}"`)
+      .replace(/(<svg[^>]*)\s+height="[^"]*"/i, `$1 height="${sz}"`);
+    innerHtml = sized;
+  } else {
+    innerHtml = `<svg xmlns="http://www.w3.org/2000/svg"
+      viewBox="-15 -14 30 28" width="${sz}" height="${sz}">
+      <path d="${PLANE_PATH}" fill="${color}"/>
+    </svg>`;
+  }
 
   return L.divIcon({
-    html: `<div class="ac-icon" style="width:${sz}px;height:${sz}px;
+    html: `<div class="ac-icon" style="color:${color};width:${sz}px;height:${sz}px;
                transform:rotate(${hdg}deg);opacity:${opacity};${glow}">
-             <svg xmlns="http://www.w3.org/2000/svg"
-                  viewBox="-15 -14 30 28" width="${sz}" height="${sz}">
-               <path d="${PLANE_PATH}" fill="${color}"/>
-             </svg>
+             ${innerHtml}
            </div>`,
     className: '',
     iconSize:   [sz, sz],
@@ -1040,6 +1054,19 @@ function hideLoading() {
   document.getElementById('map-loading')?.classList.add('hidden');
 }
 
+/* ── Load external plane icon (plane.svg) ────────────────────────────────────── */
+async function loadPlaneSvg() {
+  try {
+    const res = await fetch('plane.svg');
+    if (!res.ok) return;                    // file not present — fall back to PLANE_PATH
+    let raw = await res.text();
+    // Strip hardcoded fill colors so CSS `color` value drives tinting via currentColor
+    raw = raw.replace(/\sfill="(?!none)[^"]*"/gi,  ' fill="currentColor"');
+    raw = raw.replace(/\sfill:\s*(?!none)[^;}"]+/gi, ' fill:currentColor');
+    planeSvg = raw;
+  } catch { /* silently fall back to built-in path */ }
+}
+
 /* ── WebSocket ───────────────────────────────────────────────────────────────── */
 function handleFlights(flights) {
   const now = Date.now();
@@ -1082,6 +1109,7 @@ function retry() {
 /* ── Boot ────────────────────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
   initMap();
+  loadPlaneSvg();   // async — loads plane.svg if present, no-ops silently if missing
   connectWS();
   setInterval(cleanStale, 60_000);
 });
