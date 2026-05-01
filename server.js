@@ -10,8 +10,9 @@ const API_HOST   = 'api.infiniteflight.com';
 const POLL_BASE  = 15000;
 
 // In-memory cache: flightId (string) → enriched flight object
-const cache   = {};
-const clients = new Set();
+const cache        = {};
+const clients      = new Set();
+let   aircraftNames = {};   // aircraftId (GUID) → human-readable name, e.g. "A320"
 
 // ── HTTP helper ────────────────────────────────────────────────────────────────
 function apiGet(path) {
@@ -31,6 +32,21 @@ function apiGet(path) {
     req.on('error', reject);
     req.setTimeout(10000, () => { req.destroy(); reject(new Error('request timeout')); });
   });
+}
+
+// ── Aircraft name lookup (fetched once at boot, refreshed every 6 h) ──────────
+async function refreshAircraftNames() {
+  if (!API_KEY) return;
+  try {
+    const res = await apiGet('/aircraft');
+    if (!Array.isArray(res?.result)) return;
+    for (const a of res.result) {
+      if (a.id && a.name) aircraftNames[a.id] = a.name;
+    }
+    console.log(`[aircraft] ${Object.keys(aircraftNames).length} types loaded`);
+  } catch (e) {
+    console.error('[aircraft] fetch error:', e.message);
+  }
 }
 
 // ── Broadcast to all open clients ─────────────────────────────────────────────
@@ -84,6 +100,7 @@ async function poll() {
             heading:             f.heading,
             flightState:         f.flightState,
             onGround:            f.onGround,
+            aircraft:            aircraftNames[f.aircraftId] || '',
             server,
             serverName:          session.name,
             sessionId:           session.id,   // needed for flightplan lookup
@@ -173,6 +190,8 @@ wss.on('connection', ws => {
 // ── Boot ──────────────────────────────────────────────────────────────────────
 server.listen(PORT, () => {
   console.log(`Polaris proxy listening on :${PORT}`);
+  refreshAircraftNames();
+  setInterval(refreshAircraftNames, 6 * 60 * 60 * 1000);  // refresh every 6 h
   poll();
   setInterval(() => poll(), POLL_BASE + Math.random() * 2000);
 });

@@ -536,7 +536,15 @@
         <div id="d-badges"></div>
       </div>
 
-      <div class="d-section" style="margin-top:14px">
+      <!-- Aircraft type — shown above nav data -->
+      <div class="d-section" style="margin-top:14px" id="d-aircraft-section">
+        <div class="d-sec-label">Aircraft</div>
+        <div class="dg-card" style="margin-bottom:0">
+          <div class="dg-val" id="d-aircraft" style="font-size:16px;letter-spacing:0.04em">—</div>
+        </div>
+      </div>
+
+      <div class="d-section" style="margin-top:12px">
         <div class="d-sec-label">Navigation</div>
         <div class="d-grid">
           <div class="dg-card"><div class="dg-lbl">Altitude</div><div class="dg-val" id="d-alt">—</div></div>
@@ -601,7 +609,7 @@ const FLIGHT_STATE = {
 };
 
 const STALE_MS  = 5 * 60 * 1000;
-const TRAIL_MAX = 200;
+const TRAIL_MAX = 100;   // ~25 min at 15 s intervals — clean trail without clutter
 const LIST_MAX  = 300;
 
 /* ── State ──────────────────────────────────────────────────────────────────── */
@@ -615,7 +623,7 @@ let currentServer = 'casual';
 let searchQuery   = '';
 let speedUnit     = 'kn';
 let map           = null;
-let trailLine     = null;   // L.Polyline — selected flight history
+let trailLines    = [];     // L.Polyline[] — fading trail segments (old → new)
 let projLine      = null;   // L.Polyline — projected path ahead
 let isOnline      = false;
 let planeSvg      = null;   // cached SVG markup from plane.svg, loaded once at boot
@@ -626,7 +634,8 @@ const esc = s => String(s || '')
   .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
 const sColor = s => SERVER_COLOR[s] || '#5a6270';
-const sState = n => FLIGHT_STATE[n] || FLIGHT_STATE[0];
+// Returns state object only for meaningful states (2-7); null for Unknown/Preflight
+const sState = n => (n >= 2 && n <= 7) ? FLIGHT_STATE[n] : null;
 
 function fmtSpeed(kn) {
   if (kn == null || isNaN(kn)) return '—';
@@ -709,7 +718,8 @@ function makeIcon(f) {
 
 /* ── Great-circle projection ─────────────────────────────────────────────────── */
 function projectAhead(lat, lng, trackDeg, speedKt) {
-  const distKm = Math.min(Math.max((speedKt || 450) * 1.852 * 1.5, 400), 2200);
+  // Project 45 minutes ahead — enough to show intent without clutter
+  const distKm = Math.min(Math.max((speedKt || 450) * 1.852 * 0.75, 150), 1000);
   const R = 6371, d = distKm / R;
   const lat1 = lat * Math.PI / 180;
   const lng1 = lng * Math.PI / 180;
@@ -773,8 +783,10 @@ function initMap() {
 
 /* ── Trail lines ─────────────────────────────────────────────────────────────── */
 function updateTrails() {
-  if (trailLine) { map.removeLayer(trailLine); trailLine = null; }
-  if (projLine)  { map.removeLayer(projLine);  projLine  = null; }
+  // Clear previous layers
+  trailLines.forEach(l => map?.removeLayer(l));
+  trailLines = [];
+  if (projLine) { map?.removeLayer(projLine); projLine = null; }
 
   if (!selectedId || !flightData[selectedId] || !map) return;
 
@@ -783,20 +795,44 @@ function updateTrails() {
   const trail = liveTrails[selectedId];
 
   if (trail?.length >= 2) {
-    trailLine = L.polyline(trail, {
-      color,
-      weight:  2,
-      opacity: 0.75,
-    }).addTo(map);
+    // Split trail into 3 segments: oldest → faintest, newest → brightest
+    // This creates a natural fade from where the plane came from
+    const n  = trail.length;
+    const t1 = Math.floor(n * 0.33);
+    const t2 = Math.floor(n * 0.66);
+
+    const segments = [
+      { pts: trail.slice(0,  t1 + 1), opacity: 0.15 },   // oldest — barely visible
+      { pts: trail.slice(t1, t2 + 1), opacity: 0.40 },   // middle
+      { pts: trail.slice(t2),         opacity: 0.72 },   // recent — bright
+    ].filter(s => s.pts.length >= 2);
+
+    for (const seg of segments) {
+      trailLines.push(
+        L.polyline(seg.pts, {
+          color,
+          weight:   1.8,
+          opacity:  seg.opacity,
+          lineJoin: 'round',
+          lineCap:  'round',
+          smoothFactor: 1.2,
+        }).addTo(map)
+      );
+    }
   }
 
-  if (f.latitude != null && f.track != null && !f.onGround) {
-    projLine = L.polyline(projectAhead(f.latitude, f.longitude, f.track, f.speed), {
-      color,
-      weight:    1.5,
-      opacity:   0.45,
-      dashArray: '8 10',
-    }).addTo(map);
+  // Projected path — very subtle dotted line showing 45 min of intent
+  if (f.latitude != null && f.track != null && !f.onGround && (f.speed || 0) > 30) {
+    projLine = L.polyline(
+      projectAhead(f.latitude, f.longitude, f.track, f.speed), {
+        color,
+        weight:       1.2,
+        opacity:      0.30,
+        dashArray:    '3 8',
+        lineJoin:     'round',
+        smoothFactor: 1,
+      }
+    ).addTo(map);
   }
 }
 
@@ -904,12 +940,15 @@ function buildList() {
   list.innerHTML = shown.map(f => {
     const id    = String(f.flightId);
     const col   = sColor(f.server);
-    const state = sState(f.flightState);
+    const state = sState(f.flightState);  // null if Unknown/Preflight
     const cs    = esc(f.callsign || '—');
     const user  = esc(f.username || '');
     const vo    = f.virtualOrganization ? ` [${esc(f.virtualOrganization)}]` : '';
     const sname = (f.serverName || f.server || '').replace(' Server', '');
     const sel   = id === selectedId ? ' selected' : '';
+    const stateBadge = state
+      ? `<span class="fl-sep">·</span><span class="s-badge" style="background:${state.color}18;color:${state.color}">${state.label}</span>`
+      : '';
 
     return `<div class="fl-item${sel}" onclick="selectFlight('${id}')">
   <div class="fl-r1">
@@ -922,8 +961,7 @@ function buildList() {
     <span class="fl-alt">${fmtAlt(f.altitude)}</span>
     <span class="fl-sep">·</span>
     <span>${fmtSpeed(f.speed)}</span>
-    <span class="fl-sep">·</span>
-    <span class="s-badge" style="background:${state.color}18;color:${state.color}">${state.label}</span>
+    ${stateBadge}
   </div>
 </div>`;
   }).join('') + more;
@@ -982,18 +1020,32 @@ function selectFlight(id) {
 }
 
 function renderDetail(f) {
-  const state = sState(f.flightState);
+  const state = sState(f.flightState);  // null for Unknown/Preflight
   const col   = sColor(f.server);
 
   document.getElementById('d-callsign').textContent = f.callsign || '—';
   document.getElementById('d-user').textContent     = f.username || '';
 
+  // Aircraft type — show/hide the whole section depending on whether we have data
+  const acName = f.aircraft || '';
+  document.getElementById('d-aircraft').textContent = acName || '—';
+  document.getElementById('d-aircraft-section').style.display = acName ? '' : 'none';
+
   const b = (txt, bg, fg, br) =>
     `<span style="display:inline-block;font-size:10px;padding:3px 9px;border-radius:4px;
       background:${bg};color:${fg};border:1px solid ${br};line-height:1.6">${txt}</span>`;
-  let badges = b(state.label, state.color + '20', state.color, state.color + '40');
+
+  let badges = '';
+  // Only show a state badge when the state is meaningful (not Unknown/Preflight)
+  if (state) badges += b(state.label, state.color + '20', state.color, state.color + '40');
+  // Virtual org tag
   if (f.virtualOrganization) badges += ' ' + b(esc(f.virtualOrganization), col+'18', col, col+'35');
+  // On-ground indicator
   if (f.onGround) badges += ' ' + b('On Ground', '#f5a62318', '#f5a623', '#f5a62340');
+  // Autopilot Plus — shown when in cruise phase (IF autopilot typically engaged)
+  if (f.flightState === 4 && !f.onGround) {
+    badges += ' ' + b('Autopilot Plus', '#3fb95018', '#3fb950', '#3fb95040');
+  }
   document.getElementById('d-badges').innerHTML = badges;
 
   document.getElementById('d-alt').textContent = fmtAlt(f.altitude);
@@ -1003,7 +1055,7 @@ function renderDetail(f) {
   document.getElementById('d-lat').textContent = f.latitude  != null ? f.latitude.toFixed(4)  : '—';
   document.getElementById('d-lon').textContent = f.longitude != null ? f.longitude.toFixed(4) : '—';
 
-  // Flight plan — set loading state; async update fills in real values
+  // Flight plan — loading state; async update fills in real values
   document.getElementById('d-dep').textContent  = '…';
   document.getElementById('d-dest').textContent = '…';
   document.getElementById('d-eta').textContent  = '…';
@@ -1016,8 +1068,8 @@ function renderDetail(f) {
 function closeDetail() {
   selectedId = null;
   document.getElementById('right-sb').classList.remove('open');
-  if (trailLine) { map?.removeLayer(trailLine); trailLine = null; }
-  if (projLine)  { map?.removeLayer(projLine);  projLine  = null; }
+  trailLines.forEach(l => map?.removeLayer(l)); trailLines = [];
+  if (projLine) { map?.removeLayer(projLine); projLine = null; }
   updateMarkers();
   buildList();
 }
@@ -1060,9 +1112,10 @@ async function loadPlaneSvg() {
     const res = await fetch('plane.svg');
     if (!res.ok) return;                    // file not present — fall back to PLANE_PATH
     let raw = await res.text();
-    // Strip hardcoded fill colors so CSS `color` value drives tinting via currentColor
-    raw = raw.replace(/\sfill="(?!none)[^"]*"/gi,  ' fill="currentColor"');
-    raw = raw.replace(/\sfill:\s*(?!none)[^;}"]+/gi, ' fill:currentColor');
+    // Strip hardcoded fill colors so CSS `color` value drives tinting via currentColor.
+    // Use \b (word boundary) so we catch fill: at start of style value (after ") as well.
+    raw = raw.replace(/\bfill="(?!none)[^"]*"/gi,   'fill="currentColor"');
+    raw = raw.replace(/\bfill:\s*(?!none)[^;}" ]+/gi, 'fill:currentColor');
     planeSvg = raw;
   } catch { /* silently fall back to built-in path */ }
 }
