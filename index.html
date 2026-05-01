@@ -6,8 +6,7 @@
   <title>Polaris — Live Infinite Flight Tracker</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Exo:wght@600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/globe.gl/dist/globe.gl.min.js"></script>
 
   <style>
@@ -42,9 +41,8 @@
       overflow: hidden;
       background: var(--black);
       color: var(--text);
-      font-family: 'IBM Plex Sans', sans-serif;
+      font-family: 'JetBrains Mono', monospace;
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
     }
 
     /* ── App shell: globe fills everything, sidebars float over it ─────────── */
@@ -67,21 +65,20 @@
       z-index: 20;
 
       /* Frosted glass */
-      background: rgba(4, 6, 12, 0.48);
-      backdrop-filter: blur(40px) saturate(180%);
-      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      background: rgba(0, 0, 0, 0.44);
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
 
-      /* Glass border — hairline white rim */
-      border: 1px solid rgba(255, 255, 255, 0.09);
-      border-radius: 18px;
+      /* Glass border — very subtle white rim */
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
       overflow: hidden;
 
       /* Depth shadows + inner top-edge highlight */
       box-shadow:
-        0 16px 64px rgba(0,0,0,0.7),
-        0 2px 16px rgba(0,0,0,0.5),
-        inset 0 1px 0 rgba(255,255,255,0.13),
-        inset 0 0 0 0.5px rgba(255,255,255,0.05);
+        0 8px 48px rgba(0,0,0,0.65),
+        inset 0 1px 0 rgba(255,255,255,0.11),
+        inset 0 0 0 0.5px rgba(255,255,255,0.04);
 
       display: flex;
       flex-direction: column;
@@ -92,24 +89,24 @@
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
-      height: 2px;
+      height: 1.5px;
       background: linear-gradient(90deg,
-        rgba(79,142,247,0.7),
-        rgba(139,92,246,0.8),
-        rgba(56,189,248,0.65),
-        rgba(52,211,153,0.55),
-        rgba(251,191,36,0.45),
-        rgba(239,68,68,0.35),
+        rgba(79,142,247,0.55),
+        rgba(139,92,246,0.65),
+        rgba(56,189,248,0.5),
+        rgba(52,211,153,0.4),
+        rgba(251,191,36,0.35),
+        rgba(239,68,68,0.25),
         transparent
       );
-      border-radius: 18px 18px 0 0;
+      border-radius: 14px 14px 0 0;
       pointer-events: none;
       z-index: 2;
     }
 
     /* Header */
     #sb-hdr {
-      padding: 10px 16px;
+      padding: 8px 14px;
       border-bottom: 1px solid rgba(255,255,255,0.06);
       flex-shrink: 0;
     }
@@ -153,9 +150,8 @@
       border: none;
       outline: none;
       color: var(--text);
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 12.5px;
-      font-weight: 400;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
       padding: 8px 0;
     }
     #search-input::placeholder { color: var(--text3); }
@@ -173,14 +169,13 @@
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.07);
       color: var(--text3);
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 11px;
-      font-weight: 500;
-      padding: 6px 0;
-      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      padding: 5px 0;
+      border-radius: 5px;
       cursor: pointer;
-      transition: color 0.18s, border-color 0.18s, background 0.18s, box-shadow 0.18s;
-      letter-spacing: 0.01em;
+      transition: color 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      letter-spacing: 0.03em;
     }
     .sf-btn:hover { color: var(--text2); background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.12); }
     .sf-btn.active[data-server="all"]      { background: rgba(79,142,247,0.14);  border-color: rgba(79,142,247,0.4);  color: var(--accent);  box-shadow: 0 0 12px rgba(79,142,247,0.2); }
@@ -196,16 +191,10 @@
       border-bottom: 1px solid rgba(255,255,255,0.06);
       gap: 6px;
       flex-shrink: 0;
-      font-size: 11.5px;
-      font-weight: 400;
+      font-size: 11px;
       color: var(--text2);
     }
-    #flight-count {
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 600;
-      color: var(--text);
-      font-size: 12px;
-    }
+    #flight-count { font-weight: 700; color: var(--text); font-size: 12px; }
     #speed-btn {
       margin-left: auto;
       background: rgba(255,255,255,0.05);
@@ -213,14 +202,14 @@
       color: var(--accent);
       font-family: 'JetBrains Mono', monospace;
       font-size: 10px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 5px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 4px;
       cursor: pointer;
-      letter-spacing: 0.04em;
-      transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+      letter-spacing: 0.06em;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
     }
-    #speed-btn:hover { border-color: rgba(79,142,247,0.45); background: rgba(79,142,247,0.1); box-shadow: 0 0 12px rgba(79,142,247,0.2); }
+    #speed-btn:hover { border-color: rgba(79,142,247,0.4); background: rgba(79,142,247,0.1); box-shadow: 0 0 10px rgba(79,142,247,0.18); }
 
     /* Flight list */
     #flight-list {
@@ -233,10 +222,10 @@
     #flight-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
 
     .fl-item {
-      padding: 10px 14px 9px;
+      padding: 9px 14px 8px;
       border-bottom: 1px solid rgba(255,255,255,0.04);
       cursor: pointer;
-      transition: background 0.18s;
+      transition: background 0.2s;
       position: relative;
     }
     .fl-item:hover    { background: rgba(255,255,255,0.04); }
@@ -265,9 +254,8 @@
       flex-shrink: 0;
     }
     .fl-cs {
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 600;
-      font-size: 12.5px;
+      font-weight: 700;
+      font-size: 13px;
       flex: 1;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -275,21 +263,19 @@
       letter-spacing: 0.02em;
     }
     .fl-stag {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 9px;
+      font-size: 8px;
       font-weight: 600;
-      padding: 2px 6px;
-      border-radius: 4px;
-      letter-spacing: 0.02em;
+      padding: 2px 5px;
+      border-radius: 3px;
+      letter-spacing: 0.04em;
       flex-shrink: 0;
     }
 
     /* Row 2: username */
     .fl-r2 {
-      font-size: 11.5px;
-      font-weight: 400;
+      font-size: 11px;
       color: var(--text2);
-      margin-top: 3px;
+      margin-top: 2px;
       padding-left: 13px;
       white-space: nowrap;
       overflow: hidden;
@@ -298,17 +284,16 @@
 
     /* Row 3: alt · spd · state */
     .fl-r3 {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10.5px;
+      font-size: 11px;
       color: var(--text2);
-      margin-top: 3px;
+      margin-top: 2px;
       padding-left: 13px;
       display: flex;
       align-items: center;
       gap: 5px;
       flex-wrap: nowrap;
     }
-    .fl-alt { color: var(--text); font-weight: 500; }
+    .fl-alt { color: var(--text); font-weight: 600; }
     .fl-sep { color: var(--text3); }
     .s-badge {
       font-size: 9px;
@@ -335,14 +320,12 @@
 
     /* Beta footer */
     #sb-footer {
-      padding: 9px 14px;
+      padding: 8px 14px;
       border-top: 1px solid rgba(255,255,255,0.05);
-      background: rgba(3,8,20,0.4);
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 10px;
-      font-weight: 500;
-      color: rgba(79,142,247,0.5);
-      letter-spacing: 0.04em;
+      background: rgba(3,8,20,0.5);
+      font-size: 9px;
+      color: rgba(79,142,247,0.45);
+      letter-spacing: 0.07em;
       flex-shrink: 0;
       text-align: center;
     }
@@ -446,16 +429,15 @@
       overflow: hidden;
 
       /* Frosted glass — mirrors left sidebar */
-      background: rgba(4, 6, 12, 0.48);
-      backdrop-filter: blur(40px) saturate(180%);
-      -webkit-backdrop-filter: blur(40px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.09);
-      border-radius: 18px;
+      background: rgba(0, 0, 0, 0.44);
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
       box-shadow:
-        0 16px 64px rgba(0,0,0,0.7),
-        0 2px 16px rgba(0,0,0,0.5),
-        inset 0 1px 0 rgba(255,255,255,0.13),
-        inset 0 0 0 0.5px rgba(255,255,255,0.05);
+        0 8px 48px rgba(0,0,0,0.65),
+        inset 0 1px 0 rgba(255,255,255,0.11),
+        inset 0 0 0 0.5px rgba(255,255,255,0.04);
 
       /* Slide in from right */
       transform: translateX(calc(100% + 24px));
@@ -470,17 +452,17 @@
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
-      height: 2px;
+      height: 1.5px;
       background: linear-gradient(90deg,
         transparent,
-        rgba(239,68,68,0.35),
-        rgba(251,191,36,0.45),
-        rgba(52,211,153,0.55),
-        rgba(56,189,248,0.65),
-        rgba(139,92,246,0.8),
-        rgba(79,142,247,0.7)
+        rgba(239,68,68,0.25),
+        rgba(251,191,36,0.35),
+        rgba(52,211,153,0.4),
+        rgba(56,189,248,0.5),
+        rgba(139,92,246,0.65),
+        rgba(79,142,247,0.55)
       );
-      border-radius: 18px 18px 0 0;
+      border-radius: 14px 14px 0 0;
       pointer-events: none;
       z-index: 2;
     }
@@ -521,18 +503,17 @@
     #d-close:hover { color: var(--text); border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.1); }
 
     #d-callsign {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 22px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      line-height: 1.15;
+      font-family: 'Exo', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      line-height: 1.1;
       padding-right: 36px;
-      margin-bottom: 5px;
-      text-shadow: 0 0 24px var(--glow-accent);
+      margin-bottom: 4px;
+      text-shadow: 0 0 20px var(--glow-accent);
     }
     #d-user {
-      font-size: 12.5px;
-      font-weight: 400;
+      font-size: 12px;
       color: var(--text2);
       min-height: 17px;
       margin-bottom: 10px;
@@ -548,13 +529,11 @@
       padding: 14px 16px 0;
     }
     .d-sec-label {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 9.5px;
-      font-weight: 600;
-      color: rgba(122,134,148,0.7);
-      letter-spacing: 0.14em;
+      font-size: 9px;
+      color: var(--text3);
+      letter-spacing: 0.16em;
       text-transform: uppercase;
-      margin-bottom: 9px;
+      margin-bottom: 8px;
     }
     .d-grid {
       display: grid;
@@ -564,25 +543,21 @@
     .dg-card {
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 9px;
-      padding: 10px 12px;
-      cursor: default;
-      transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+      border-radius: 7px;
+      padding: 9px 11px;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
     }
-    .dg-card:hover { border-color: rgba(255,255,255,0.13); background: rgba(255,255,255,0.06); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07); }
+    .dg-card:hover { border-color: rgba(255,255,255,0.12); background: rgba(255,255,255,0.06); box-shadow: inset 0 1px 0 rgba(255,255,255,0.06); }
     .dg-lbl {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 9px;
-      font-weight: 500;
-      color: rgba(122,134,148,0.65);
-      letter-spacing: 0.1em;
+      font-size: 8px;
+      color: var(--text3);
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
     }
     .dg-val {
-      font-family: 'JetBrains Mono', monospace;
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--text);
       white-space: nowrap;
     }
@@ -598,14 +573,6 @@
     @media (max-width: 768px) {
       #left-sb  { display: none; }
       #right-sb { display: none; }
-    }
-
-    /* Respect reduced-motion preference */
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        transition-duration: 0.01ms !important;
-      }
     }
   </style>
 </head>
@@ -849,7 +816,7 @@ function initGlobe() {
     .ringStroke(0.55)
     .ringAltitude(0.002);
 
-  globe.pointOfView({ lat: 25, lng: 15, altitude: 1.6 });
+  globe.pointOfView({ lat: 25, lng: 15, altitude: 2.5 });
 
   window.addEventListener('resize', resizeGlobe);
 
