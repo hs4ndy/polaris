@@ -10,9 +10,18 @@ const API_HOST   = 'api.infiniteflight.com';
 const POLL_BASE  = 15000;
 
 // In-memory cache: flightId (string) → enriched flight object
-const cache        = {};
-const clients      = new Set();
+const cache         = {};
+const clients       = new Set();
 let   aircraftNames = {};   // aircraftId (GUID) → human-readable name, e.g. "A320"
+
+// Rolling path history per flight — keeps up to ~30 min so client can fetch
+// a full trail the instant a user clicks a plane, instead of waiting for
+// liveTrails to accumulate.
+//   pathHistory[flightId] = [{lat, lng, alt, spd, vs, track, ts}, ...]
+const pathHistory   = {};
+const PATH_MAX_PTS  = 120;        // 30 min at 15 s polls
+const PATH_MIN_DLAT = 1e-5;       // ~1 m — skip duplicate positions
+const PATH_MIN_DLNG = 1e-5;
 
 // ── HTTP helper ────────────────────────────────────────────────────────────────
 function apiGet(path) {
@@ -116,6 +125,32 @@ async function poll() {
     for (const k of Object.keys(cache)) delete cache[k];
     Object.assign(cache, updated);
 
+    // Append each flight's current position to its rolling path history.
+    // Skip the append if it hasn't moved meaningfully (parked planes, etc.).
+    for (const [id, f] of Object.entries(updated)) {
+      if (f.latitude == null || f.longitude == null) continue;
+      const hist = pathHistory[id] || (pathHistory[id] = []);
+      const last = hist[hist.length - 1];
+      if (!last
+          || Math.abs(last.lat - f.latitude)  >= PATH_MIN_DLAT
+          || Math.abs(last.lng - f.longitude) >= PATH_MIN_DLNG) {
+        hist.push({
+          lat:   f.latitude,
+          lng:   f.longitude,
+          alt:   f.altitude,
+          spd:   f.speed,
+          vs:    f.verticalSpeed,
+          track: f.track,
+          ts:    f.ts,
+        });
+        if (hist.length > PATH_MAX_PTS) hist.shift();
+      }
+    }
+    // Drop history for flights that disappeared this poll
+    for (const id of Object.keys(pathHistory)) {
+      if (!updated[id]) delete pathHistory[id];
+    }
+
     const flights = Object.values(cache);
     broadcast({ type: 'update', flights, ts: now });
 
@@ -138,6 +173,17 @@ const server = http.createServer(async (req, res) => {
   if (req.url === '/' || req.url === '') {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('Polaris IF Proxy running');
+    return;
+  }
+
+  // Rolling path history: GET /path/:flightId
+  // Returns up to 30 min of past positions for instant trail rendering on click.
+  const pathMatch = req.url.match(/^\/path\/([^/?]+)/);
+  if (pathMatch) {
+    const flightId = pathMatch[1];
+    const hist = pathHistory[flightId] || [];
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ result: hist }));
     return;
   }
 
