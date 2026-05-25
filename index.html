@@ -436,7 +436,7 @@
       line-height: 1.1;
       padding-right: 36px;
       margin-bottom: 4px;
-      text-shadow: 0 0 20px var(--glow-accent);
+      /* No text-shadow — strict no-glow rule */
     }
     #d-user   { font-size: 12px; color: var(--text2); min-height: 17px; margin-bottom: 10px; }
     #d-badges { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -464,6 +464,91 @@
 
     /* Server row */
     #d-server-row { padding: 12px 16px 0; font-size: 11px; color: var(--text2); }
+
+    /* ── Performance chart ── */
+    #d-chart-wrap {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 7px;
+      padding: 8px 10px 4px;
+      position: relative;
+    }
+    #d-chart-svg { width: 100%; height: 96px; display: block; }
+    .d-chart-lbl {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 0.14em;
+      fill: var(--text3);
+    }
+    .d-chart-lgnd {
+      position: absolute;
+      top: 8px; right: 10px;
+      display: flex;
+      gap: 8px;
+      font-size: 8px;
+      letter-spacing: 0.14em;
+      color: var(--text3);
+      pointer-events: none;
+    }
+    .d-chart-lgnd span { display: inline-flex; align-items: center; gap: 4px; }
+    .d-chart-lgnd i {
+      display: inline-block;
+      width: 8px; height: 1.5px;
+      background: currentColor;
+    }
+
+    /* ── Waypoint list ── */
+    #d-waypoints-section { padding: 14px 16px 0; }
+    #d-waypoints {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 7px;
+      padding: 4px 10px;
+      max-height: 240px;
+      overflow-y: auto;
+    }
+    #d-waypoints::-webkit-scrollbar       { width: 3px; }
+    #d-waypoints::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+    .wp-item {
+      display: grid;
+      grid-template-columns: 12px 1fr auto auto;
+      column-gap: 10px;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 11px;
+      color: var(--text2);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-variant-numeric: tabular-nums;
+    }
+    .wp-item:last-child { border-bottom: none; }
+    .wp-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--text3);
+      border: 1px solid transparent;
+    }
+    .wp-item.passed .wp-dot { background: var(--accent); }
+    .wp-item.next   .wp-dot { background: transparent; border-color: var(--amber); }
+    .wp-name { color: var(--text); font-weight: 600; letter-spacing: 0.02em; }
+    .wp-item.future .wp-name { color: var(--text2); font-weight: 500; }
+    .wp-dist, .wp-brng { color: var(--text3); font-size: 10px; }
+    .wp-item.passed .wp-dist, .wp-item.passed .wp-brng { color: var(--text3); opacity: 0.6; }
+    .wp-next-pill {
+      grid-column: 1 / -1;
+      justify-self: end;
+      font-size: 8px;
+      letter-spacing: 0.14em;
+      padding: 1px 5px;
+      border-radius: 3px;
+      background: var(--amber);
+      color: var(--black);
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    /* Departure / Destination cards — larger ICAOs for the headline route */
+    .route-icao { font-size: 16px; font-weight: 700; letter-spacing: 0.06em; color: var(--text); }
 
     /* Mobile */
     @media (max-width: 768px) {
@@ -554,22 +639,35 @@
         </div>
       </div>
 
-      <div class="d-section" style="margin-top:12px">
-        <div class="d-sec-label">Position</div>
+      <!-- Route progress: Departure / Destination / Flown / To go / Progress / ETA -->
+      <div class="d-section" style="margin-top:12px" id="d-route-section">
+        <div class="d-sec-label">Route</div>
         <div class="d-grid">
-          <div class="dg-card"><div class="dg-lbl">Latitude</div><div class="dg-val" id="d-lat">—</div></div>
-          <div class="dg-card"><div class="dg-lbl">Longitude</div><div class="dg-val" id="d-lon">—</div></div>
+          <div class="dg-card"><div class="dg-lbl">Departure</div><div class="dg-val route-icao" id="d-dep">—</div></div>
+          <div class="dg-card"><div class="dg-lbl">Destination</div><div class="dg-val route-icao" id="d-dest">—</div></div>
+          <div class="dg-card"><div class="dg-lbl">Flown</div><div class="dg-val" id="d-flown">—</div></div>
+          <div class="dg-card"><div class="dg-lbl">To Go</div><div class="dg-val" id="d-togo">—</div></div>
+          <div class="dg-card"><div class="dg-lbl">Progress</div><div class="dg-val" id="d-prog">—</div></div>
+          <div class="dg-card"><div class="dg-lbl">ETA (UTC)</div><div class="dg-val" id="d-eta">—</div></div>
         </div>
       </div>
 
-      <div class="d-section" style="margin-top:12px">
-        <div class="d-sec-label">Flight Plan</div>
-        <div class="d-grid">
-          <div class="dg-card"><div class="dg-lbl">Departure</div><div class="dg-val" id="d-dep">—</div></div>
-          <div class="dg-card"><div class="dg-lbl">Destination</div><div class="dg-val" id="d-dest">—</div></div>
-          <div class="dg-card"><div class="dg-lbl">ETA (UTC)</div><div class="dg-val" id="d-eta">—</div></div>
-          <div class="dg-card"><div class="dg-lbl">On Ground</div><div class="dg-val" id="d-gnd">—</div></div>
+      <!-- Performance chart — altitude + speed over last 30 min -->
+      <div class="d-section" style="margin-top:12px" id="d-chart-section">
+        <div class="d-sec-label">Performance</div>
+        <div id="d-chart-wrap">
+          <div class="d-chart-lgnd">
+            <span style="color:var(--purple)"><i></i>ALT</span>
+            <span style="color:var(--accent)"><i></i>SPD</span>
+          </div>
+          <svg id="d-chart-svg" viewBox="0 0 300 96" preserveAspectRatio="none"></svg>
         </div>
+      </div>
+
+      <!-- Waypoint progress list -->
+      <div id="d-waypoints-section">
+        <div class="d-sec-label">Waypoints</div>
+        <div id="d-waypoints"></div>
       </div>
 
       <div id="d-server-row"></div>
@@ -634,8 +732,9 @@ let map           = null;
 let trailLines    = [];     // L.Polyline[] — historical trail (halo + colored steps)
 let projLines     = [];     // L.Polyline[] — short white dashed projection (halo + dash)
 let planLines     = [];     // L.Polyline[] — flight plan past + future (with halos)
-let selectedTrail = [];     // [{lat,lng,...}] — server path + live appends for selectedId
-let flightPlanPts = null;   // flat [[lat,lng], ...] — current selected flight plan
+let selectedTrail   = [];     // [{lat,lng,...}] — server path + live appends for selectedId
+let flightPlanWPs   = null;   // flat [{name,type,lat,lng,alt}, ...] — source of truth for plan
+let flightPlanState = 'idle'; // 'idle' | 'loading' | 'loaded' | 'empty' — drives placeholder UI
 let isOnline      = false;
 let planeSvg      = null;   // cached SVG markup from plane.svg, loaded once at boot
 let svgRenderer   = null;   // explicit L.svg() renderer for all path polylines
@@ -801,19 +900,38 @@ function splitAtAntimeridian(pts) {
   return out;
 }
 
-/* ── Flatten a hierarchical flight plan into [[lat,lng], ...] ───────────────── */
+/* ── Flatten a hierarchical flight plan into rich waypoint records ──────────── */
+//  Returns [{name, type, lat, lng, alt}, ...] in route order. Procedure waypoints
+//  inside `children` are inlined in place. The flat polyline coord array used
+//  for path rendering is derived from this list.
 function flattenFlightPlan(items) {
-  const pts = [];
-  if (!Array.isArray(items)) return pts;
+  const wps = [];
+  if (!Array.isArray(items)) return wps;
   for (const it of items) {
     if (it?.location?.latitude != null && it?.location?.longitude != null) {
-      pts.push([it.location.latitude, it.location.longitude]);
+      wps.push({
+        name: (it.name || it.identifier || '·').trim(),
+        type: it.type ?? 1,                         // 0=origin, 1=waypoint, 2=destination
+        lat:  it.location.latitude,
+        lng:  it.location.longitude,
+        alt:  it.altitude,
+      });
     }
     if (Array.isArray(it?.children) && it.children.length) {
-      pts.push(...flattenFlightPlan(it.children));
+      wps.push(...flattenFlightPlan(it.children));
     }
   }
-  return pts;
+  return wps;
+}
+
+/* ── Compass bearing from (lat1,lon1) to (lat2,lon2), degrees 0-360 ──────────── */
+function bearingDeg(lat1, lon1, lat2, lon2) {
+  const φ1 = lat1 * Math.PI / 180;
+  const φ2 = lat2 * Math.PI / 180;
+  const Δλ = (lon2 - lon1) * Math.PI / 180;
+  const y  = Math.sin(Δλ) * Math.cos(φ2);
+  const x  = Math.cos(φ1)*Math.sin(φ2) - Math.sin(φ1)*Math.cos(φ2)*Math.cos(Δλ);
+  return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
 }
 
 /* ── Split flight plan into past + future at the plane's current position ───── */
@@ -978,8 +1096,9 @@ function renderProjection(f) {
 
 /* ── Render flight plan as past + future polylines ─────────────────────────── */
 function renderFlightPlanRoute(f) {
-  if (!flightPlanPts || flightPlanPts.length < 2 || !f) return;
-  const { past, future } = splitPlanAtPlane(flightPlanPts, f.latitude, f.longitude);
+  if (!flightPlanWPs || flightPlanWPs.length < 2 || !f) return;
+  const planPts = flightPlanWPs.map(w => [w.lat, w.lng]);
+  const { past, future } = splitPlanAtPlane(planPts, f.latitude, f.longitude);
 
   const out = [];
   const drawSegments = (pts, colorOpts) => {
@@ -1182,8 +1301,9 @@ function selectFlight(id) {
   if (!f) return;
 
   // Reset selection-scoped state before fetches resolve
-  selectedTrail = [];
-  flightPlanPts = null;
+  selectedTrail   = [];
+  flightPlanWPs   = null;
+  flightPlanState = 'loading';
 
   renderDetail(f);
   document.getElementById('right-sb').classList.add('open');
@@ -1203,43 +1323,28 @@ function selectFlight(id) {
     if (selectedId !== id) return;
     selectedTrail = history;
     updateTrails();
+    renderChart();   // draw the performance chart now that we have history
   });
 
   fetchFlightPlan(id).then(plan => {
     if (selectedId !== id) return;
     const items = plan?.flightPlanItems;
-
-    // Build the flat polyline for the flight-plan route layer
-    flightPlanPts = items?.length ? flattenFlightPlan(items) : null;
-    updateTrails();
-
-    // Fill the detail-panel fields
-    if (!items?.length) {
-      document.getElementById('d-dep').textContent  = 'N/A';
-      document.getElementById('d-dest').textContent = 'N/A';
-      document.getElementById('d-eta').textContent  = 'N/A';
-      return;
-    }
-    const dep = items.find(i => i.type === 0);
-    const dst = items.filter(i => i.type === 2).pop() || items[items.length - 1];
-    document.getElementById('d-dep').textContent  = dep?.name || 'N/A';
-    document.getElementById('d-dest').textContent = dst?.name || 'N/A';
-    const cur = flightData[id];
-    if (cur && cur.speed > 10 && dst?.location?.latitude != null && cur.latitude != null) {
-      const distNm  = haversineNm(cur.latitude, cur.longitude, dst.location.latitude, dst.location.longitude);
-      const etaMins = Math.round(distNm / cur.speed * 60);
-      const eta     = new Date(Date.now() + etaMins * 60_000);
-      document.getElementById('d-eta').textContent =
-        String(eta.getUTCHours()).padStart(2,'0') + ':' +
-        String(eta.getUTCMinutes()).padStart(2,'0') + 'Z';
+    if (items?.length) {
+      flightPlanWPs   = flattenFlightPlan(items);
+      flightPlanState = 'loaded';
     } else {
-      document.getElementById('d-eta').textContent = 'N/A';
+      flightPlanWPs   = null;
+      flightPlanState = 'empty';
     }
+    updateTrails();
+    refreshRouteFields();
+    if (flightData[id]) renderWaypoints(flightData[id]);
   }).catch(() => {
     if (selectedId !== id) return;
-    document.getElementById('d-dep').textContent  = 'N/A';
-    document.getElementById('d-dest').textContent = 'N/A';
-    document.getElementById('d-eta').textContent  = 'N/A';
+    flightPlanWPs   = null;
+    flightPlanState = 'empty';
+    refreshRouteFields();
+    renderWaypoints(flightData[id]);
   });
 }
 
@@ -1248,51 +1353,279 @@ function renderDetail(f) {
   const col   = sColor(f.server);
 
   document.getElementById('d-callsign').textContent = f.callsign || '—';
-  document.getElementById('d-user').textContent     = f.username || '';
+  // IFC line: pilot username + (optional) virtual org as a separator-delimited line
+  const userLine = f.username
+    ? `IFC: ${esc(f.username)}` + (f.virtualOrganization ? ` · ${esc(f.virtualOrganization)}` : '')
+    : '';
+  document.getElementById('d-user').innerHTML = userLine;
 
   // Aircraft type — show/hide the whole section depending on whether we have data
   const acName = f.aircraft || '';
   document.getElementById('d-aircraft').textContent = acName || '—';
   document.getElementById('d-aircraft-section').style.display = acName ? '' : 'none';
 
+  // Badges — palette-strict, no glow
   const b = (txt, bg, fg, br) =>
     `<span style="display:inline-block;font-size:10px;padding:3px 9px;border-radius:4px;
       background:${bg};color:${fg};border:1px solid ${br};line-height:1.6">${txt}</span>`;
 
   let badges = '';
-  // Only show a state badge when the state is meaningful (not Unknown/Preflight)
   if (state) badges += b(state.label, state.color + '20', state.color, state.color + '40');
-  // Virtual org tag
-  if (f.virtualOrganization) badges += ' ' + b(esc(f.virtualOrganization), col+'18', col, col+'35');
-  // On-ground indicator
   if (f.onGround) badges += ' ' + b('On Ground', '#f5a62318', '#f5a623', '#f5a62340');
-  // Autopilot Plus — shown when in cruise phase (IF autopilot typically engaged)
   if (f.flightState === 4 && !f.onGround) {
     badges += ' ' + b('Autopilot Plus', '#3fb95018', '#3fb950', '#3fb95040');
   }
   document.getElementById('d-badges').innerHTML = badges;
 
+  // Navigation cards
   document.getElementById('d-alt').textContent = fmtAlt(f.altitude);
   document.getElementById('d-spd').textContent = fmtSpeed(f.speed);
   document.getElementById('d-vs').textContent  = fmtVS(f.verticalSpeed);
-  document.getElementById('d-trk').textContent = f.track != null ? Math.round(f.track) + '°' : '—';
-  document.getElementById('d-lat').textContent = f.latitude  != null ? f.latitude.toFixed(4)  : '—';
-  document.getElementById('d-lon').textContent = f.longitude != null ? f.longitude.toFixed(4) : '—';
+  document.getElementById('d-trk').textContent = f.track != null ? Math.round(f.track).toString().padStart(3,'0') + '°' : '—';
 
-  // Flight plan — loading state; async update fills in real values
-  document.getElementById('d-dep').textContent  = '…';
-  document.getElementById('d-dest').textContent = '…';
-  document.getElementById('d-eta').textContent  = '…';
-  document.getElementById('d-gnd').textContent  = f.onGround ? 'Yes' : 'No';
+  // Route + waypoints + chart are populated by their own helpers
+  refreshRouteFields();
+  renderChart();
+  renderWaypoints(f);
 
   document.getElementById('d-server-row').innerHTML =
     `<span style="color:${col}">■</span>&nbsp;${esc(f.serverName || f.server || '')}`;
 }
 
+/* ── Route progress (Dep/Dest/Flown/To Go/Progress/ETA) ─────────────────────── */
+function computeRouteProgress(wps, planeLat, planeLng) {
+  if (!wps || wps.length < 2 || planeLat == null || planeLng == null) return null;
+
+  // Find closest waypoint to plane (squared planar distance — fine at this scale)
+  let closestIdx = 0, best = Infinity;
+  for (let i = 0; i < wps.length; i++) {
+    const dy = wps[i].lat - planeLat;
+    const dx = wps[i].lng - planeLng;
+    const d  = dy * dy + dx * dx;
+    if (d < best) { best = d; closestIdx = i; }
+  }
+
+  // Flown: legs 0..closestIdx + closestIdx → plane
+  let flown = 0;
+  for (let i = 0; i < closestIdx; i++) {
+    flown += haversineNm(wps[i].lat, wps[i].lng, wps[i+1].lat, wps[i+1].lng);
+  }
+  flown += haversineNm(wps[closestIdx].lat, wps[closestIdx].lng, planeLat, planeLng);
+
+  // To go: plane → next + remaining legs
+  let togo = 0;
+  if (closestIdx < wps.length - 1) {
+    togo += haversineNm(planeLat, planeLng, wps[closestIdx + 1].lat, wps[closestIdx + 1].lng);
+    for (let i = closestIdx + 1; i < wps.length - 1; i++) {
+      togo += haversineNm(wps[i].lat, wps[i].lng, wps[i+1].lat, wps[i+1].lng);
+    }
+  }
+
+  const total    = flown + togo;
+  const progress = total > 0 ? Math.max(0, Math.min(100, (flown / total) * 100)) : 0;
+  return { flown, togo, progress, closestIdx };
+}
+
+function refreshRouteFields() {
+  const id = selectedId;
+  const f  = id ? flightData[id] : null;
+  if (!f) return;
+
+  const set = (elId, val) => { document.getElementById(elId).textContent = val; };
+
+  // Loading state — fetches haven't resolved yet
+  if (flightPlanState === 'loading') {
+    set('d-dep', '…'); set('d-dest', '…');
+    set('d-flown', '…'); set('d-togo', '…');
+    set('d-prog', '…'); set('d-eta', '…');
+    return;
+  }
+
+  // No flight plan filed (most casual server flights)
+  if (flightPlanState === 'empty' || !flightPlanWPs || flightPlanWPs.length < 2) {
+    set('d-dep', 'N/A'); set('d-dest', 'N/A');
+    set('d-flown', '—'); set('d-togo', '—');
+    set('d-prog', '—');  set('d-eta', 'N/A');
+    return;
+  }
+
+  // Loaded — populate from the flat waypoint list
+  const origin = flightPlanWPs.find(w => w.type === 0) || flightPlanWPs[0];
+  const last   = [...flightPlanWPs].reverse().find(w => w.type === 2) || flightPlanWPs[flightPlanWPs.length - 1];
+  set('d-dep',  origin.name || '—');
+  set('d-dest', last.name   || '—');
+
+  const prog = computeRouteProgress(flightPlanWPs, f.latitude, f.longitude);
+  if (prog) {
+    set('d-flown', Math.round(prog.flown).toLocaleString() + ' NM');
+    set('d-togo',  Math.round(prog.togo ).toLocaleString() + ' NM');
+    set('d-prog',  Math.round(prog.progress) + '%');
+
+    if (f.speed > 10) {
+      const etaMins = Math.round(prog.togo / f.speed * 60);
+      const eta     = new Date(Date.now() + etaMins * 60_000);
+      set('d-eta',
+        String(eta.getUTCHours()).padStart(2,'0') + ':' +
+        String(eta.getUTCMinutes()).padStart(2,'0') + 'Z');
+    } else {
+      set('d-eta', 'N/A');
+    }
+  } else {
+    set('d-flown', '—'); set('d-togo', '—');
+    set('d-prog', '—');  set('d-eta', '—');
+  }
+}
+
+/* ── Performance chart (inline SVG: altitude purple + speed accent) ─────────── */
+function renderChart() {
+  const svg = document.getElementById('d-chart-svg');
+  if (!svg) return;
+  svg.innerHTML = '';   // clear previous render
+
+  const pts = selectedTrail.filter(p => p.ts != null);
+  const NS  = 'http://www.w3.org/2000/svg';
+
+  // Placeholder when we don't have enough history yet
+  if (pts.length < 2) {
+    const t = document.createElementNS(NS, 'text');
+    t.setAttribute('x', '150');
+    t.setAttribute('y', '52');
+    t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('class', 'd-chart-lbl');
+    t.textContent = 'Building history…';
+    svg.appendChild(t);
+    return;
+  }
+
+  // Layout constants (must match the viewBox 300 × 96 set in HTML)
+  const W = 300, H = 96;
+  const padL = 4, padR = 4, padT = 18, padB = 4;
+  const innerW = W - padL - padR;
+  const innerH = H - padT - padB;
+
+  // Ranges
+  const tMin = pts[0].ts, tMax = pts[pts.length - 1].ts;
+  const tRange = tMax - tMin || 1;
+  const alts = pts.map(p => p.alt).filter(a => a != null && !isNaN(a));
+  const spds = pts.map(p => p.spd).filter(s => s != null && !isNaN(s));
+  if (!alts.length && !spds.length) return;
+  const aMin = alts.length ? Math.min(...alts) : 0;
+  const aMax = alts.length ? Math.max(...alts) : 1;
+  const aRange = (aMax - aMin) || 1;
+  const sMin = spds.length ? Math.min(...spds) : 0;
+  const sMax = spds.length ? Math.max(...spds) : 1;
+  const sRange = (sMax - sMin) || 1;
+
+  const xOf  = t => padL + (t - tMin) / tRange * innerW;
+  const yAlt = a => padT + innerH - (a - aMin) / aRange * innerH;
+  const ySpd = s => padT + innerH - (s - sMin) / sRange * innerH;
+
+  // Subtle middle baseline — a single faint horizontal line for orientation
+  const grid = document.createElementNS(NS, 'line');
+  grid.setAttribute('x1', padL);
+  grid.setAttribute('x2', W - padR);
+  grid.setAttribute('y1', (padT + innerH / 2).toFixed(1));
+  grid.setAttribute('y2', (padT + innerH / 2).toFixed(1));
+  grid.setAttribute('stroke', 'rgba(255,255,255,0.05)');
+  grid.setAttribute('stroke-width', '1');
+  svg.appendChild(grid);
+
+  // Speed line (accent blue) — drawn first so altitude sits on top
+  if (spds.length >= 2) {
+    const ln = document.createElementNS(NS, 'polyline');
+    ln.setAttribute('points', pts
+      .filter(p => p.spd != null && !isNaN(p.spd))
+      .map(p => `${xOf(p.ts).toFixed(1)},${ySpd(p.spd).toFixed(1)}`)
+      .join(' ')
+    );
+    ln.setAttribute('fill', 'none');
+    ln.setAttribute('stroke', '#4f8ef7');
+    ln.setAttribute('stroke-width', '1.5');
+    ln.setAttribute('stroke-linecap', 'round');
+    ln.setAttribute('stroke-linejoin', 'round');
+    svg.appendChild(ln);
+  }
+
+  // Altitude line (purple)
+  if (alts.length >= 2) {
+    const ln = document.createElementNS(NS, 'polyline');
+    ln.setAttribute('points', pts
+      .filter(p => p.alt != null && !isNaN(p.alt))
+      .map(p => `${xOf(p.ts).toFixed(1)},${yAlt(p.alt).toFixed(1)}`)
+      .join(' ')
+    );
+    ln.setAttribute('fill', 'none');
+    ln.setAttribute('stroke', '#a855f7');
+    ln.setAttribute('stroke-width', '1.5');
+    ln.setAttribute('stroke-linecap', 'round');
+    ln.setAttribute('stroke-linejoin', 'round');
+    svg.appendChild(ln);
+  }
+
+  // Min / max numeric labels — corners only, palette colors
+  const fmtAltShort = a => a >= 18000 ? `FL${Math.round(a/100)}` : `${Math.round(a/100)*100}`;
+  const altLbl = document.createElementNS(NS, 'text');
+  altLbl.setAttribute('x', padL);
+  altLbl.setAttribute('y', 11);
+  altLbl.setAttribute('class', 'd-chart-lbl');
+  altLbl.setAttribute('fill', '#a855f7');
+  altLbl.textContent = alts.length ? `${fmtAltShort(aMax)}` : '';
+  svg.appendChild(altLbl);
+
+  const spdLbl = document.createElementNS(NS, 'text');
+  spdLbl.setAttribute('x', W - padR);
+  spdLbl.setAttribute('y', 11);
+  spdLbl.setAttribute('text-anchor', 'end');
+  spdLbl.setAttribute('class', 'd-chart-lbl');
+  spdLbl.setAttribute('fill', '#4f8ef7');
+  spdLbl.textContent = spds.length ? `${Math.round(sMax)}kt` : '';
+  svg.appendChild(spdLbl);
+}
+
+/* ── Waypoint progress list ─────────────────────────────────────────────────── */
+function renderWaypoints(f) {
+  const section   = document.getElementById('d-waypoints-section');
+  const container = document.getElementById('d-waypoints');
+  if (!section || !container) return;
+
+  if (!flightPlanWPs || flightPlanWPs.length < 1 || !f) {
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = '';
+
+  // Find the index of the closest waypoint to the plane
+  let closestIdx = 0, best = Infinity;
+  for (let i = 0; i < flightPlanWPs.length; i++) {
+    const w = flightPlanWPs[i];
+    const dy = w.lat - f.latitude;
+    const dx = w.lng - f.longitude;
+    const d  = dy * dy + dx * dx;
+    if (d < best) { best = d; closestIdx = i; }
+  }
+  // Treat closest-or-earlier as passed; the very next one is "NEXT"
+  const nextIdx = Math.min(closestIdx + 1, flightPlanWPs.length - 1);
+
+  container.innerHTML = flightPlanWPs.map((w, i) => {
+    const dist = haversineNm(f.latitude, f.longitude, w.lat, w.lng);
+    const brng = bearingDeg(f.latitude, f.longitude, w.lat, w.lng);
+    const cls  = (i < nextIdx) ? 'passed' : (i === nextIdx ? 'next' : 'future');
+    const pill = (cls === 'next') ? '<span class="wp-next-pill">NEXT</span>' : '';
+    return `<div class="wp-item ${cls}">
+      <div class="wp-dot"></div>
+      <div class="wp-name">${esc(w.name)}</div>
+      <div class="wp-dist">${Math.round(dist).toLocaleString()} NM</div>
+      <div class="wp-brng">${Math.round(brng).toString().padStart(3,'0')}°</div>
+      ${pill}
+    </div>`;
+  }).join('');
+}
+
 function closeDetail() {
-  selectedId    = null;
-  selectedTrail = [];
-  flightPlanPts = null;
+  selectedId      = null;
+  selectedTrail   = [];
+  flightPlanWPs   = null;
+  flightPlanState = 'idle';
   document.getElementById('right-sb').classList.remove('open');
   clearPathLayers();
   updateMarkers();
