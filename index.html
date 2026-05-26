@@ -1018,9 +1018,11 @@ function splitAtAntimeridian(pts) {
 }
 
 /* ── Flatten a hierarchical flight plan into rich waypoint records ──────────── */
-//  Returns [{name, type, lat, lng, alt}, ...] in route order. Procedure waypoints
-//  inside `children` are inlined in place. The flat polyline coord array used
-//  for path rendering is derived from this list.
+//  Returns [{name, type, lat, lng, alt}, ...] in route order. Procedure
+//  waypoints inside `children` are inlined in place. The IF API will sometimes
+//  include alternate-airport / approach / STAR items AFTER the primary
+//  destination — we truncate the flat list at the first type=2 destination
+//  (with a valid location) so the active route doesn't snake past the airport.
 function flattenFlightPlan(items) {
   const wps = [];
   if (!Array.isArray(items)) return wps;
@@ -1038,6 +1040,12 @@ function flattenFlightPlan(items) {
       wps.push(...flattenFlightPlan(it.children));
     }
   }
+  // Truncate at the first destination — anything filed afterward (diversion,
+  // STAR/approach details past the airport) just creates phantom route lines.
+  const destIdx = wps.findIndex(w => w.type === 2);
+  if (destIdx >= 0 && destIdx < wps.length - 1) {
+    return wps.slice(0, destIdx + 1);
+  }
   return wps;
 }
 
@@ -1052,20 +1060,46 @@ function bearingDeg(lat1, lon1, lat2, lon2) {
 }
 
 /* ── Split flight plan into past + future at the plane's current position ───── */
+//  Improved over the previous closest-waypoint approach: we project the plane
+//  onto every leg (A→B segment between consecutive waypoints), find the leg
+//  whose projected point is geographically closest to the plane, and split
+//  THERE. This avoids the failure mode where a plane in cruise is briefly
+//  closer to a STAR descent waypoint than to any cruise waypoint, causing the
+//  route to "jump ahead" to descent prematurely.
 function splitPlanAtPlane(pts, planeLat, planeLng) {
   if (pts.length < 2) return { past: [], future: pts.slice() };
-  // Find the waypoint closest to the plane (squared planar distance is fine
-  // at airliner scale — exact great-circle isn't worth the cycles).
-  let idx = 0, best = Infinity;
-  for (let i = 0; i < pts.length; i++) {
-    const dy = pts[i][0] - planeLat;
-    const dx = pts[i][1] - planeLng;
-    const d  = dy * dy + dx * dx;
-    if (d < best) { best = d; idx = i; }
+
+  let bestLeg  = 0;       // index of leg's start waypoint
+  let bestT    = 0;       // 0..1 along the leg
+  let bestDist = Infinity;
+
+  for (let i = 0; i < pts.length - 1; i++) {
+    const A = pts[i], B = pts[i + 1];
+    const dy = B[0] - A[0];
+    const dx = B[1] - A[1];
+    const legLen2 = dy*dy + dx*dx;
+    if (legLen2 === 0) continue;
+
+    // Projection parameter (clamped to [0,1] so we stay on the segment)
+    let t = ((planeLat - A[0]) * dy + (planeLng - A[1]) * dx) / legLen2;
+    if (t < 0) t = 0;
+    else if (t > 1) t = 1;
+
+    const px = A[0] + t * dy;
+    const py = A[1] + t * dx;
+    const d  = (planeLat - px) ** 2 + (planeLng - py) ** 2;
+    if (d < bestDist) {
+      bestDist = d;
+      bestLeg  = i;
+      bestT    = t;
+    }
   }
+
+  // Past = leg-start waypoints up through bestLeg + plane-position cap
+  // Future = plane-position + waypoints from (bestLeg + 1) onward
   return {
-    past:   pts.slice(0, idx + 1).concat([[planeLat, planeLng]]),
-    future: [[planeLat, planeLng]].concat(pts.slice(idx + 1)),
+    past:   pts.slice(0, bestLeg + 1).concat([[planeLat, planeLng]]),
+    future: [[planeLat, planeLng]].concat(pts.slice(bestLeg + 1)),
   };
 }
 
@@ -1527,37 +1561,52 @@ function renderDetail(f) {
 }
 
 /* ── Route progress (Dep/Dest/Flown/To Go/Progress/ETA) ─────────────────────── */
+//  Uses leg-projection (matches splitPlanAtPlane). For each consecutive leg
+//  in the filed route, project the plane onto the segment, then pick the leg
+//  where the projection is closest to the plane. Flown = sum of fully-flown
+//  legs + distance along the active leg up to projection. To go = remaining
+//  partial leg + sum of remaining whole legs.
 function computeRouteProgress(wps, planeLat, planeLng) {
   if (!wps || wps.length < 2 || planeLat == null || planeLng == null) return null;
 
-  // Find closest waypoint to plane (squared planar distance — fine at this scale)
-  let closestIdx = 0, best = Infinity;
-  for (let i = 0; i < wps.length; i++) {
-    const dy = wps[i].lat - planeLat;
-    const dx = wps[i].lng - planeLng;
-    const d  = dy * dy + dx * dx;
-    if (d < best) { best = d; closestIdx = i; }
+  // 1) Find the leg whose projected point is closest to the plane
+  let bestLeg = 0, bestT = 0, bestDist = Infinity;
+  for (let i = 0; i < wps.length - 1; i++) {
+    const A = wps[i], B = wps[i + 1];
+    const dy = B.lat - A.lat;
+    const dx = B.lng - A.lng;
+    const legLen2 = dy*dy + dx*dx;
+    if (legLen2 === 0) continue;
+    let t = ((planeLat - A.lat) * dy + (planeLng - A.lng) * dx) / legLen2;
+    if (t < 0) t = 0;
+    else if (t > 1) t = 1;
+    const px = A.lat + t * dy;
+    const py = A.lng + t * dx;
+    const d  = (planeLat - px) ** 2 + (planeLng - py) ** 2;
+    if (d < bestDist) { bestDist = d; bestLeg = i; bestT = t; }
   }
 
-  // Flown: legs 0..closestIdx + closestIdx → plane
+  // 2) Projected point on the active leg
+  const A = wps[bestLeg], B = wps[bestLeg + 1];
+  const projLat = A.lat + bestT * (B.lat - A.lat);
+  const projLng = A.lng + bestT * (B.lng - A.lng);
+
+  // 3) Flown = legs 0..bestLeg completely + (A → projection)
   let flown = 0;
-  for (let i = 0; i < closestIdx; i++) {
+  for (let i = 0; i < bestLeg; i++) {
     flown += haversineNm(wps[i].lat, wps[i].lng, wps[i+1].lat, wps[i+1].lng);
   }
-  flown += haversineNm(wps[closestIdx].lat, wps[closestIdx].lng, planeLat, planeLng);
+  flown += haversineNm(A.lat, A.lng, projLat, projLng);
 
-  // To go: plane → next + remaining legs
-  let togo = 0;
-  if (closestIdx < wps.length - 1) {
-    togo += haversineNm(planeLat, planeLng, wps[closestIdx + 1].lat, wps[closestIdx + 1].lng);
-    for (let i = closestIdx + 1; i < wps.length - 1; i++) {
-      togo += haversineNm(wps[i].lat, wps[i].lng, wps[i+1].lat, wps[i+1].lng);
-    }
+  // 4) To go = (projection → B) + remaining whole legs
+  let togo = haversineNm(projLat, projLng, B.lat, B.lng);
+  for (let i = bestLeg + 1; i < wps.length - 1; i++) {
+    togo += haversineNm(wps[i].lat, wps[i].lng, wps[i+1].lat, wps[i+1].lng);
   }
 
   const total    = flown + togo;
   const progress = total > 0 ? Math.max(0, Math.min(100, (flown / total) * 100)) : 0;
-  return { flown, togo, progress, closestIdx };
+  return { flown, togo, progress, bestLeg, bestT };
 }
 
 /* ── Inject plane.svg into the route-hero icon slot ─────────────────────────── */
@@ -1615,13 +1664,15 @@ function refreshRouteFields() {
     return;
   }
 
-  // ── Loaded: derive origin/dest from waypoint type, then progress ──
-  const origin = flightPlanWPs.find(w => w.type === 0) || flightPlanWPs[0];
-  const last   = [...flightPlanWPs].reverse().find(w => w.type === 2) || flightPlanWPs[flightPlanWPs.length - 1];
+  // ── Loaded: derive origin/dest strictly from type=0 / type=2 ──
+  //  Falling back to first/last waypoint produced bad data: when the flatten
+  //  step keeps SID/STAR waypoints around, "last" used to be a runway or
+  //  approach fix rather than the actual destination airport.
+  const origin = flightPlanWPs.find(w => w.type === 0);
+  const dest   = flightPlanWPs.find(w => w.type === 2);
 
-  // Show the full ICAO (e.g. KDFW, KJFK, EGLL) — no shortening, no subtitle
-  set('d-dep-icao',  (origin.name || '—').toUpperCase());
-  set('d-dest-icao', (last.name   || '—').toUpperCase());
+  set('d-dep-icao',  (origin?.name || '—').toUpperCase());
+  set('d-dest-icao', (dest?.name   || '—').toUpperCase());
 
   const prog = computeRouteProgress(flightPlanWPs, f.latitude, f.longitude);
   if (!prog) {
@@ -1864,17 +1915,27 @@ function renderWaypoints(f) {
   }
   section.style.display = '';
 
-  // Find the index of the closest waypoint to the plane
-  let closestIdx = 0, best = Infinity;
-  for (let i = 0; i < flightPlanWPs.length; i++) {
-    const w = flightPlanWPs[i];
-    const dy = w.lat - f.latitude;
-    const dx = w.lng - f.longitude;
-    const d  = dy * dy + dx * dx;
-    if (d < best) { best = d; closestIdx = i; }
+  // Same leg-projection technique as splitPlanAtPlane / computeRouteProgress.
+  // The NEXT waypoint is the one at the END of the active leg — i.e. the one
+  // the plane is approaching, not whichever happens to be geographically
+  // closest (a descent waypoint could be closest while still being far ahead
+  // on the route).
+  let bestLeg = 0, bestDist = Infinity;
+  for (let i = 0; i < flightPlanWPs.length - 1; i++) {
+    const A = flightPlanWPs[i], B = flightPlanWPs[i + 1];
+    const dy = B.lat - A.lat;
+    const dx = B.lng - A.lng;
+    const legLen2 = dy*dy + dx*dx;
+    if (legLen2 === 0) continue;
+    let t = ((f.latitude - A.lat) * dy + (f.longitude - A.lng) * dx) / legLen2;
+    if (t < 0) t = 0;
+    else if (t > 1) t = 1;
+    const px = A.lat + t * dy;
+    const py = A.lng + t * dx;
+    const d  = (f.latitude - px) ** 2 + (f.longitude - py) ** 2;
+    if (d < bestDist) { bestDist = d; bestLeg = i; }
   }
-  // Treat closest-or-earlier as passed; the very next one is "NEXT"
-  const nextIdx = Math.min(closestIdx + 1, flightPlanWPs.length - 1);
+  const nextIdx = bestLeg + 1;
 
   container.innerHTML = flightPlanWPs.map((w, i) => {
     const dist = haversineNm(f.latitude, f.longitude, w.lat, w.lng);
