@@ -176,14 +176,51 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // Rolling path history: GET /path/:flightId
-  // Returns up to 30 min of past positions for instant trail rendering on click.
+  // Full flown track: GET /path/:flightId
+  // Hits the IF Live API /sessions/{sid}/flights/{fid}/route endpoint to get
+  // the ENTIRE flight history (from takeoff or earlier), then merges any
+  // newer rolling pathHistory entries we've collected since the last API
+  // sample. Falls back to pure pathHistory on error.
   const pathMatch = req.url.match(/^\/path\/([^/?]+)/);
   if (pathMatch) {
     const flightId = pathMatch[1];
-    const hist = pathHistory[flightId] || [];
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ result: hist }));
+    const cached   = cache[flightId];
+    const local    = pathHistory[flightId] || [];
+
+    if (!cached || !cached.sessionId) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ result: local }));
+      return;
+    }
+
+    try {
+      const data = await apiGet(`/sessions/${cached.sessionId}/flights/${flightId}/route`);
+      const apiPts = Array.isArray(data?.result) ? data.result : [];
+
+      // Normalize to our internal shape
+      const fromApi = apiPts.map(p => ({
+        lat:   p.latitude,
+        lng:   p.longitude,
+        alt:   p.altitude,
+        spd:   p.groundSpeed,
+        track: p.track,
+        ts:    new Date(p.date).getTime(),
+      })).filter(p =>
+        Number.isFinite(p.lat) && Number.isFinite(p.lng) && Number.isFinite(p.ts)
+      ).sort((a, b) => a.ts - b.ts);
+
+      // Append any rolling entries strictly newer than the API's last sample
+      const lastApiTs = fromApi.length ? fromApi[fromApi.length - 1].ts : 0;
+      const newer     = local.filter(p => p.ts > lastApiTs);
+      const merged    = fromApi.concat(newer);
+
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ result: merged }));
+    } catch (e) {
+      // On error fall back to the rolling buffer so the client still gets *something*
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ result: local }));
+    }
     return;
   }
 

@@ -278,21 +278,6 @@
       color: var(--text2);
     }
     #flight-count { font-weight: 700; color: var(--text); font-size: 12px; }
-    #speed-btn {
-      margin-left: auto;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.09);
-      color: var(--accent);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      font-weight: 700;
-      padding: 3px 9px;
-      border-radius: 4px;
-      cursor: pointer;
-      letter-spacing: 0.06em;
-      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
-    }
-    #speed-btn:hover { border-color: rgba(79,142,247,0.4); background: rgba(79,142,247,0.1); box-shadow: 0 0 10px rgba(79,142,247,0.18); }
 
     /* Flight list */
     #flight-list { flex: 1; overflow-y: auto; overflow-x: hidden; }
@@ -507,10 +492,13 @@
       color: var(--amber);
       flex-shrink: 0;
     }
+    /* plane.svg has the nose pointing UP — rotate 90° so it flies left→right
+       between the two airport codes */
     .d-rh-plane svg {
-      width: 18px;
-      height: 18px;
+      width: 22px;
+      height: 22px;
       display: block;
+      transform: rotate(90deg);
     }
 
     /* ── Route progress bar ── */
@@ -588,7 +576,7 @@
       padding: 8px 10px 4px;
       position: relative;
     }
-    #d-chart-svg { width: 100%; height: 96px; display: block; }
+    #d-chart-svg { width: 100%; height: 140px; display: block; }
     .d-chart-lbl {
       font-family: 'JetBrains Mono', monospace;
       font-size: 8px;
@@ -715,7 +703,6 @@
     <div id="sb-meta">
       <span id="flight-count">0</span>
       <span style="color:var(--text3)">flights</span>
-      <button id="speed-btn" onclick="cycleSpeed()">kn</button>
     </div>
 
     <div id="flight-list">
@@ -740,27 +727,14 @@
         <div id="d-badges"></div>
       </div>
 
-      <!-- Route hero: ORIGIN  ✈  DESTINATION -->
+      <!-- Route hero: ORIGIN-ICAO  ✈  DESTINATION-ICAO -->
       <div id="d-route-hero">
         <div class="d-rh-col">
           <div class="d-rh-icao" id="d-dep-icao">—</div>
-          <div class="d-rh-name" id="d-dep-name"></div>
         </div>
-        <div class="d-rh-plane" title="In flight">
-          <!-- Amber plane silhouette pointing right -->
-          <svg viewBox="-15 -14 30 28" xmlns="http://www.w3.org/2000/svg">
-            <g transform="rotate(90)">
-              <path fill="currentColor" d="M0,-11 C1,-8 1.5,-3.5 1.5,-1.5
-                L13,3 11.5,6.5 1.5,2.5 1.5,7
-                L5,11 2.5,12.5 0,9.5 -2.5,12.5 -5,11
-                L-1.5,7 -1.5,2.5 -11.5,6.5 -13,3
-                C-1.5,-3.5 -1,-8 0,-11 Z"/>
-            </g>
-          </svg>
-        </div>
+        <div class="d-rh-plane" id="d-rh-plane" title="In flight"></div>
         <div class="d-rh-col">
           <div class="d-rh-icao" id="d-dest-icao">—</div>
-          <div class="d-rh-name" id="d-dest-name"></div>
         </div>
       </div>
 
@@ -803,7 +777,7 @@
             <span style="color:var(--amber)"><i></i>ALT</span>
             <span style="color:var(--accent)"><i></i>SPD</span>
           </div>
-          <svg id="d-chart-svg" viewBox="0 0 300 96" preserveAspectRatio="none"></svg>
+          <svg id="d-chart-svg" viewBox="0 0 300 140" preserveAspectRatio="none"></svg>
         </div>
       </div>
 
@@ -1413,8 +1387,13 @@ function buildList() {
     const cs    = esc(f.callsign || '—');
     const user  = esc(f.username || '');
     const vo    = f.virtualOrganization ? ` [${esc(f.virtualOrganization)}]` : '';
-    const sname = (f.serverName || f.server || '').replace(' Server', '');
     const sel   = id === selectedId ? ' selected' : '';
+    // Aircraft chip — replaces the server name. Server filter is already shown
+    // by the active tab above, so duplicating it on every row is noise.
+    const ac    = aircraftChip(f.aircraft);
+    const acChip = ac
+      ? `<span class="fl-stag" style="background:${col}18;color:${col};border:1px solid ${col}35">${esc(ac)}</span>`
+      : '';
     const stateBadge = state
       ? `<span class="fl-sep">·</span><span class="s-badge" style="background:${state.color}18;color:${state.color}">${state.label}</span>`
       : '';
@@ -1423,7 +1402,7 @@ function buildList() {
   <div class="fl-r1">
     <div class="fl-dot" style="background:${col}"></div>
     <span class="fl-cs">${cs}</span>
-    <span class="fl-stag" style="background:${col}18;color:${col};border:1px solid ${col}35">${sname}</span>
+    ${acChip}
   </div>
   <div class="fl-r2">${user}${vo}</div>
   <div class="fl-r3">
@@ -1508,6 +1487,9 @@ function renderDetail(f) {
 
   document.getElementById('d-callsign').textContent = f.callsign || '—';
 
+  // Inject the airplane icon between the two airport codes (uses plane.svg)
+  injectHeroPlane();
+
   // Aircraft chip beside callsign — short code like "A321"; hidden when unknown
   const chip = aircraftChip(f.aircraft);
   document.getElementById('d-ac-chip').textContent = chip;
@@ -1583,13 +1565,23 @@ function computeRouteProgress(wps, planeLat, planeLng) {
   return { flown, togo, progress, closestIdx };
 }
 
-/* ── Strip leading "K" from US ICAOs for a tighter display ──────────────────── */
-//  KDFW → DFW, KRSW → RSW. Non-US (EGLL, RJTT, OMDB, etc.) stay as-is.
-function shortIcao(name) {
-  if (!name) return '—';
-  const n = name.trim().toUpperCase();
-  if (/^K[A-Z]{3}$/.test(n)) return n.slice(1);   // US — drop K
-  return n;
+/* ── Inject plane.svg into the route-hero icon slot ─────────────────────────── */
+function injectHeroPlane() {
+  const slot = document.getElementById('d-rh-plane');
+  if (!slot) return;
+  if (planeSvg) {
+    // Resize to 22 × 22; currentColor fills follow .d-rh-plane's amber color
+    const sized = planeSvg
+      .replace(/(<svg[^>]*)\s+width="[^"]*"/i,  `$1 width="22"`)
+      .replace(/(<svg[^>]*)\s+height="[^"]*"/i, `$1 height="22"`);
+    slot.innerHTML = sized;
+  } else {
+    // Built-in fallback while plane.svg is still loading
+    slot.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg"
+      viewBox="-15 -14 30 28" width="22" height="22">
+      <path fill="currentColor" d="${PLANE_PATH}"/>
+    </svg>`;
+  }
 }
 
 /* ── Format minutes as "HhMm" or just "Mm" if under an hour ─────────────────── */
@@ -1612,8 +1604,8 @@ function refreshRouteFields() {
 
   // ── Loading: fetches haven't resolved yet ──
   if (flightPlanState === 'loading') {
-    set('d-dep-icao', '…');  set('d-dep-name', '');
-    set('d-dest-icao', '…'); set('d-dest-name', '');
+    set('d-dep-icao', '…');
+    set('d-dest-icao', '…');
     setW('d-pb-fill', 0);    setL('d-pb-marker', 0);
     set('d-pb-left', '…');   set('d-pb-right', '…');
     return;
@@ -1621,8 +1613,8 @@ function refreshRouteFields() {
 
   // ── No flight plan filed (most casual flights) ──
   if (flightPlanState === 'empty' || !flightPlanWPs || flightPlanWPs.length < 2) {
-    set('d-dep-icao', '—');  set('d-dep-name', '');
-    set('d-dest-icao', '—'); set('d-dest-name', '');
+    set('d-dep-icao', '—');
+    set('d-dest-icao', '—');
     setW('d-pb-fill', 0);    setL('d-pb-marker', 0);
     set('d-pb-left', 'No flight plan filed'); set('d-pb-right', '');
     return;
@@ -1632,21 +1624,9 @@ function refreshRouteFields() {
   const origin = flightPlanWPs.find(w => w.type === 0) || flightPlanWPs[0];
   const last   = [...flightPlanWPs].reverse().find(w => w.type === 2) || flightPlanWPs[flightPlanWPs.length - 1];
 
-  set('d-dep-icao',  shortIcao(origin.name));
-  set('d-dest-icao', shortIcao(last.name));
-  // Small label under each ICAO — only shown if it provides EXTRA info beyond
-  // the ICAO already in the big slot (e.g. a city name). The IF API typically
-  // returns just the ICAO as `name`, so this stays empty most of the time and
-  // the :empty CSS rule collapses it.
-  const subLabel = n => {
-    if (!n) return '';
-    const u = n.trim().toUpperCase();
-    // Hide if it's just the bare ICAO/IATA (≤4 chars, all letters)
-    if (/^[A-Z]{3,4}$/.test(u)) return '';
-    return u;
-  };
-  set('d-dep-name',  subLabel(origin.name));
-  set('d-dest-name', subLabel(last.name));
+  // Show the full ICAO (e.g. KDFW, KJFK, EGLL) — no shortening, no subtitle
+  set('d-dep-icao',  (origin.name || '—').toUpperCase());
+  set('d-dest-icao', (last.name   || '—').toUpperCase());
 
   const prog = computeRouteProgress(flightPlanWPs, f.latitude, f.longitude);
   if (!prog) {
@@ -1691,11 +1671,11 @@ function renderChart() {
   const pts = selectedTrail.filter(p => p.ts != null);
   const NS  = 'http://www.w3.org/2000/svg';
 
-  // Placeholder when we don't have enough history yet
+  // Placeholder while we don't have enough history yet
   if (pts.length < 2) {
     const t = document.createElementNS(NS, 'text');
     t.setAttribute('x', '150');
-    t.setAttribute('y', '52');
+    t.setAttribute('y', '72');
     t.setAttribute('text-anchor', 'middle');
     t.setAttribute('class', 'd-chart-lbl');
     t.textContent = 'Building history…';
@@ -1703,40 +1683,57 @@ function renderChart() {
     return;
   }
 
-  // Layout constants (must match the viewBox 300 × 96 set in HTML)
-  const W = 300, H = 96;
-  const padL = 4, padR = 4, padT = 18, padB = 4;
+  // Layout (must match viewBox 300 × 140 set in HTML)
+  const W = 300, H = 140;
+  const padL = 4, padR = 4, padT = 16, padB = 16;
   const innerW = W - padL - padR;
   const innerH = H - padT - padB;
 
-  // Ranges
+  // Time + value ranges
   const tMin = pts[0].ts, tMax = pts[pts.length - 1].ts;
   const tRange = tMax - tMin || 1;
   const alts = pts.map(p => p.alt).filter(a => a != null && !isNaN(a));
   const spds = pts.map(p => p.spd).filter(s => s != null && !isNaN(s));
   if (!alts.length && !spds.length) return;
-  const aMin = alts.length ? Math.min(...alts) : 0;
-  const aMax = alts.length ? Math.max(...alts) : 1;
+  const aMin = alts.length ? Math.min(...alts, 0) : 0;
+  const aMaxRaw = alts.length ? Math.max(...alts) : 1;
+  const aMax = aMaxRaw > 0 ? aMaxRaw : 1;
   const aRange = (aMax - aMin) || 1;
-  const sMin = spds.length ? Math.min(...spds) : 0;
-  const sMax = spds.length ? Math.max(...spds) : 1;
+  const sMin = spds.length ? Math.min(...spds, 0) : 0;
+  const sMaxRaw = spds.length ? Math.max(...spds) : 1;
+  const sMax = sMaxRaw > 0 ? sMaxRaw : 1;
   const sRange = (sMax - sMin) || 1;
 
   const xOf  = t => padL + (t - tMin) / tRange * innerW;
   const yAlt = a => padT + innerH - (a - aMin) / aRange * innerH;
   const ySpd = s => padT + innerH - (s - sMin) / sRange * innerH;
 
-  // Subtle middle baseline — a single faint horizontal line for orientation
-  const grid = document.createElementNS(NS, 'line');
-  grid.setAttribute('x1', padL);
-  grid.setAttribute('x2', W - padR);
-  grid.setAttribute('y1', (padT + innerH / 2).toFixed(1));
-  grid.setAttribute('y2', (padT + innerH / 2).toFixed(1));
-  grid.setAttribute('stroke', 'rgba(255,255,255,0.05)');
-  grid.setAttribute('stroke-width', '1');
-  svg.appendChild(grid);
+  // Subtle altitude gridlines at common flight levels (FL100/200/300/400)
+  // — only drawn for levels that fall within the chart's altitude range.
+  const fmtAltShort = a => a >= 18000 ? `FL${Math.round(a/100)}` : `${(a/1000).toFixed(0)}k`;
+  for (const fl of [10000, 20000, 30000, 40000]) {
+    if (fl < aMin || fl > aMax) continue;
+    const y = yAlt(fl);
+    const line = document.createElementNS(NS, 'line');
+    line.setAttribute('x1', padL);
+    line.setAttribute('x2', W - padR);
+    line.setAttribute('y1', y.toFixed(1));
+    line.setAttribute('y2', y.toFixed(1));
+    line.setAttribute('stroke', 'rgba(245,166,35,0.10)');
+    line.setAttribute('stroke-width', '1');
+    line.setAttribute('stroke-dasharray', '2 4');
+    svg.appendChild(line);
 
-  // Speed line (accent blue) — drawn first so altitude sits on top
+    const lbl = document.createElementNS(NS, 'text');
+    lbl.setAttribute('x', padL + 2);
+    lbl.setAttribute('y', (y - 2).toFixed(1));
+    lbl.setAttribute('class', 'd-chart-lbl');
+    lbl.setAttribute('fill', 'rgba(245,166,35,0.45)');
+    lbl.textContent = fmtAltShort(fl);
+    svg.appendChild(lbl);
+  }
+
+  // Speed line — drawn first so altitude sits on top
   if (spds.length >= 2) {
     const ln = document.createElementNS(NS, 'polyline');
     ln.setAttribute('points', pts
@@ -1752,7 +1749,7 @@ function renderChart() {
     svg.appendChild(ln);
   }
 
-  // Altitude line (amber) — yellow line for altitude per spec
+  // Altitude line (amber)
   if (alts.length >= 2) {
     const ln = document.createElementNS(NS, 'polyline');
     ln.setAttribute('points', pts
@@ -1768,24 +1765,47 @@ function renderChart() {
     svg.appendChild(ln);
   }
 
-  // Min / max numeric labels — corners only, palette colors
-  const fmtAltShort = a => a >= 18000 ? `FL${Math.round(a/100)}` : `${Math.round(a/100)*100}`;
-  const altLbl = document.createElementNS(NS, 'text');
-  altLbl.setAttribute('x', padL);
-  altLbl.setAttribute('y', 11);
-  altLbl.setAttribute('class', 'd-chart-lbl');
-  altLbl.setAttribute('fill', '#f5a623');
-  altLbl.textContent = alts.length ? `${fmtAltShort(aMax)}` : '';
-  svg.appendChild(altLbl);
+  // Peak value labels — top corners
+  if (alts.length) {
+    const altLbl = document.createElementNS(NS, 'text');
+    altLbl.setAttribute('x', padL);
+    altLbl.setAttribute('y', 11);
+    altLbl.setAttribute('class', 'd-chart-lbl');
+    altLbl.setAttribute('fill', '#f5a623');
+    altLbl.textContent = `MAX ${fmtAltShort(aMaxRaw)}`;
+    svg.appendChild(altLbl);
+  }
+  if (spds.length) {
+    const spdLbl = document.createElementNS(NS, 'text');
+    spdLbl.setAttribute('x', W - padR);
+    spdLbl.setAttribute('y', 11);
+    spdLbl.setAttribute('text-anchor', 'end');
+    spdLbl.setAttribute('class', 'd-chart-lbl');
+    spdLbl.setAttribute('fill', '#4f8ef7');
+    spdLbl.textContent = `MAX ${Math.round(sMaxRaw)} KT`;
+    svg.appendChild(spdLbl);
+  }
 
-  const spdLbl = document.createElementNS(NS, 'text');
-  spdLbl.setAttribute('x', W - padR);
-  spdLbl.setAttribute('y', 11);
-  spdLbl.setAttribute('text-anchor', 'end');
-  spdLbl.setAttribute('class', 'd-chart-lbl');
-  spdLbl.setAttribute('fill', '#4f8ef7');
-  spdLbl.textContent = spds.length ? `${Math.round(sMax)}kt` : '';
-  svg.appendChild(spdLbl);
+  // Time-axis corner labels — Departure (start) / Now (end)
+  const elapsedMin = (tMax - tMin) / 60_000;
+  const elapsedLabel = elapsedMin >= 60
+    ? `${Math.floor(elapsedMin/60)}H ${String(Math.round(elapsedMin%60)).padStart(2,'0')}M`
+    : `${Math.round(elapsedMin)}M`;
+
+  const startLbl = document.createElementNS(NS, 'text');
+  startLbl.setAttribute('x', padL);
+  startLbl.setAttribute('y', H - 3);
+  startLbl.setAttribute('class', 'd-chart-lbl');
+  startLbl.textContent = `DEPARTURE · ${elapsedLabel} AGO`;
+  svg.appendChild(startLbl);
+
+  const endLbl = document.createElementNS(NS, 'text');
+  endLbl.setAttribute('x', W - padR);
+  endLbl.setAttribute('y', H - 3);
+  endLbl.setAttribute('text-anchor', 'end');
+  endLbl.setAttribute('class', 'd-chart-lbl');
+  endLbl.textContent = 'NOW';
+  svg.appendChild(endLbl);
 }
 
 /* ── Waypoint progress list ─────────────────────────────────────────────────── */
@@ -1864,13 +1884,8 @@ function setFilter(btn, server) {
   updateMarkers();
 }
 
-const SPEED_CYCLE = ['kn', 'mph', 'km/h'];
-function cycleSpeed() {
-  speedUnit = SPEED_CYCLE[(SPEED_CYCLE.indexOf(speedUnit) + 1) % SPEED_CYCLE.length];
-  document.getElementById('speed-btn').textContent = speedUnit;
-  buildList();
-  if (selectedId && flightData[selectedId]) renderDetail(flightData[selectedId]);
-}
+// Speed display is locked to knots — removed unit toggle per spec
+// (speedUnit constant stays in state for fmtSpeed compatibility)
 
 /* ── Loading overlay ─────────────────────────────────────────────────────────── */
 function hideLoading() {
@@ -1888,6 +1903,8 @@ async function loadPlaneSvg() {
     raw = raw.replace(/\bfill="(?!none)[^"]*"/gi,   'fill="currentColor"');
     raw = raw.replace(/\bfill:\s*(?!none)[^;}" ]+/gi, 'fill:currentColor');
     planeSvg = raw;
+    // If a flight is already selected, swap the placeholder hero plane to the real SVG
+    if (selectedId) injectHeroPlane();
   } catch { /* silently fall back to built-in path */ }
 }
 
