@@ -1138,27 +1138,31 @@ function renderTrail(coords, color) {
       }).addTo(map)
     );
 
-    // Colored line, split into TRAIL_STEPS sub-segments with stepped opacity.
-    // Each sub-segment shares its first point with the previous one's last
-    // point so they connect cleanly with no visible gap.
+    // Colored line — TAPERED in both weight AND opacity. The trail visually
+    // fades back toward where the plane came from and gets thicker + brighter
+    // approaching the current position. Three chunks (oldest / mid / newest)
+    // give a clear directional feel without ten micro-polylines.
     const n = seg.length;
-    for (let i = 0; i < TRAIL_STEPS; i++) {
-      const from = Math.floor(i       * (n - 1) / TRAIL_STEPS);
-      const to   = Math.floor((i + 1) * (n - 1) / TRAIL_STEPS) + 1;
-      const sub  = seg.slice(from, to);
+    const chunks = [
+      // oldest 40% — thin, low opacity (faded memory)
+      { from: 0,                       to: Math.ceil(n * 0.40) + 1, weight: 1.8, opacity: 0.35, cap: 'butt'  },
+      // middle 40% — medium
+      { from: Math.ceil(n * 0.40),     to: Math.ceil(n * 0.80) + 1, weight: 2.5, opacity: 0.70, cap: 'butt'  },
+      // newest 20% — boldest (closest to "now")
+      { from: Math.ceil(n * 0.80),     to: n,                       weight: 3.2, opacity: 0.95, cap: 'round' },
+    ];
+
+    for (const c of chunks) {
+      const sub = seg.slice(c.from, c.to);
       if (sub.length < 2) continue;
-
-      const t  = TRAIL_STEPS === 1 ? 1 : i / (TRAIL_STEPS - 1);
-      const op = TRAIL_OP_MIN + t * (TRAIL_OP_MAX - TRAIL_OP_MIN);
-
       out.push(
         L.polyline(sub, {
           renderer: svgRenderer,
           pane:     'flight-path-pane',
           color,
-          weight:   2.5,
-          opacity:  op,
-          lineCap:  'butt',
+          weight:   c.weight,
+          opacity:  c.opacity,
+          lineCap:  c.cap,
           lineJoin: 'round',
         }).addTo(map)
       );
@@ -1211,51 +1215,42 @@ function renderProjection(f) {
   projLines = out;
 }
 
-/* ── Render flight plan as past + future polylines ─────────────────────────── */
+/* ── Render flight plan — FUTURE portion only ───────────────────────────────── */
+//  The PAST portion of the filed route is now dropped because it overlaps the
+//  actual flown trail and just adds visual noise (the trail IS the past). We
+//  show only the upcoming route, so the user sees "where it's actually going".
 function renderFlightPlanRoute(f) {
   if (!flightPlanWPs || flightPlanWPs.length < 2 || !f) return;
   const planPts = flightPlanWPs.map(w => [w.lat, w.lng]);
-  const { past, future } = splitPlanAtPlane(planPts, f.latitude, f.longitude);
+  const { future } = splitPlanAtPlane(planPts, f.latitude, f.longitude);
 
   const out = [];
-  const drawSegments = (pts, colorOpts) => {
-    for (const seg of splitAtAntimeridian(pts)) {
-      if (seg.length < 2) continue;
-      // halo
-      out.push(L.polyline(seg, {
-        renderer: svgRenderer,
-        pane:     'flight-plan-pane',
-        color:    HALO_COLOR,
-        weight:   3.5,
-        opacity:  0.45,
-        lineCap:  'round',
-        lineJoin: 'round',
-      }).addTo(map));
-      // visible dashed line
-      out.push(L.polyline(seg, {
-        renderer:  svgRenderer,
-        pane:      'flight-plan-pane',
-        ...colorOpts,
-        lineJoin:  'round',
-      }).addTo(map));
-    }
-  };
+  for (const seg of splitAtAntimeridian(future)) {
+    if (seg.length < 2) continue;
 
-  // PAST — very subtle, low priority, behind the plane
-  drawSegments(past, {
-    color:     '#3d4450',      // var(--text3)
-    weight:    1.5,
-    opacity:   0.55,
-    dashArray: '4 8',
-  });
+    // halo
+    out.push(L.polyline(seg, {
+      renderer: svgRenderer,
+      pane:     'flight-plan-pane',
+      color:    HALO_COLOR,
+      weight:   3,
+      opacity:  0.40,
+      lineCap:  'round',
+      lineJoin: 'round',
+    }).addTo(map));
 
-  // FUTURE — slightly brighter, where it's still going
-  drawSegments(future, {
-    color:     '#7a8694',      // var(--text2)
-    weight:    1.8,
-    opacity:   0.75,
-    dashArray: '8 8',
-  });
+    // visible — single muted slate line, dashed
+    out.push(L.polyline(seg, {
+      renderer:  svgRenderer,
+      pane:      'flight-plan-pane',
+      color:     '#8b96a8',          // muted slate — clearly distinct from trail color
+      weight:    1.6,
+      opacity:   0.7,
+      dashArray: '6 8',
+      lineCap:   'butt',
+      lineJoin:  'round',
+    }).addTo(map));
+  }
 
   planLines = out;
 }
@@ -1733,56 +1728,105 @@ function renderChart() {
     svg.appendChild(lbl);
   }
 
+  // Smooth-curve path builder: quadratic Bezier through midpoints of each
+  // segment. Avoids jagged lines where data points jump around in cruise.
+  const buildSmoothPath = (xy) => {
+    if (xy.length < 2) return '';
+    if (xy.length === 2) return `M${xy[0][0]},${xy[0][1]} L${xy[1][0]},${xy[1][1]}`;
+    let d = `M${xy[0][0]},${xy[0][1]}`;
+    for (let i = 1; i < xy.length - 1; i++) {
+      const mx = ((xy[i][0] + xy[i+1][0]) / 2).toFixed(1);
+      const my = ((xy[i][1] + xy[i+1][1]) / 2).toFixed(1);
+      d += ` Q${xy[i][0].toFixed(1)},${xy[i][1].toFixed(1)} ${mx},${my}`;
+    }
+    const lst = xy[xy.length - 1];
+    d += ` L${lst[0].toFixed(1)},${lst[1].toFixed(1)}`;
+    return d;
+  };
+
   // Speed line — drawn first so altitude sits on top
   if (spds.length >= 2) {
-    const ln = document.createElementNS(NS, 'polyline');
-    ln.setAttribute('points', pts
+    const xy = pts
       .filter(p => p.spd != null && !isNaN(p.spd))
-      .map(p => `${xOf(p.ts).toFixed(1)},${ySpd(p.spd).toFixed(1)}`)
-      .join(' ')
-    );
-    ln.setAttribute('fill', 'none');
-    ln.setAttribute('stroke', '#4f8ef7');
-    ln.setAttribute('stroke-width', '1.5');
-    ln.setAttribute('stroke-linecap', 'round');
-    ln.setAttribute('stroke-linejoin', 'round');
-    svg.appendChild(ln);
+      .map(p => [xOf(p.ts), ySpd(p.spd)]);
+    const path = document.createElementNS(NS, 'path');
+    path.setAttribute('d', buildSmoothPath(xy));
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', '#4f8ef7');
+    path.setAttribute('stroke-width', '1.8');
+    path.setAttribute('stroke-linecap',  'round');
+    path.setAttribute('stroke-linejoin', 'round');
+    svg.appendChild(path);
   }
 
   // Altitude line (amber)
   if (alts.length >= 2) {
-    const ln = document.createElementNS(NS, 'polyline');
-    ln.setAttribute('points', pts
+    const xy = pts
       .filter(p => p.alt != null && !isNaN(p.alt))
-      .map(p => `${xOf(p.ts).toFixed(1)},${yAlt(p.alt).toFixed(1)}`)
-      .join(' ')
-    );
-    ln.setAttribute('fill', 'none');
-    ln.setAttribute('stroke', '#f5a623');
-    ln.setAttribute('stroke-width', '1.5');
-    ln.setAttribute('stroke-linecap', 'round');
-    ln.setAttribute('stroke-linejoin', 'round');
-    svg.appendChild(ln);
+      .map(p => [xOf(p.ts), yAlt(p.alt)]);
+    const path = document.createElementNS(NS, 'path');
+    path.setAttribute('d', buildSmoothPath(xy));
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', '#f5a623');
+    path.setAttribute('stroke-width', '2');
+    path.setAttribute('stroke-linecap',  'round');
+    path.setAttribute('stroke-linejoin', 'round');
+    svg.appendChild(path);
   }
 
-  // Peak value labels — top corners
-  if (alts.length) {
+  // ── Current-position markers ──
+  //  A small filled dot at the latest data point on each line, plus a faint
+  //  vertical guideline at "now" so the eye locks onto current values.
+  const lastPt   = pts[pts.length - 1];
+  const lastAlt  = [...pts].reverse().find(p => p.alt != null && !isNaN(p.alt));
+  const lastSpd  = [...pts].reverse().find(p => p.spd != null && !isNaN(p.spd));
+  const xNow     = xOf(lastPt.ts);
+
+  // Faint vertical "now" line
+  const nowLine = document.createElementNS(NS, 'line');
+  nowLine.setAttribute('x1', xNow.toFixed(1));
+  nowLine.setAttribute('x2', xNow.toFixed(1));
+  nowLine.setAttribute('y1', padT);
+  nowLine.setAttribute('y2', padT + innerH);
+  nowLine.setAttribute('stroke', 'rgba(255,255,255,0.12)');
+  nowLine.setAttribute('stroke-width', '1');
+  svg.appendChild(nowLine);
+
+  if (lastAlt) {
+    const dot = document.createElementNS(NS, 'circle');
+    dot.setAttribute('cx', xNow.toFixed(1));
+    dot.setAttribute('cy', yAlt(lastAlt.alt).toFixed(1));
+    dot.setAttribute('r', '2.5');
+    dot.setAttribute('fill', '#f5a623');
+    svg.appendChild(dot);
+  }
+  if (lastSpd) {
+    const dot = document.createElementNS(NS, 'circle');
+    dot.setAttribute('cx', xNow.toFixed(1));
+    dot.setAttribute('cy', ySpd(lastSpd.spd).toFixed(1));
+    dot.setAttribute('r', '2.5');
+    dot.setAttribute('fill', '#4f8ef7');
+    svg.appendChild(dot);
+  }
+
+  // Top corners: CURRENT live values (more useful than MAX, which never changes)
+  if (lastAlt) {
     const altLbl = document.createElementNS(NS, 'text');
     altLbl.setAttribute('x', padL);
     altLbl.setAttribute('y', 11);
     altLbl.setAttribute('class', 'd-chart-lbl');
     altLbl.setAttribute('fill', '#f5a623');
-    altLbl.textContent = `MAX ${fmtAltShort(aMaxRaw)}`;
+    altLbl.textContent = `ALT ${fmtAltShort(lastAlt.alt)}`;
     svg.appendChild(altLbl);
   }
-  if (spds.length) {
+  if (lastSpd) {
     const spdLbl = document.createElementNS(NS, 'text');
     spdLbl.setAttribute('x', W - padR);
     spdLbl.setAttribute('y', 11);
     spdLbl.setAttribute('text-anchor', 'end');
     spdLbl.setAttribute('class', 'd-chart-lbl');
     spdLbl.setAttribute('fill', '#4f8ef7');
-    spdLbl.textContent = `MAX ${Math.round(sMaxRaw)} KT`;
+    spdLbl.textContent = `SPD ${Math.round(lastSpd.spd)} KT`;
     svg.appendChild(spdLbl);
   }
 

@@ -44,19 +44,60 @@ function apiGet(path) {
 }
 
 // ── Aircraft name lookup (fetched once at boot, refreshed every 6 h) ──────────
+//  The IF Live API exposes aircraft metadata in two places:
+//    1) GET /aircraft        → top-level list of aircraft types
+//    2) GET /liveries        → liveries, each carries aircraftID + aircraftName
+//  Field naming varies (aircraftId vs aircraftID, id vs aircraftID). We try
+//  /aircraft first, and if it doesn't yield a usable map, fall back to /liveries.
 async function refreshAircraftNames() {
   if (!API_KEY) return;
+  const before = Object.keys(aircraftNames).length;
+
+  // Attempt 1: /aircraft
   try {
-    const res = await apiGet('/aircraft');
-    if (!Array.isArray(res?.result)) return;
-    for (const a of res.result) {
-      if (a.id && a.name) aircraftNames[a.id] = a.name;
+    const res  = await apiGet('/aircraft');
+    const list = Array.isArray(res?.result) ? res.result : [];
+    for (const a of list) {
+      const id   = a.id || a.aircraftID || a.aircraftId;
+      const name = a.name || a.aircraftName || a.aircraft;
+      if (id && name) aircraftNames[id] = name;
     }
-    console.log(`[aircraft] ${Object.keys(aircraftNames).length} types loaded`);
+    if (list.length) {
+      console.log(`[aircraft] /aircraft returned ${list.length} entries (${Object.keys(aircraftNames).length - before} added)`);
+    } else {
+      console.warn('[aircraft] /aircraft returned 0 entries');
+    }
   } catch (e) {
-    console.error('[aircraft] fetch error:', e.message);
+    console.warn('[aircraft] /aircraft failed:', e.message);
   }
+
+  // Attempt 2: /liveries — used to backfill if /aircraft was empty/missing
+  if (Object.keys(aircraftNames).length === 0) {
+    try {
+      const res  = await apiGet('/liveries');
+      const list = Array.isArray(res?.result) ? res.result : [];
+      const seen = new Set();
+      for (const l of list) {
+        const id   = l.aircraftID || l.aircraftId || l.id;
+        const name = l.aircraftName || l.aircraft || l.name;
+        if (id && name && !seen.has(id)) {
+          aircraftNames[id] = name;
+          seen.add(id);
+        }
+      }
+      console.log(`[aircraft] /liveries fallback loaded ${seen.size} unique aircraft from ${list.length} liveries`);
+    } catch (e) {
+      console.error('[aircraft] /liveries fallback failed:', e.message);
+    }
+  }
+
+  console.log(`[aircraft] total names in cache: ${Object.keys(aircraftNames).length}`);
 }
+
+// One-shot diagnostic: log the field shape of the first flight we ever see.
+// Helps us discover whether IF returns aircraftId or aircraftID, and what other
+// fields exist that we could pass through.
+let _loggedSampleFlight = false;
 
 // ── Broadcast to all open clients ─────────────────────────────────────────────
 function broadcast(msg) {
@@ -95,6 +136,22 @@ async function poll() {
 
         for (const f of flightsRes.result) {
           const id = String(f.flightId);
+
+          // First-flight diagnostic — log keys + relevant IDs once per process
+          if (!_loggedSampleFlight) {
+            _loggedSampleFlight = true;
+            console.log('[diag] sample flight keys:', Object.keys(f));
+            console.log('[diag] sample IDs:', {
+              aircraftId:  f.aircraftId,
+              aircraftID:  f.aircraftID,
+              liveryId:    f.liveryId,
+              liveryID:    f.liveryID,
+              callsign:    f.callsign,
+            });
+          }
+
+          // The IF Live API uses inconsistent casing across endpoints — accept both
+          const acId = f.aircraftId || f.aircraftID || '';
           updated[id] = {
             flightId:            id,
             username:            f.username            || '',
@@ -109,10 +166,11 @@ async function poll() {
             heading:             f.heading,
             flightState:         f.flightState,
             onGround:            f.onGround,
-            aircraft:            aircraftNames[f.aircraftId] || '',
+            aircraft:            aircraftNames[acId] || '',
+            aircraftId:          acId,                  // pass through for debugging
             server,
             serverName:          session.name,
-            sessionId:           session.id,   // needed for flightplan lookup
+            sessionId:           session.id,            // needed for flightplan lookup
             ts:                  now,
           };
         }
