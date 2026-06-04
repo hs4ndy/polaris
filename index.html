@@ -750,11 +750,16 @@
         </div>
       </div>
 
-      <!-- Aircraft type (full-width single card, like FR24 row) -->
+      <!-- Aircraft: type + airline/livery -->
       <div class="d-section" style="margin-top:14px" id="d-aircraft-section">
-        <div class="d-sec-label">Aircraft Type</div>
-        <div class="dg-card" style="margin-bottom:0">
+        <div class="d-sec-label">Aircraft</div>
+        <div class="dg-card" style="margin-bottom:6px">
+          <div class="dg-lbl">Type</div>
           <div class="dg-val" id="d-aircraft" style="font-size:14px;letter-spacing:0.03em">—</div>
+        </div>
+        <div class="dg-card" id="d-livery-card" style="margin-bottom:0">
+          <div class="dg-lbl">Airline / Livery</div>
+          <div class="dg-val" id="d-livery" style="font-size:13px;letter-spacing:0.02em">—</div>
         </div>
       </div>
 
@@ -850,7 +855,9 @@ let trailLines    = [];     // L.Polyline[] — historical trail (halo + colored
 let projLines     = [];     // L.Polyline[] — short white dashed projection (halo + dash)
 let planLines     = [];     // L.Polyline[] — flight plan past + future (with halos)
 let selectedTrail   = [];     // [{lat,lng,...}] — server path + live appends for selectedId
-let flightPlanWPs   = null;   // flat [{name,type,lat,lng,alt}, ...] — source of truth for plan
+let flightPlanWPs   = null;   // ACTIVE route [{name,type,lat,lng,alt}, ...] (origin→dest)
+let flightPlanOrigin = null;  // resolved origin waypoint
+let flightPlanDest   = null;  // resolved destination waypoint
 let flightPlanState = 'idle'; // 'idle' | 'loading' | 'loaded' | 'empty' — drives placeholder UI
 let isOnline      = false;
 let planeSvg      = null;   // cached SVG markup from plane.svg, loaded once at boot
@@ -916,7 +923,7 @@ function makeIcon(f) {
   }
 
   // Selected plane just renders slightly larger — no glow (strict palette / no glow rule)
-  const sz = isSel ? 30 : 24;
+  const sz = isSel ? 26 : 20;
 
   // Use external plane.svg if loaded; fall back to built-in PLANE_PATH
   let innerHtml;
@@ -1018,11 +1025,9 @@ function splitAtAntimeridian(pts) {
 }
 
 /* ── Flatten a hierarchical flight plan into rich waypoint records ──────────── */
-//  Returns [{name, type, lat, lng, alt}, ...] in route order. Procedure
-//  waypoints inside `children` are inlined in place. The IF API will sometimes
-//  include alternate-airport / approach / STAR items AFTER the primary
-//  destination — we truncate the flat list at the first type=2 destination
-//  (with a valid location) so the active route doesn't snake past the airport.
+//  Returns the FULL [{name, type, lat, lng, alt}, ...] list in route order.
+//  Procedure waypoints inside `children` are inlined in place. Truncation to
+//  the active origin→destination route is done separately by resolveRoute().
 function flattenFlightPlan(items) {
   const wps = [];
   if (!Array.isArray(items)) return wps;
@@ -1040,13 +1045,43 @@ function flattenFlightPlan(items) {
       wps.push(...flattenFlightPlan(it.children));
     }
   }
-  // Truncate at the first destination — anything filed afterward (diversion,
-  // STAR/approach details past the airport) just creates phantom route lines.
-  const destIdx = wps.findIndex(w => w.type === 2);
-  if (destIdx >= 0 && destIdx < wps.length - 1) {
-    return wps.slice(0, destIdx + 1);
-  }
   return wps;
+}
+
+/* ── Resolve origin / destination / active route from a flat waypoint list ──── */
+//  Robust destination handling — the previous strict "type === 2 only" logic
+//  left the destination blank whenever IF didn't tag it (which happens a lot).
+//  Priority:
+//    origin  = first type=0   → else first waypoint
+//    dest    = last  type=2   → else the LAST airport-looking ICAO (4 letters)
+//              → else the final waypoint
+//  The active route is truncated at the resolved destination so any filed
+//  alternate / approach overrun past the airport doesn't draw a phantom line.
+const ICAO_RE = /^[A-Z]{4}$/;
+function resolveRoute(wps) {
+  if (!wps || !wps.length) return { origin: null, dest: null, active: [] };
+
+  const origin = wps.find(w => w.type === 0) || wps[0];
+
+  // Destination: prefer the LAST explicit type=2 (handles alt airports after it)
+  let destIdx = -1;
+  for (let i = wps.length - 1; i >= 0; i--) {
+    if (wps[i].type === 2) { destIdx = i; break; }
+  }
+  // Fallback: last waypoint whose name is a 4-letter ICAO
+  if (destIdx < 0) {
+    for (let i = wps.length - 1; i >= 0; i--) {
+      if (ICAO_RE.test((wps[i].name || '').toUpperCase())) { destIdx = i; break; }
+    }
+  }
+  // Last resort: final waypoint
+  if (destIdx < 0) destIdx = wps.length - 1;
+
+  return {
+    origin,
+    dest:   wps[destIdx],
+    active: wps.slice(0, destIdx + 1),
+  };
 }
 
 /* ── Compass bearing from (lat1,lon1) to (lat2,lon2), degrees 0-360 ──────────── */
@@ -1156,47 +1191,53 @@ function renderTrail(coords, color) {
   if (!coords || coords.length < 2) return;
   const out = [];
 
+  // Constant weight everywhere — the OLD version varied weight per chunk
+  // (1.8 / 2.5 / 3.2) AND overlapped chunks, so transparency stacked at the
+  // seams and the line looked lumpy/inconsistent. Now: ONE constant width,
+  // and the only thing that changes along the trail is opacity (a clean fade
+  // from old → new). Boldness is uniform.
+  const WEIGHT  = 2.4;
+  const OP_MIN  = 0.32;   // oldest end of the trail
+  const OP_MAX  = 0.92;   // freshest end (at the plane)
+  const BANDS   = 8;      // opacity steps across the whole trail
+
   for (const seg of splitAtAntimeridian(coords)) {
     if (seg.length < 2) continue;
 
-    // Dark halo — the entire segment in one go, slightly wider and dimmer
+    // Dark halo under the whole segment — single constant-width polyline
     out.push(
       L.polyline(seg, {
-        renderer:  svgRenderer,
-        pane:      'flight-path-pane',
-        color:     HALO_COLOR,
-        weight:    4,
-        opacity:   0.55,
-        lineCap:   'round',
-        lineJoin:  'round',
+        renderer: svgRenderer,
+        pane:     'flight-path-pane',
+        color:    HALO_COLOR,
+        weight:   WEIGHT + 1.6,
+        opacity:  0.5,
+        lineCap:  'round',
+        lineJoin: 'round',
       }).addTo(map)
     );
 
-    // Colored line — TAPERED in both weight AND opacity. The trail visually
-    // fades back toward where the plane came from and gets thicker + brighter
-    // approaching the current position. Three chunks (oldest / mid / newest)
-    // give a clear directional feel without ten micro-polylines.
+    // Colored fade — equal-length bands, each sharing exactly ONE vertex with
+    // its neighbour (butt caps) so there's no double-drawn segment and thus no
+    // opacity stacking. Weight is identical for every band.
     const n = seg.length;
-    const chunks = [
-      // oldest 40% — thin, low opacity (faded memory)
-      { from: 0,                       to: Math.ceil(n * 0.40) + 1, weight: 1.8, opacity: 0.35, cap: 'butt'  },
-      // middle 40% — medium
-      { from: Math.ceil(n * 0.40),     to: Math.ceil(n * 0.80) + 1, weight: 2.5, opacity: 0.70, cap: 'butt'  },
-      // newest 20% — boldest (closest to "now")
-      { from: Math.ceil(n * 0.80),     to: n,                       weight: 3.2, opacity: 0.95, cap: 'round' },
-    ];
-
-    for (const c of chunks) {
-      const sub = seg.slice(c.from, c.to);
+    for (let i = 0; i < BANDS; i++) {
+      const from = Math.floor(i       * (n - 1) / BANDS);
+      const to   = Math.floor((i + 1) * (n - 1) / BANDS) + 1;
+      const sub  = seg.slice(from, to);
       if (sub.length < 2) continue;
+
+      const t  = BANDS === 1 ? 1 : i / (BANDS - 1);
+      const op = OP_MIN + t * (OP_MAX - OP_MIN);
+
       out.push(
         L.polyline(sub, {
           renderer: svgRenderer,
           pane:     'flight-path-pane',
           color,
-          weight:   c.weight,
-          opacity:  c.opacity,
-          lineCap:  c.cap,
+          weight:   WEIGHT,
+          opacity:  op,
+          lineCap:  'round',
           lineJoin: 'round',
         }).addTo(map)
       );
@@ -1452,9 +1493,11 @@ function selectFlight(id) {
   if (!f) return;
 
   // Reset selection-scoped state before fetches resolve
-  selectedTrail   = [];
-  flightPlanWPs   = null;
-  flightPlanState = 'loading';
+  selectedTrail    = [];
+  flightPlanWPs    = null;
+  flightPlanOrigin = null;
+  flightPlanDest   = null;
+  flightPlanState  = 'loading';
 
   renderDetail(f);
   document.getElementById('right-sb').classList.add('open');
@@ -1481,19 +1524,26 @@ function selectFlight(id) {
     if (selectedId !== id) return;
     const items = plan?.flightPlanItems;
     if (items?.length) {
-      flightPlanWPs   = flattenFlightPlan(items);
-      flightPlanState = 'loaded';
+      const route      = resolveRoute(flattenFlightPlan(items));
+      flightPlanWPs    = route.active;
+      flightPlanOrigin = route.origin;
+      flightPlanDest   = route.dest;
+      flightPlanState  = (flightPlanWPs && flightPlanWPs.length >= 2) ? 'loaded' : 'empty';
     } else {
-      flightPlanWPs   = null;
-      flightPlanState = 'empty';
+      flightPlanWPs    = null;
+      flightPlanOrigin = null;
+      flightPlanDest   = null;
+      flightPlanState  = 'empty';
     }
     updateTrails();
     refreshRouteFields();
     if (flightData[id]) renderWaypoints(flightData[id]);
   }).catch(() => {
     if (selectedId !== id) return;
-    flightPlanWPs   = null;
-    flightPlanState = 'empty';
+    flightPlanWPs    = null;
+    flightPlanOrigin = null;
+    flightPlanDest   = null;
+    flightPlanState  = 'empty';
     refreshRouteFields();
     renderWaypoints(flightData[id]);
   });
@@ -1526,10 +1576,14 @@ function renderDetail(f) {
   // Username line — plain pilot handle, no "IFC:" prefix
   document.getElementById('d-user').textContent = f.username || '';
 
-  // Aircraft type — full row card, hidden when no aircraft data
+  // Aircraft type + airline/livery. Section hidden only when we have neither.
   const acName = f.aircraft || '';
+  const lvName = f.livery   || '';
   document.getElementById('d-aircraft').textContent = acName || '—';
-  document.getElementById('d-aircraft-section').style.display = acName ? '' : 'none';
+  document.getElementById('d-livery').textContent   = lvName || '—';
+  // Hide the livery card specifically if we have a type but no livery
+  document.getElementById('d-livery-card').style.display = lvName ? '' : 'none';
+  document.getElementById('d-aircraft-section').style.display = (acName || lvName) ? '' : 'none';
 
   // Badges — palette-strict, no glow. VO appears here (was on username line).
   const b = (txt, bg, fg, br) =>
@@ -1664,15 +1718,9 @@ function refreshRouteFields() {
     return;
   }
 
-  // ── Loaded: derive origin/dest strictly from type=0 / type=2 ──
-  //  Falling back to first/last waypoint produced bad data: when the flatten
-  //  step keeps SID/STAR waypoints around, "last" used to be a runway or
-  //  approach fix rather than the actual destination airport.
-  const origin = flightPlanWPs.find(w => w.type === 0);
-  const dest   = flightPlanWPs.find(w => w.type === 2);
-
-  set('d-dep-icao',  (origin?.name || '—').toUpperCase());
-  set('d-dest-icao', (dest?.name   || '—').toUpperCase());
+  // ── Loaded: origin/dest were resolved once by resolveRoute() at fetch time ──
+  set('d-dep-icao',  (flightPlanOrigin?.name || '—').toUpperCase());
+  set('d-dest-icao', (flightPlanDest?.name   || '—').toUpperCase());
 
   const prog = computeRouteProgress(flightPlanWPs, f.latitude, f.longitude);
   if (!prog) {
@@ -1953,10 +2001,12 @@ function renderWaypoints(f) {
 }
 
 function closeDetail() {
-  selectedId      = null;
-  selectedTrail   = [];
-  flightPlanWPs   = null;
-  flightPlanState = 'idle';
+  selectedId       = null;
+  selectedTrail    = [];
+  flightPlanWPs    = null;
+  flightPlanOrigin = null;
+  flightPlanDest   = null;
+  flightPlanState  = 'idle';
   document.getElementById('right-sb').classList.remove('open');
   clearPathLayers();
   updateMarkers();

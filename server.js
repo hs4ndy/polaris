@@ -4,15 +4,65 @@ const http  = require('http');
 const https = require('https');
 const { WebSocketServer, WebSocket } = require('ws');
 
-const PORT       = process.env.PORT     || 3001;
+const PORT       = process.env.PORT       || 3001;
 const API_KEY    = process.env.IF_API_KEY || '';
-const API_HOST   = 'api.infiniteflight.com';
+const API_HOST   = process.env.IF_API_HOST || 'api.infiniteflight.com';
 const POLL_BASE  = 15000;
+
+// Allowed browser origins for CORS. Comma-separated env override, else a
+// sensible default set (prod Vercel domain + localhost for dev). '*' is the
+// final fallback so the app keeps working if ALLOWED_ORIGINS isn't configured.
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '')
+  .split(',').map(s => s.trim()).filter(Boolean);
 
 // In-memory cache: flightId (string) → enriched flight object
 const cache         = {};
 const clients       = new Set();
-let   aircraftNames = {};   // aircraftId (GUID) → human-readable name, e.g. "A320"
+let   aircraftNames = {};   // aircraftId (GUID) → human-readable name, e.g. "Airbus A320"
+let   liveryNames   = {};   // liveryId  (GUID) → human-readable livery, e.g. "American Airlines"
+
+// ── Security: per-IP rate limiting ──────────────────────────────────────────────
+//  Fixed-window counter. Cheap, in-memory, no deps. Tuned generously enough
+//  for normal browsing (a session clicks a handful of flights/min) but low
+//  enough to make brute-forcing the /path & /flightplan endpoints impractical.
+const RATE_WINDOW_MS = 60_000;
+const RATE_MAX_HTTP  = 100;          // HTTP requests / IP / minute
+const WS_MAX_PER_IP  = 8;            // concurrent WebSocket connections / IP
+const rateBuckets    = new Map();    // ip → { count, resetAt }
+const wsCountByIp    = new Map();    // ip → active WS connection count
+
+function clientIp(req) {
+  // Render/Vercel/most proxies put the real client IP first in x-forwarded-for
+  const xff = req.headers['x-forwarded-for'];
+  if (xff) return String(xff).split(',')[0].trim();
+  return req.socket?.remoteAddress || 'unknown';
+}
+
+function rateLimitOk(ip) {
+  const now = Date.now();
+  let b = rateBuckets.get(ip);
+  if (!b || now >= b.resetAt) {
+    b = { count: 0, resetAt: now + RATE_WINDOW_MS };
+    rateBuckets.set(ip, b);
+  }
+  b.count++;
+  return b.count <= RATE_MAX_HTTP;
+}
+
+// Periodic cleanup so the bucket maps don't grow unbounded
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, b] of rateBuckets) if (now >= b.resetAt) rateBuckets.delete(ip);
+}, 5 * 60_000).unref?.();
+
+// ── Security: input validation ──────────────────────────────────────────────────
+//  IF flight IDs are GUIDs. Accept only safe URL-segment characters and cap the
+//  length hard so a malformed/oversized param can never reach the upstream API
+//  or be used to build a weird request path.
+const ID_RE = /^[A-Za-z0-9_-]{1,64}$/;
+const isValidId = id => typeof id === 'string' && ID_RE.test(id);
+
+const MAX_URL_LEN = 256;   // reject absurdly long request targets outright
 
 // Rolling path history per flight — keeps up to ~30 min so client can fetch
 // a full trail the instant a user clicks a plane, instead of waiting for
@@ -43,55 +93,45 @@ function apiGet(path) {
   });
 }
 
-// ── Aircraft name lookup (fetched once at boot, refreshed every 6 h) ──────────
-//  The IF Live API exposes aircraft metadata in two places:
-//    1) GET /aircraft        → top-level list of aircraft types
-//    2) GET /liveries        → liveries, each carries aircraftID + aircraftName
-//  Field naming varies (aircraftId vs aircraftID, id vs aircraftID). We try
-//  /aircraft first, and if it doesn't yield a usable map, fall back to /liveries.
-async function refreshAircraftNames() {
+// ── Aircraft + livery metadata (fetched at boot, refreshed every 6 h) ─────────
+//  GET /liveries returns one row per livery, each carrying BOTH the aircraft
+//  type (aircraftID + aircraftName) and the livery (id + liveryName, which is
+//  usually the airline, e.g. "American Airlines"). So a single call populates
+//  both maps. /aircraft is a fallback only if /liveries fails to give us types.
+async function refreshMeta() {
   if (!API_KEY) return;
-  const before = Object.keys(aircraftNames).length;
 
-  // Attempt 1: /aircraft
   try {
-    const res  = await apiGet('/aircraft');
+    const res  = await apiGet('/liveries');
     const list = Array.isArray(res?.result) ? res.result : [];
-    for (const a of list) {
-      const id   = a.id || a.aircraftID || a.aircraftId;
-      const name = a.name || a.aircraftName || a.aircraft;
-      if (id && name) aircraftNames[id] = name;
+    for (const l of list) {
+      const acId = l.aircraftID || l.aircraftId;
+      const acNm = l.aircraftName || l.aircraft;
+      const lvId = l.id || l.liveryID || l.liveryId;
+      const lvNm = l.liveryName || l.livery || l.name;
+      if (acId && acNm) aircraftNames[acId] = acNm;
+      if (lvId && lvNm) liveryNames[lvId]   = lvNm;
     }
-    if (list.length) {
-      console.log(`[aircraft] /aircraft returned ${list.length} entries (${Object.keys(aircraftNames).length - before} added)`);
-    } else {
-      console.warn('[aircraft] /aircraft returned 0 entries');
-    }
+    console.log(`[meta] /liveries: ${list.length} rows → ${Object.keys(aircraftNames).length} aircraft, ${Object.keys(liveryNames).length} liveries`);
   } catch (e) {
-    console.warn('[aircraft] /aircraft failed:', e.message);
+    console.error('[meta] /liveries failed:', e.message);
   }
 
-  // Attempt 2: /liveries — used to backfill if /aircraft was empty/missing
+  // Fallback: populate aircraft names from /aircraft if liveries gave us none
   if (Object.keys(aircraftNames).length === 0) {
     try {
-      const res  = await apiGet('/liveries');
+      const res  = await apiGet('/aircraft');
       const list = Array.isArray(res?.result) ? res.result : [];
-      const seen = new Set();
-      for (const l of list) {
-        const id   = l.aircraftID || l.aircraftId || l.id;
-        const name = l.aircraftName || l.aircraft || l.name;
-        if (id && name && !seen.has(id)) {
-          aircraftNames[id] = name;
-          seen.add(id);
-        }
+      for (const a of list) {
+        const id = a.id || a.aircraftID || a.aircraftId;
+        const nm = a.name || a.aircraftName;
+        if (id && nm) aircraftNames[id] = nm;
       }
-      console.log(`[aircraft] /liveries fallback loaded ${seen.size} unique aircraft from ${list.length} liveries`);
+      console.log(`[meta] /aircraft fallback: ${Object.keys(aircraftNames).length} aircraft names`);
     } catch (e) {
-      console.error('[aircraft] /liveries fallback failed:', e.message);
+      console.error('[meta] /aircraft fallback failed:', e.message);
     }
   }
-
-  console.log(`[aircraft] total names in cache: ${Object.keys(aircraftNames).length}`);
 }
 
 // One-shot diagnostic: log the field shape of the first flight we ever see.
@@ -152,6 +192,7 @@ async function poll() {
 
           // The IF Live API uses inconsistent casing across endpoints — accept both
           const acId = f.aircraftId || f.aircraftID || '';
+          const lvId = f.liveryId   || f.liveryID   || '';
           updated[id] = {
             flightId:            id,
             username:            f.username            || '',
@@ -167,7 +208,7 @@ async function poll() {
             flightState:         f.flightState,
             onGround:            f.onGround,
             aircraft:            aircraftNames[acId] || '',
-            aircraftId:          acId,                  // pass through for debugging
+            livery:              liveryNames[lvId]   || '',
             server,
             serverName:          session.name,
             sessionId:           session.id,            // needed for flightplan lookup
@@ -224,8 +265,38 @@ async function poll() {
 
 // ── HTTP server ────────────────────────────────────────────────────────────────
 const server = http.createServer(async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // ── CORS ── allow configured origins (or * if none configured)
+  const origin = req.headers.origin;
+  if (ALLOWED_ORIGINS.length && origin && ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+  } else if (!ALLOWED_ORIGINS.length) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
   res.setHeader('Access-Control-Allow-Methods', 'GET');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+
+  // ── Method allow-list — this proxy is read-only ──
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    res.writeHead(405, { 'Content-Type': 'text/plain' });
+    res.end('Method not allowed');
+    return;
+  }
+
+  // ── Reject oversized / malformed request targets before any work ──
+  if (!req.url || req.url.length > MAX_URL_LEN) {
+    res.writeHead(414, { 'Content-Type': 'text/plain' });
+    res.end('URI too long');
+    return;
+  }
+
+  // ── Per-IP rate limit ──
+  const ip = clientIp(req);
+  if (!rateLimitOk(ip)) {
+    res.writeHead(429, { 'Content-Type': 'text/plain', 'Retry-After': '60' });
+    res.end('Too many requests');
+    return;
+  }
 
   // Health check
   if (req.url === '/' || req.url === '') {
@@ -241,7 +312,12 @@ const server = http.createServer(async (req, res) => {
   // sample. Falls back to pure pathHistory on error.
   const pathMatch = req.url.match(/^\/path\/([^/?]+)/);
   if (pathMatch) {
-    const flightId = pathMatch[1];
+    const flightId = decodeURIComponent(pathMatch[1]);
+    if (!isValidId(flightId)) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'invalid flight id' }));
+      return;
+    }
     const cached   = cache[flightId];
     const local    = pathHistory[flightId] || [];
 
@@ -285,7 +361,12 @@ const server = http.createServer(async (req, res) => {
   // Flight plan proxy: GET /flightplan/:flightId
   const fpMatch = req.url.match(/^\/flightplan\/([^/?]+)/);
   if (fpMatch) {
-    const flightId = fpMatch[1];
+    const flightId = decodeURIComponent(fpMatch[1]);
+    if (!isValidId(flightId)) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'invalid flight id' }));
+      return;
+    }
     const cached = cache[flightId];
     if (!cached || !cached.sessionId) {
       res.writeHead(404, { 'Content-Type': 'application/json' });
@@ -308,9 +389,23 @@ const server = http.createServer(async (req, res) => {
 });
 
 // ── WebSocket server ───────────────────────────────────────────────────────────
-const wss = new WebSocketServer({ server });
+//  maxPayload caps inbound frame size so a client can't send huge buffers.
+//  The proxy never needs to read client messages (it only pushes), so any
+//  inbound data is ignored, and oversized frames are rejected by ws itself.
+const wss = new WebSocketServer({ server, maxPayload: 4 * 1024 });
 
-wss.on('connection', ws => {
+wss.on('connection', (ws, req) => {
+  const ip = clientIp(req);
+
+  // Per-IP concurrent-connection cap — stops a single host from opening
+  // thousands of sockets to exhaust memory.
+  const openForIp = wsCountByIp.get(ip) || 0;
+  if (openForIp >= WS_MAX_PER_IP) {
+    try { ws.close(1013, 'too many connections'); } catch {}
+    return;
+  }
+  wsCountByIp.set(ip, openForIp + 1);
+
   clients.add(ws);
   console.log(`[ws] client connected  (${clients.size} total)`);
 
@@ -321,18 +416,23 @@ wss.on('connection', ws => {
     ts:      Date.now(),
   }));
 
-  ws.on('close', () => {
+  // This server is push-only — ignore anything the client sends.
+  ws.on('message', () => { /* intentionally ignored */ });
+
+  const cleanup = () => {
     clients.delete(ws);
-    console.log(`[ws] client left  (${clients.size} remaining)`);
-  });
-  ws.on('error', () => clients.delete(ws));
+    const c = (wsCountByIp.get(ip) || 1) - 1;
+    if (c <= 0) wsCountByIp.delete(ip); else wsCountByIp.set(ip, c);
+  };
+  ws.on('close', () => { cleanup(); console.log(`[ws] client left  (${clients.size} remaining)`); });
+  ws.on('error', cleanup);
 });
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 server.listen(PORT, () => {
   console.log(`Polaris proxy listening on :${PORT}`);
-  refreshAircraftNames();
-  setInterval(refreshAircraftNames, 6 * 60 * 60 * 1000);  // refresh every 6 h
+  refreshMeta();
+  setInterval(refreshMeta, 6 * 60 * 60 * 1000);  // refresh every 6 h
   poll();
   setInterval(() => poll(), POLL_BASE + Math.random() * 2000);
 });

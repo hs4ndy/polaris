@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Secrets / local env
+.env
+.env.*
+*.local
+
+# Editor / agent scratch (contains saved reference material, not source)
+.claude/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS cruft
+.DS_Store
+Thumbs.db
