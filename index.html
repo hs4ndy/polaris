@@ -856,8 +856,8 @@ let projLines     = [];     // L.Polyline[] — short white dashed projection (h
 let planLines     = [];     // L.Polyline[] — flight plan past + future (with halos)
 let selectedTrail   = [];     // [{lat,lng,...}] — server path + live appends for selectedId
 let flightPlanWPs   = null;   // ACTIVE route [{name,type,lat,lng,alt}, ...] (origin→dest)
-let flightPlanOrigin = null;  // resolved origin waypoint
-let flightPlanDest   = null;  // resolved destination waypoint
+let flightPlanDepName  = '—'; // resolved departure ICAO for display
+let flightPlanDestName = '—'; // resolved destination ICAO for display
 let flightPlanState = 'idle'; // 'idle' | 'loading' | 'loaded' | 'empty' — drives placeholder UI
 let isOnline      = false;
 let planeSvg      = null;   // cached SVG markup from plane.svg, loaded once at boot
@@ -1024,64 +1024,81 @@ function splitAtAntimeridian(pts) {
   return out;
 }
 
+/* ── Coordinate sanity check ─────────────────────────────────────────────────── */
+//  Rejects the data that was wrecking the route: non-finite values, out-of-range
+//  lat/lng, and "null island" (0,0) — procedure GROUP items in the IF flight
+//  plan carry 0,0 (or null) coordinates while their real fixes live in children.
+//  Including them drew dashed lines off the coast of Africa and inflated the
+//  to-go distance to ~40,000 km.
+function isValidLatLng(lat, lng) {
+  return Number.isFinite(lat) && Number.isFinite(lng)
+    && Math.abs(lat) <= 90 && Math.abs(lng) <= 180
+    && !(Math.abs(lat) < 0.02 && Math.abs(lng) < 0.02);
+}
+
 /* ── Flatten a hierarchical flight plan into rich waypoint records ──────────── */
-//  Returns the FULL [{name, type, lat, lng, alt}, ...] list in route order.
-//  Procedure waypoints inside `children` are inlined in place. Truncation to
-//  the active origin→destination route is done separately by resolveRoute().
+//  IF flight plans nest SID/STAR/approach procedures: a parent "group" item
+//  (e.g. "PARDN4") whose own location is 0,0/null, with the real fixes in its
+//  `children`. We therefore DESCEND into children and never add the parent,
+//  and we drop any leaf whose coordinates fail isValidLatLng.
 function flattenFlightPlan(items) {
   const wps = [];
   if (!Array.isArray(items)) return wps;
   for (const it of items) {
-    if (it?.location?.latitude != null && it?.location?.longitude != null) {
+    const kids = Array.isArray(it?.children) ? it.children : null;
+    if (kids && kids.length) {
+      // Procedure group — recurse into the real fixes, skip the group itself
+      wps.push(...flattenFlightPlan(kids));
+      continue;
+    }
+    const lat = it?.location?.latitude;
+    const lng = it?.location?.longitude;
+    if (isValidLatLng(lat, lng)) {
       wps.push({
         name: (it.name || it.identifier || '·').trim(),
-        type: it.type ?? 1,                         // 0=origin, 1=waypoint, 2=destination
-        lat:  it.location.latitude,
-        lng:  it.location.longitude,
+        type: it.type ?? 0,
+        lat, lng,
         alt:  it.altitude,
       });
-    }
-    if (Array.isArray(it?.children) && it.children.length) {
-      wps.push(...flattenFlightPlan(it.children));
     }
   }
   return wps;
 }
 
-/* ── Resolve origin / destination / active route from a flat waypoint list ──── */
-//  Robust destination handling — the previous strict "type === 2 only" logic
-//  left the destination blank whenever IF didn't tag it (which happens a lot).
-//  Priority:
-//    origin  = first type=0   → else first waypoint
-//    dest    = last  type=2   → else the LAST airport-looking ICAO (4 letters)
-//              → else the final waypoint
-//  The active route is truncated at the resolved destination so any filed
-//  alternate / approach overrun past the airport doesn't draw a phantom line.
+/* ── Resolve display ICAOs + active route ───────────────────────────────────── */
+//  IF's flightPlanItems `type` field is NOT origin/dest (it's waypoint vs
+//  procedure-group), so we can't rely on it. The cleanest source of the
+//  departure/destination ICAO codes is the flat `waypoints` STRING array that
+//  the flightplan endpoint also returns — its first and last entries are the
+//  filed origin and destination. We fall back to the first/last geo-waypoint
+//  names when that array is missing.
 const ICAO_RE = /^[A-Z]{4}$/;
-function resolveRoute(wps) {
-  if (!wps || !wps.length) return { origin: null, dest: null, active: [] };
+function resolveRoute(flatWps, wpNames) {
+  const names = Array.isArray(wpNames) ? wpNames.map(s => String(s).trim()).filter(Boolean) : [];
 
-  const origin = wps.find(w => w.type === 0) || wps[0];
-
-  // Destination: prefer the LAST explicit type=2 (handles alt airports after it)
-  let destIdx = -1;
-  for (let i = wps.length - 1; i >= 0; i--) {
-    if (wps[i].type === 2) { destIdx = i; break; }
-  }
-  // Fallback: last waypoint whose name is a 4-letter ICAO
-  if (destIdx < 0) {
-    for (let i = wps.length - 1; i >= 0; i--) {
-      if (ICAO_RE.test((wps[i].name || '').toUpperCase())) { destIdx = i; break; }
+  const pickIcao = (candidates) => {
+    for (const c of candidates) {
+      const u = (c || '').toUpperCase();
+      if (ICAO_RE.test(u)) return u;
     }
-  }
-  // Last resort: final waypoint
-  if (destIdx < 0) destIdx = wps.length - 1;
-
-  return {
-    origin,
-    dest:   wps[destIdx],
-    active: wps.slice(0, destIdx + 1),
+    return null;
   };
+
+  // Departure: first ICAO from the string list, else first geo-waypoint name
+  const depName =
+    pickIcao(names.slice(0, 3)) ||
+    pickIcao(flatWps.slice(0, 3).map(w => w.name)) ||
+    (names[0] || flatWps[0]?.name || '—').toUpperCase();
+
+  // Destination: last ICAO from the string list, else last geo-waypoint name.
+  // Scanning the LAST few entries handles plans that append a runway/approach
+  // fix after the airport.
+  const destName =
+    pickIcao(names.slice(-4).reverse()) ||
+    pickIcao(flatWps.slice(-4).reverse().map(w => w.name)) ||
+    (names[names.length - 1] || flatWps[flatWps.length - 1]?.name || '—').toUpperCase();
+
+  return { depName, destName, active: flatWps };
 }
 
 /* ── Compass bearing from (lat1,lon1) to (lat2,lon2), degrees 0-360 ──────────── */
@@ -1493,11 +1510,11 @@ function selectFlight(id) {
   if (!f) return;
 
   // Reset selection-scoped state before fetches resolve
-  selectedTrail    = [];
-  flightPlanWPs    = null;
-  flightPlanOrigin = null;
-  flightPlanDest   = null;
-  flightPlanState  = 'loading';
+  selectedTrail      = [];
+  flightPlanWPs      = null;
+  flightPlanDepName  = '—';
+  flightPlanDestName = '—';
+  flightPlanState    = 'loading';
 
   renderDetail(f);
   document.getElementById('right-sb').classList.add('open');
@@ -1524,26 +1541,26 @@ function selectFlight(id) {
     if (selectedId !== id) return;
     const items = plan?.flightPlanItems;
     if (items?.length) {
-      const route      = resolveRoute(flattenFlightPlan(items));
-      flightPlanWPs    = route.active;
-      flightPlanOrigin = route.origin;
-      flightPlanDest   = route.dest;
-      flightPlanState  = (flightPlanWPs && flightPlanWPs.length >= 2) ? 'loaded' : 'empty';
+      const route        = resolveRoute(flattenFlightPlan(items), plan.waypoints);
+      flightPlanWPs      = route.active;
+      flightPlanDepName  = route.depName;
+      flightPlanDestName = route.destName;
+      flightPlanState    = (flightPlanWPs && flightPlanWPs.length >= 2) ? 'loaded' : 'empty';
     } else {
-      flightPlanWPs    = null;
-      flightPlanOrigin = null;
-      flightPlanDest   = null;
-      flightPlanState  = 'empty';
+      flightPlanWPs      = null;
+      flightPlanDepName  = '—';
+      flightPlanDestName = '—';
+      flightPlanState    = 'empty';
     }
     updateTrails();
     refreshRouteFields();
     if (flightData[id]) renderWaypoints(flightData[id]);
   }).catch(() => {
     if (selectedId !== id) return;
-    flightPlanWPs    = null;
-    flightPlanOrigin = null;
-    flightPlanDest   = null;
-    flightPlanState  = 'empty';
+    flightPlanWPs      = null;
+    flightPlanDepName  = '—';
+    flightPlanDestName = '—';
+    flightPlanState    = 'empty';
     refreshRouteFields();
     renderWaypoints(flightData[id]);
   });
@@ -1718,9 +1735,9 @@ function refreshRouteFields() {
     return;
   }
 
-  // ── Loaded: origin/dest were resolved once by resolveRoute() at fetch time ──
-  set('d-dep-icao',  (flightPlanOrigin?.name || '—').toUpperCase());
-  set('d-dest-icao', (flightPlanDest?.name   || '—').toUpperCase());
+  // ── Loaded: dep/dest names resolved once by resolveRoute() at fetch time ──
+  set('d-dep-icao',  flightPlanDepName  || '—');
+  set('d-dest-icao', flightPlanDestName || '—');
 
   const prog = computeRouteProgress(flightPlanWPs, f.latitude, f.longitude);
   if (!prog) {
@@ -2001,12 +2018,12 @@ function renderWaypoints(f) {
 }
 
 function closeDetail() {
-  selectedId       = null;
-  selectedTrail    = [];
-  flightPlanWPs    = null;
-  flightPlanOrigin = null;
-  flightPlanDest   = null;
-  flightPlanState  = 'idle';
+  selectedId         = null;
+  selectedTrail      = [];
+  flightPlanWPs      = null;
+  flightPlanDepName  = '—';
+  flightPlanDestName = '—';
+  flightPlanState    = 'idle';
   document.getElementById('right-sb').classList.remove('open');
   clearPathLayers();
   updateMarkers();
