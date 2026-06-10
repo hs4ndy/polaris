@@ -1180,11 +1180,20 @@ function splitPlanAtPlane(pts, planeLat, planeLng) {
     }
   }
 
-  // Past = leg-start waypoints up through bestLeg + plane-position cap
-  // Future = plane-position + waypoints from (bestLeg + 1) onward
+  // Anchor the split at the PROJECTED point on the active leg, not the raw
+  // plane position. The plane is never exactly on the filed leg (it moves
+  // between polls / flies slightly off the line), so anchoring at the plane
+  // drew a small diagonal kink at the head of the future route on every
+  // flight. Anchoring on-route keeps the dashed line perfectly straight.
+  const A = pts[bestLeg], B = pts[bestLeg + 1];
+  const anchor = [
+    A[0] + bestT * (B[0] - A[0]),
+    A[1] + bestT * (B[1] - A[1]),
+  ];
+
   return {
-    past:   pts.slice(0, bestLeg + 1).concat([[planeLat, planeLng]]),
-    future: [[planeLat, planeLng]].concat(pts.slice(bestLeg + 1)),
+    past:   pts.slice(0, bestLeg + 1).concat([anchor]),
+    future: [anchor].concat(pts.slice(bestLeg + 1)),
   };
 }
 
@@ -1386,9 +1395,13 @@ function updateTrails() {
     : (liveTrails[selectedId] || []).map(p => [p[1], p[0]]);
   setData('trail', lineFC(trailPts));
 
-  // Projection — 4-minute look-ahead
+  // Projection — 4-minute look-ahead. Only shown when there's NO filed flight
+  // plan: when both were drawn they spawned two dashed lines from the plane at
+  // slightly different angles, which read as a rendering glitch at the head of
+  // the route (the plan line already shows where the flight is going).
+  const hasPlan = !!(flightPlanWPs && flightPlanWPs.length >= 2);
   let projFC = emptyFC();
-  if (f.latitude != null && f.track != null && !f.onGround && (f.speed || 0) >= 30) {
+  if (!hasPlan && f.latitude != null && f.track != null && !f.onGround && (f.speed || 0) >= 30) {
     const distKm = (f.speed * 1.852 / 3600) * 240;
     if (distKm >= 5) {
       const pts = projectAheadKm(f.latitude, f.longitude, f.track, distKm).map(p => [p[1], p[0]]);
