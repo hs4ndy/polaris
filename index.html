@@ -1027,6 +1027,47 @@ function projectAheadKm(lat, lng, trackDeg, distKm) {
   return pts;
 }
 
+/* ── Great-circle interpolation between two [lat,lng] points ────────────────── */
+//  Spherical linear interpolation (slerp). f = 0 → a, f = 1 → b.
+function gcInterpolate(a, b, f) {
+  const φ1 = a[0] * Math.PI / 180, λ1 = a[1] * Math.PI / 180;
+  const φ2 = b[0] * Math.PI / 180, λ2 = b[1] * Math.PI / 180;
+  const dφ = φ2 - φ1, dλ = λ2 - λ1;
+  const h  = Math.sin(dφ/2)**2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(dλ/2)**2;
+  const Δ  = 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+  if (Δ < 1e-9) return a;
+  const A = Math.sin((1 - f) * Δ) / Math.sin(Δ);
+  const B = Math.sin(f * Δ)       / Math.sin(Δ);
+  const x = A * Math.cos(φ1) * Math.cos(λ1) + B * Math.cos(φ2) * Math.cos(λ2);
+  const y = A * Math.cos(φ1) * Math.sin(λ1) + B * Math.cos(φ2) * Math.sin(λ2);
+  const z = A * Math.sin(φ1)                + B * Math.sin(φ2);
+  return [
+    Math.atan2(z, Math.sqrt(x*x + y*y)) * 180 / Math.PI,
+    Math.atan2(y, x) * 180 / Math.PI,
+  ];
+}
+
+/* ── Densify a route along great circles ────────────────────────────────────── */
+//  THE fix for the "dashed route floats away from the plane" bug: IF pilots
+//  file long direct legs, and a straight line between two waypoints diverges
+//  from the great circle the plane actually flies — by 100+ km on long legs.
+//  Drawing the route as straight chords made the line miss the plane entirely
+//  (and confused the closest-leg picker). Inserting a point every ~50 km along
+//  each leg's great circle makes the rendered route match the real flight path.
+function densifyRoute(pts, stepKm = 50) {
+  if (!pts || pts.length < 2) return pts || [];
+  const out = [];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i], b = pts[i + 1];
+    const distKm = haversineNm(a[0], a[1], b[0], b[1]) * 1.852;
+    const n = Math.max(1, Math.min(200, Math.ceil(distKm / stepKm)));
+    out.push(a);
+    for (let s = 1; s < n; s++) out.push(gcInterpolate(a, b, s / n));
+  }
+  out.push(pts[pts.length - 1]);
+  return out;
+}
+
 /* ── Haversine ───────────────────────────────────────────────────────────────── */
 function haversineNm(lat1, lon1, lat2, lon2) {
   const R = 3440.065;
@@ -1193,7 +1234,10 @@ function splitPlanAtPlane(pts, planeLat, planeLng) {
 
   return {
     past:   pts.slice(0, bestLeg + 1).concat([anchor]),
-    future: [anchor].concat(pts.slice(bestLeg + 1)),
+    // Bridge plane → anchor so the dashed line always CONNECTS to the plane.
+    // With a densified route the anchor sits within a few km of the plane,
+    // so the bridge is a short straight stub, not a visible kink.
+    future: [[planeLat, planeLng], anchor].concat(pts.slice(bestLeg + 1)),
   };
 }
 
@@ -1410,10 +1454,12 @@ function updateTrails() {
   }
   setData('projection', projFC);
 
-  // Flight plan — future portion only
+  // Flight plan — future portion only, densified along great circles so the
+  // drawn line matches the path the plane actually flies (and so the
+  // closest-leg split can't pick a wildly wrong leg on long direct routes).
   let planFC = emptyFC();
-  if (flightPlanWPs && flightPlanWPs.length >= 2) {
-    const planPts = flightPlanWPs.map(w => [w.lat, w.lng]);
+  if (hasPlan) {
+    const planPts = densifyRoute(flightPlanWPs.map(w => [w.lat, w.lng]));
     const { future } = splitPlanAtPlane(planPts, f.latitude, f.longitude);
     planFC = lineFC(future.map(p => [p[1], p[0]]));
   }
@@ -1562,40 +1608,62 @@ function selectFlight(id) {
     });
   }
 
-  // Parallel: pull rolling history (for trail) and flight plan (for route + ETA)
+  // Parallel: pull rolling history (for trail) and flight plan (for route + ETA).
+  // Both loaders retry on failure — see loadPath/loadPlan.
+  loadPath(id);
+  loadPlan(id);
+}
+
+/* ── Resilient loaders — retry ladder so a plane is never left bare ─────────── */
+//  The proxy (Render free tier) can be waking from sleep, the IF API can blip,
+//  or a response can come back empty. One failed fetch used to leave a selected
+//  plane with no trail and no route. Now each loader retries on a short ladder,
+//  and a background sweep (see boot) keeps retrying as long as data is missing.
+const RETRY_MS = [2000, 5000, 10000];
+
+function loadPath(id, attempt = 0) {
   fetchPath(id).then(history => {
     if (selectedId !== id) return;
-    selectedTrail = history;
-    updateTrails();
-    renderChart();   // draw the performance chart now that we have history
+    if (history.length >= 2) {
+      selectedTrail = history;
+      updateTrails();
+      renderChart();
+    } else if (attempt < RETRY_MS.length) {
+      setTimeout(() => { if (selectedId === id) loadPath(id, attempt + 1); }, RETRY_MS[attempt]);
+    }
+    // else: live liveTrails fallback keeps accumulating; background sweep retries
   });
+}
 
+function loadPlan(id, attempt = 0) {
   fetchFlightPlan(id).then(plan => {
     if (selectedId !== id) return;
     const items = plan?.flightPlanItems;
-    if (items?.length) {
-      const route        = resolveRoute(flattenFlightPlan(items), plan.waypoints);
-      flightPlanWPs      = route.active;
-      flightPlanDepName  = route.depName;
-      flightPlanDestName = route.destName;
-      flightPlanState    = (flightPlanWPs && flightPlanWPs.length >= 2) ? 'loaded' : 'empty';
-    } else {
-      flightPlanWPs      = null;
-      flightPlanDepName  = '—';
-      flightPlanDestName = '—';
-      flightPlanState    = 'empty';
-    }
+    if (!items?.length) throw new Error('no plan in response');
+
+    const route        = resolveRoute(flattenFlightPlan(items), plan.waypoints);
+    flightPlanWPs      = route.active;
+    flightPlanDepName  = route.depName;
+    flightPlanDestName = route.destName;
+    flightPlanState    = (flightPlanWPs && flightPlanWPs.length >= 2) ? 'loaded' : 'empty';
     updateTrails();
     refreshRouteFields();
     if (flightData[id]) renderWaypoints(flightData[id]);
   }).catch(() => {
     if (selectedId !== id) return;
-    flightPlanWPs      = null;
-    flightPlanDepName  = '—';
-    flightPlanDestName = '—';
-    flightPlanState    = 'empty';
-    refreshRouteFields();
-    renderWaypoints(flightData[id]);
+    if (attempt < RETRY_MS.length) {
+      // Keep the "…" loading placeholders up and try again shortly
+      setTimeout(() => { if (selectedId === id) loadPlan(id, attempt + 1); }, RETRY_MS[attempt]);
+    } else {
+      // Genuinely no plan (or proxy unreachable) — show the honest empty state
+      flightPlanWPs      = null;
+      flightPlanDepName  = '—';
+      flightPlanDestName = '—';
+      flightPlanState    = 'empty';
+      updateTrails();
+      refreshRouteFields();
+      if (flightData[id]) renderWaypoints(flightData[id]);
+    }
   });
 }
 
@@ -2210,6 +2278,15 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(() => {
     if (!idlePaused && Date.now() - lastActivity >= IDLE_MS) pauseForIdle();
   }, 30_000);
+
+  // Failsafe sweep — if the selected flight is still missing its trail or
+  // flight plan (failed fetches, proxy waking from sleep, or a plan filed
+  // mid-flight), retry once a minute until it loads.
+  setInterval(() => {
+    if (!selectedId || idlePaused) return;
+    if (selectedTrail.length < 2) loadPath(selectedId);
+    if (flightPlanState === 'empty') loadPlan(selectedId);
+  }, 60_000);
 });
 </script>
 </body>
