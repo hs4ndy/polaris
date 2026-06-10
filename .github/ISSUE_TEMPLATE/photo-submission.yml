@@ -1,0 +1,53 @@
+name: Photo submission
+description: Submit an Infinite Flight screenshot for a specific livery + aircraft combo
+title: "[photo] <livery> + <aircraft>"
+labels: ["photo"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for contributing a photo!
+
+        To match correctly, copy the **exact** Livery and Aircraft strings shown
+        in the Polaris detail panel (the Aircraft section). Capitalization and
+        spacing matter.
+
+        Screenshots should be in-sim Infinite Flight captures, roughly 16:9,
+        under 2 MB, and ideally JPEG or WebP. By submitting you confirm the
+        screenshot is yours (or you have permission to share it) and you're
+        OK with it being shown on Polaris with the credit below.
+
+  - type: input
+    id: livery
+    attributes:
+      label: Livery
+      description: Exact string from the panel — e.g. "Southwest - Heart"
+      placeholder: Southwest - Heart
+    validations:
+      required: true
+
+  - type: input
+    id: aircraft
+    attributes:
+      label: Aircraft
+      description: Exact string from the panel — e.g. "Boeing 737-800"
+      placeholder: Boeing 737-800
+    validations:
+      required: true
+
+  - type: input
+    id: credit
+    attributes:
+      label: Credit
+      description: IFC username or display name to show on the photo
+      placeholder: YourIFCName
+    validations:
+      required: true
+
+  - type: textarea
+    id: image
+    attributes:
+      label: Image
+      description: Drag & drop the screenshot into this box (keep under 2 MB)
+    validations:
+      required: true

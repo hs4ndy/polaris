@@ -567,6 +567,30 @@
     /* Server row */
     #d-server-row { padding: 12px 16px 0; font-size: 11px; color: var(--text2); }
 
+    /* ── Aircraft photo (community-submitted IF screenshot) ── */
+    .d-photo {
+      position: relative;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 7px;
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+    }
+    .d-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .d-photo-credit {
+      position: absolute;
+      bottom: 6px; right: 8px;
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.75);
+      background: rgba(0,0,0,0.55);
+      padding: 2px 6px;
+      border-radius: 3px;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      pointer-events: none;
+    }
+
     /* ── Performance chart ── */
     #d-chart-wrap {
       background: rgba(255,255,255,0.04);
@@ -778,6 +802,14 @@
         </div>
         <div id="d-user"></div>
         <div id="d-badges"></div>
+      </div>
+
+      <!-- Aircraft photo (community-submitted IF screenshot, hidden when no match) -->
+      <div class="d-section" id="d-photo-section" style="display:none">
+        <div class="d-photo">
+          <img id="d-photo-img" alt="" loading="lazy">
+          <div class="d-photo-credit" id="d-photo-credit"></div>
+        </div>
       </div>
 
       <!-- Route hero: ORIGIN-ICAO  ✈  DESTINATION-ICAO -->
@@ -1687,6 +1719,9 @@ function renderDetail(f) {
   // Inject the airplane icon between the two airport codes (uses plane.svg)
   injectHeroPlane();
 
+  // Community-submitted photo (top of panel) — silently hidden if no match
+  renderPhoto(f);
+
   // Aircraft chip beside callsign — short code like "A321"; hidden when unknown
   const chip = aircraftChip(f.aircraft);
   document.getElementById('d-ac-chip').textContent = chip;
@@ -2182,6 +2217,38 @@ function ensurePlaneSvg() {
   return _planeSvgPromise || (_planeSvgPromise = loadPlaneSvg());
 }
 
+/* ── Community-submitted photo manifest ─────────────────────────────────────── */
+//  photos.json keys are "<livery>|<aircraft>" → { file, credit }. Empty
+//  manifest, missing file, or fetch failure all degrade silently — the photo
+//  card simply stays hidden.
+let photoManifest = null;
+let _photoManifestPromise = null;
+function ensurePhotoManifest() {
+  return _photoManifestPromise ||
+    (_photoManifestPromise = fetch('photos.json')
+      .then(r => r.ok ? r.json() : {})
+      .then(j => { photoManifest = (j && typeof j === 'object') ? j : {}; })
+      .catch(() => { photoManifest = {}; }));
+}
+
+function renderPhoto(f) {
+  const section = document.getElementById('d-photo-section');
+  if (!section) return;
+  const img     = document.getElementById('d-photo-img');
+  const credit  = document.getElementById('d-photo-credit');
+  const key     = `${f.livery || ''}|${f.aircraft || ''}`;
+  const entry   = photoManifest && photoManifest[key];
+  if (!entry || !entry.file) {
+    section.style.display = 'none';
+    img.removeAttribute('src');   // stop downloading a stale image
+    return;
+  }
+  img.src              = `photos/${entry.file}`;
+  img.alt              = `${f.livery || ''} ${f.aircraft || ''}`.trim();
+  credit.textContent   = entry.credit ? `© ${entry.credit}` : '';
+  section.style.display = '';
+}
+
 /* ── WebSocket ───────────────────────────────────────────────────────────────── */
 function handleFlights(flights) {
   const now = Date.now();
@@ -2266,7 +2333,8 @@ function resumeFromIdle() {
 
 /* ── Boot ────────────────────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
-  ensurePlaneSvg();   // start the plane.svg fetch (initMap awaits the same promise)
+  ensurePlaneSvg();      // start the plane.svg fetch (initMap awaits the same promise)
+  ensurePhotoManifest(); // load community photo manifest in the background
   initMap();
   connectWS();
   setInterval(cleanStale, 60_000);
