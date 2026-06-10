@@ -7,8 +7,9 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Exo:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- MapLibre GL JS v5 — globe projection (zoom out = globe, zoom in = street map) -->
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css">
+  <script src="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.js"></script>
 
   <style>
     /* ── Reset ─────────────────────────────────────────────────────────────── */
@@ -62,58 +63,46 @@
       background: #060a0f;
     }
 
-    /* ── Leaflet dark-theme overrides ── */
-    .leaflet-container           { background: #060a0f; }
-    .leaflet-tile-pane           { filter: brightness(0.88) saturate(0.8); }
+    /* ── MapLibre dark-theme overrides ── */
+    .maplibregl-map      { background: #05070d; font-family: 'JetBrains Mono', monospace; }
+    .maplibregl-canvas   { outline: none; }
 
-    .leaflet-control-attribution {
-      background: rgba(0,0,0,0.5) !important;
+    /* Attribution — compact, dim, glassy */
+    .maplibregl-ctrl-attrib {
+      background: rgba(0,0,0,0.4) !important;
       backdrop-filter: blur(8px);
-      color: rgba(255,255,255,0.18) !important;
-      font-size: 8px !important;
       border-radius: 6px 0 0 0 !important;
-      padding: 2px 6px !important;
     }
-    .leaflet-control-attribution a { color: rgba(255,255,255,0.28) !important; }
+    .maplibregl-ctrl-attrib, .maplibregl-ctrl-attrib a {
+      color: rgba(255,255,255,0.25) !important;
+      font-size: 9px !important;
+    }
+    .maplibregl-ctrl-attrib-button { filter: invert(1); opacity: 0.3; }
 
-    .leaflet-control-zoom {
-      border: none !important;
-      box-shadow: none !important;
-      margin-right: 16px !important;
-      margin-bottom: 16px !important;
+    /* Zoom / nav controls — glass buttons matching the sidebars */
+    .maplibregl-ctrl-group {
+      background: rgba(0,0,0,0.5) !important;
+      backdrop-filter: blur(16px) saturate(140%);
+      border: 1px solid rgba(255,255,255,0.09) !important;
+      border-radius: 9px !important;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.5) !important;
+      overflow: hidden;
+      margin: 0 16px 16px 0 !important;
     }
-    .leaflet-control-zoom a {
+    .maplibregl-ctrl-group button {
       width: 32px !important;
       height: 32px !important;
-      line-height: 32px !important;
-      background: rgba(0,0,0,0.58) !important;
-      backdrop-filter: blur(16px) saturate(140%);
-      color: var(--text2) !important;
-      border: 1px solid rgba(255,255,255,0.09) !important;
-      font-size: 18px !important;
-      font-weight: 300 !important;
-      transition: background 0.18s, color 0.18s !important;
+      background: transparent !important;
+      border: none !important;
+      border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+      transition: background 0.18s;
     }
-    .leaflet-control-zoom a:hover {
-      background: rgba(79,142,247,0.18) !important;
-      color: var(--accent) !important;
-      border-color: rgba(79,142,247,0.3) !important;
-    }
-    .leaflet-control-zoom-in  { border-radius: 7px 7px 0 0 !important; }
-    .leaflet-control-zoom-out { border-radius: 0 0 7px 7px !important; border-top: 1px solid rgba(255,255,255,0.05) !important; }
+    .maplibregl-ctrl-group button:last-child { border-bottom: none !important; }
+    .maplibregl-ctrl-group button:hover { background: rgba(79,142,247,0.18) !important; }
+    /* Recolor the default dark icons to our light text color */
+    .maplibregl-ctrl-group button .maplibregl-ctrl-icon { filter: invert(0.85); }
 
-    /* No native popups — we use our own detail panel */
-    .leaflet-popup { display: none !important; }
-
-    /* Aircraft div-icon wrapper */
-    .ac-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      pointer-events: auto;
-      cursor: pointer;
-    }
-    .ac-icon svg { overflow: visible; }
+    .maplibregl-popup { display: none !important; }
 
     /* Version tag */
     #map-ver {
@@ -388,9 +377,19 @@
       overflow-y: auto;
       overflow-x: hidden;
       padding: 0 0 32px;
+      scroll-behavior: smooth;
     }
     #detail-inner::-webkit-scrollbar       { width: 3px; }
     #detail-inner::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+    /* Sections gently rise + fade in as the panel opens — fluid, not flashy */
+    #right-sb .d-section,
+    #right-sb #d-route-hero,
+    #right-sb #d-progress { transition: opacity 0.3s ease, transform 0.3s ease; }
+    #right-sb:not(.open) #detail-inner > * { opacity: 0; transform: translateY(6px); }
+    #right-sb.open #detail-inner > * { opacity: 1; transform: translateY(0); }
+    /* Smoother transform compositing for the slide */
+    #right-sb, #left-sb { will-change: transform; }
 
     /* Detail header */
     #d-hdr {
@@ -673,7 +672,7 @@
       <span class="load-txt">CONNECTING…</span>
     </div>
   </div>
-  <div id="map-ver">v0.1.0</div>
+  <div id="map-ver">v0.2.0</div>
 
   <!-- ══════════════ LEFT SIDEBAR ══════════════ -->
   <div id="left-sb">
@@ -709,7 +708,7 @@
       <div class="fl-empty">Connecting…</div>
     </div>
 
-    <div id="sb-footer">Beta — expect bugs &nbsp;·&nbsp; v0.1.0</div>
+    <div id="sb-footer">Beta — expect bugs &nbsp;·&nbsp; v0.2.0</div>
   </div>
 
   <!-- ══════════════ RIGHT SIDEBAR (DETAIL) ══════════════ -->
@@ -750,7 +749,30 @@
         </div>
       </div>
 
-      <!-- Aircraft: type + airline/livery -->
+      <!-- Live flight data (Altitude / Speed / Vert Speed / Track) -->
+      <div class="d-section" style="margin-top:14px">
+        <div class="d-sec-label">Flight Data</div>
+        <div class="d-grid">
+          <div class="dg-card"><div class="dg-lbl">Altitude</div><div class="dg-val" id="d-alt">—</div></div>
+          <div class="dg-card"><div class="dg-lbl">Speed</div><div class="dg-val" id="d-spd">—</div></div>
+          <div class="dg-card"><div class="dg-lbl">Vert Speed</div><div class="dg-val" id="d-vs">—</div></div>
+          <div class="dg-card"><div class="dg-lbl">Track</div><div class="dg-val" id="d-trk">—</div></div>
+        </div>
+      </div>
+
+      <!-- Performance chart — altitude (amber) + speed (accent) over the flight -->
+      <div class="d-section" style="margin-top:14px" id="d-chart-section">
+        <div class="d-sec-label">Performance</div>
+        <div id="d-chart-wrap">
+          <div class="d-chart-lgnd">
+            <span style="color:var(--amber)"><i></i>ALT</span>
+            <span style="color:var(--accent)"><i></i>SPD</span>
+          </div>
+          <svg id="d-chart-svg" viewBox="0 0 300 140" preserveAspectRatio="none"></svg>
+        </div>
+      </div>
+
+      <!-- Aircraft: type + airline/livery (reference info) -->
       <div class="d-section" style="margin-top:14px" id="d-aircraft-section">
         <div class="d-sec-label">Aircraft</div>
         <div class="dg-card" style="margin-bottom:6px">
@@ -760,29 +782,6 @@
         <div class="dg-card" id="d-livery-card" style="margin-bottom:0">
           <div class="dg-lbl">Airline / Livery</div>
           <div class="dg-val" id="d-livery" style="font-size:13px;letter-spacing:0.02em">—</div>
-        </div>
-      </div>
-
-      <!-- Navigation data grid (Altitude / Vert Speed / Track / Speed) -->
-      <div class="d-section" style="margin-top:12px">
-        <div class="d-sec-label">Flight Data</div>
-        <div class="d-grid">
-          <div class="dg-card"><div class="dg-lbl">Altitude</div><div class="dg-val" id="d-alt">—</div></div>
-          <div class="dg-card"><div class="dg-lbl">Vert Speed</div><div class="dg-val" id="d-vs">—</div></div>
-          <div class="dg-card"><div class="dg-lbl">Track</div><div class="dg-val" id="d-trk">—</div></div>
-          <div class="dg-card"><div class="dg-lbl">Speed</div><div class="dg-val" id="d-spd">—</div></div>
-        </div>
-      </div>
-
-      <!-- Performance chart — altitude (amber) + speed (accent) over last 30 min -->
-      <div class="d-section" style="margin-top:12px" id="d-chart-section">
-        <div class="d-sec-label">Performance</div>
-        <div id="d-chart-wrap">
-          <div class="d-chart-lgnd">
-            <span style="color:var(--amber)"><i></i>ALT</span>
-            <span style="color:var(--accent)"><i></i>SPD</span>
-          </div>
-          <svg id="d-chart-svg" viewBox="0 0 300 140" preserveAspectRatio="none"></svg>
         </div>
       </div>
 
@@ -842,18 +841,15 @@ const PROJECTION_MAX_S = 300;       // … and at most 5 min — leaves room for
 
 /* ── State ──────────────────────────────────────────────────────────────────── */
 const flightData     = {};  // flightId → flight object
-const liveTrails     = {};  // flightId → [[lat, lng], ...]
+const liveTrails     = {};  // flightId → [[lat, lng], ...] (live fallback trail)
 const flightLastSeen = {};  // flightId → timestamp
-const markers        = {};  // flightId → L.Marker
 
 let selectedId    = null;
 let currentServer = 'casual';
 let searchQuery   = '';
 let speedUnit     = 'kn';
 let map           = null;
-let trailLines    = [];     // L.Polyline[] — historical trail (halo + colored steps)
-let projLines     = [];     // L.Polyline[] — short white dashed projection (halo + dash)
-let planLines     = [];     // L.Polyline[] — flight plan past + future (with halos)
+let mapReady      = false;  // true once MapLibre style has loaded and layers are added
 let selectedTrail   = [];     // [{lat,lng,...}] — server path + live appends for selectedId
 let flightPlanWPs   = null;   // ACTIVE route [{name,type,lat,lng,alt}, ...] (origin→dest)
 let flightPlanDepName  = '—'; // resolved departure ICAO for display
@@ -861,7 +857,6 @@ let flightPlanDestName = '—'; // resolved destination ICAO for display
 let flightPlanState = 'idle'; // 'idle' | 'loading' | 'loaded' | 'empty' — drives placeholder UI
 let isOnline      = false;
 let planeSvg      = null;   // cached SVG markup from plane.svg, loaded once at boot
-let svgRenderer   = null;   // explicit L.svg() renderer for all path polylines
 
 /* ── Utilities ──────────────────────────────────────────────────────────────── */
 const esc = s => String(s || '')
@@ -899,56 +894,48 @@ const PLANE_PATH = `M0,-11 C1,-8 1.5,-3.5 1.5,-1.5
   L-1.5,7 -1.5,2.5 -11.5,6.5 -13,3
   C-1.5,-3.5 -1,-8 0,-11 Z`;
 
-function makeIcon(f) {
-  const id      = String(f.flightId);
-  const isSel   = id === selectedId;
-  const dimmed  = selectedId && !isSel;
-  const color   = sColor(f.server);
-  const hdg     = f.track || 0;
-  // Relaxed dim (was 0.18) so other planes remain visible context rather
-  // than vanishing entirely.
-  const opacity = dimmed ? 0.45 : 1.0;
-
-  if (f.onGround) {
-    // Tiny filled square for ground traffic — no shadow / no glow
-    const sz = isSel ? 10 : 7;
-    return L.divIcon({
-      html: `<div class="ac-icon" style="width:${sz}px;height:${sz}px;opacity:${opacity}">
-               <div style="width:${sz}px;height:${sz}px;border-radius:2px;background:${color}"></div>
-             </div>`,
-      className: '',
-      iconSize:   [sz, sz],
-      iconAnchor: [sz/2, sz/2],
-    });
-  }
-
-  // Selected plane just renders slightly larger — no glow (strict palette / no glow rule)
-  const sz = isSel ? 26 : 20;
-
-  // Use external plane.svg if loaded; fall back to built-in PLANE_PATH
-  let innerHtml;
+// Build a standalone SVG string of the plane silhouette filled with `color`.
+// Uses the user's plane.svg when available, else the built-in PLANE_PATH.
+function planeSvgString(color, px) {
   if (planeSvg) {
-    // Resize the cached SVG to sz×sz; CSS `color:${color}` on wrapper drives currentColor fills
-    const sized = planeSvg
-      .replace(/(<svg[^>]*)\s+width="[^"]*"/i,  `$1 width="${sz}"`)
-      .replace(/(<svg[^>]*)\s+height="[^"]*"/i, `$1 height="${sz}"`);
-    innerHtml = sized;
-  } else {
-    innerHtml = `<svg xmlns="http://www.w3.org/2000/svg"
-      viewBox="-15 -14 30 28" width="${sz}" height="${sz}">
-      <path d="${PLANE_PATH}" fill="${color}"/>
-    </svg>`;
+    return planeSvg
+      .replace(/currentColor/g, color)
+      .replace(/(<svg[^>]*?)\s+width="[^"]*"/i,  `$1 width="${px}"`)
+      .replace(/(<svg[^>]*?)\s+height="[^"]*"/i, `$1 height="${px}"`);
   }
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-15 -14 30 28" width="${px}" height="${px}">
+    <path d="${PLANE_PATH}" fill="${color}"/></svg>`;
+}
 
-  return L.divIcon({
-    html: `<div class="ac-icon" style="color:${color};width:${sz}px;height:${sz}px;
-               transform:rotate(${hdg}deg);opacity:${opacity}">
-             ${innerHtml}
-           </div>`,
-    className: '',
-    iconSize:   [sz, sz],
-    iconAnchor: [sz/2, sz/2],
+// Rasterize an SVG string to ImageData at the given pixel size.
+function svgToImageData(svgStr, px) {
+  return new Promise(resolve => {
+    const img = new Image();
+    const url = URL.createObjectURL(new Blob([svgStr], { type: 'image/svg+xml' }));
+    img.onload = () => {
+      const c = document.createElement('canvas');
+      c.width = px; c.height = px;
+      const ctx = c.getContext('2d');
+      ctx.clearRect(0, 0, px, px);
+      ctx.drawImage(img, 0, 0, px, px);
+      URL.revokeObjectURL(url);
+      resolve(ctx.getImageData(0, 0, px, px));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+    img.src = url;
   });
+}
+
+// Add one server-colored plane image per server to the map (retina @2x).
+async function buildPlaneImages() {
+  const PX = 96;  // rendered at 2x; addImage pixelRatio 2 → 48 logical px
+  for (const [server, color] of Object.entries(SERVER_COLOR)) {
+    const id = `plane-${server}`;
+    const data = await svgToImageData(planeSvgString(color, PX), PX);
+    if (!data) continue;
+    if (map.hasImage(id)) map.updateImage(id, data);
+    else map.addImage(id, data, { pixelRatio: 2 });
+  }
 }
 
 /* ── Great-circle projection ─────────────────────────────────────────────────── */
@@ -1004,24 +991,6 @@ async function fetchPath(flightId) {
     const json = await res.json();
     return Array.isArray(json?.result) ? json.result : [];
   } catch { return []; }
-}
-
-/* ── Anti-meridian split ─────────────────────────────────────────────────────── */
-//  Polyline segments are broken wherever two consecutive points jump by > 180°
-//  of longitude (i.e. they cross the date line). Each cohesive piece is its own
-//  array so Leaflet doesn't draw a wraparound line across the whole world.
-function splitAtAntimeridian(pts) {
-  const out = [];
-  let cur = [];
-  for (const p of pts) {
-    if (cur.length) {
-      const prev = cur[cur.length - 1];
-      if (Math.abs(p[1] - prev[1]) > 180) { out.push(cur); cur = []; }
-    }
-    cur.push(p);
-  }
-  if (cur.length >= 2) out.push(cur);
-  return out;
 }
 
 /* ── Coordinate sanity check ─────────────────────────────────────────────────── */
@@ -1155,263 +1124,243 @@ function splitPlanAtPlane(pts, planeLat, planeLng) {
   };
 }
 
+/* ── Map helpers ─────────────────────────────────────────────────────────────── */
+const emptyFC = () => ({ type: 'FeatureCollection', features: [] });
+
+function hexToRgba(hex, a) {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+// Smooth transparent-tail → bright-head gradient for the trail line
+function trailGradient(hex) {
+  return ['interpolate', ['linear'], ['line-progress'],
+    0,    hexToRgba(hex, 0),
+    0.12, hexToRgba(hex, 0.12),
+    0.55, hexToRgba(hex, 0.55),
+    1,    hexToRgba(hex, 0.95)];
+}
+
+// Build a MultiLineString FeatureCollection from [lng,lat] points, breaking the
+// line wherever it crosses the antimeridian (Δlng > 180).
+function lineFC(lngLat) {
+  if (!lngLat || lngLat.length < 2) return emptyFC();
+  const parts = []; let cur = [lngLat[0]];
+  for (let i = 1; i < lngLat.length; i++) {
+    if (Math.abs(lngLat[i][0] - lngLat[i - 1][0]) > 180) {
+      if (cur.length >= 2) parts.push(cur);
+      cur = [];
+    }
+    cur.push(lngLat[i]);
+  }
+  if (cur.length >= 2) parts.push(cur);
+  if (!parts.length) return emptyFC();
+  return { type: 'FeatureCollection', features: [
+    { type: 'Feature', properties: {}, geometry: { type: 'MultiLineString', coordinates: parts } }
+  ]};
+}
+
 /* ── Map init ────────────────────────────────────────────────────────────────── */
 function initMap() {
-  map = L.map('map', {
-    zoomControl:       false,
-    attributionControl: true,
-    center:    [25, 15],
-    zoom:      3,
-    minZoom:   2,
-    maxZoom:   16,
-    worldCopyJump: true,
-    // No preferCanvas — we want SVG rendering for polylines so dashArray
-    // and per-segment styling work cleanly. Markers are divIcons (DOM) anyway.
+  map = new maplibregl.Map({
+    container: 'map',
+    // CARTO dark-matter vector basemap — free, no key, renders as a globe when
+    // zoomed out and a detailed street map when zoomed in.
+    style:   'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+    center:  [15, 25],
+    zoom:    2.4,
+    minZoom: 1.4,
+    maxZoom: 18,
+    attributionControl: false,
+    dragRotate: false,        // keep north-up; left-drag spins/pans the globe
+    pitchWithRotate: false,
+    maxPitch: 0,
   });
 
-  // Custom panes that sit between tiles (200) and markers (600), so paths
-  // never overlap the plane icons.
-  map.createPane('flight-path-pane').style.zIndex = '425';
-  map.createPane('flight-plan-pane').style.zIndex = '430';
-  // Both panes are non-interactive — clicks pass through to markers below.
-  map.getPane('flight-path-pane').style.pointerEvents = 'none';
-  map.getPane('flight-plan-pane').style.pointerEvents = 'none';
+  map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
+  map.addControl(new maplibregl.NavigationControl({ showCompass: false, visualizePitch: false }), 'bottom-right');
 
-  // Explicit SVG renderer for all path layers (overrides any future defaults)
-  svgRenderer = L.svg({ padding: 0.5 });
+  map.on('style.load', onStyleLoad);
+}
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains:  'abcd',
-    maxZoom:     19,
-  }).addTo(map);
+async function onStyleLoad() {
+  // Globe projection — gracefully degrades to flat mercator if unsupported
+  try { map.setProjection({ type: 'globe' }); } catch {}
 
-  L.control.zoom({ position: 'bottomright' }).addTo(map);
+  await ensurePlaneSvg();      // make sure plane.svg fetch attempt has finished
+  await buildPlaneImages();    // server-colored plane icons → map images
+  addMapSourcesAndLayers();
+  mapReady = true;
+
+  updateMarkers();
+  updateTrails();
+  hideLoading();
+}
+
+function addMapSourcesAndLayers() {
+  map.addSource('trail',      { type: 'geojson', lineMetrics: true, data: emptyFC() });
+  map.addSource('flightplan', { type: 'geojson', data: emptyFC() });
+  map.addSource('projection', { type: 'geojson', data: emptyFC() });
+  map.addSource('flights',    { type: 'geojson', data: emptyFC() });
+
+  // Trail: dark halo under a server-colored gradient line
+  map.addLayer({
+    id: 'trail-halo', type: 'line', source: 'trail',
+    layout: { 'line-cap': 'round', 'line-join': 'round' },
+    paint: {
+      'line-color': HALO_COLOR,
+      'line-width': ['interpolate', ['linear'], ['zoom'], 2, 3.5, 6, 5, 12, 6.5],
+      'line-opacity': 0.5,
+    },
+  });
+  map.addLayer({
+    id: 'trail-line', type: 'line', source: 'trail',
+    layout: { 'line-cap': 'round', 'line-join': 'round' },
+    paint: {
+      'line-width': ['interpolate', ['linear'], ['zoom'], 2, 2, 6, 2.6, 12, 3.4],
+      'line-gradient': trailGradient('#4f8ef7'),   // recolored per selection
+    },
+  });
+
+  // Flight plan (future route) — muted slate dashed
+  map.addLayer({
+    id: 'plan-line', type: 'line', source: 'flightplan',
+    layout: { 'line-cap': 'round', 'line-join': 'round' },
+    paint: {
+      'line-color': '#8b96a8',
+      'line-width': 1.6,
+      'line-opacity': 0.7,
+      'line-dasharray': [2, 2.5],
+    },
+  });
+
+  // Short projection ahead — white dashed
+  map.addLayer({
+    id: 'projection-line', type: 'line', source: 'projection',
+    layout: { 'line-cap': 'round', 'line-join': 'round' },
+    paint: {
+      'line-color': '#f0f4f8',
+      'line-width': 2,
+      'line-opacity': 0.85,
+      'line-dasharray': [1.5, 2],
+    },
+  });
+
+  // Ground traffic — small dots
+  map.addLayer({
+    id: 'planes-ground', type: 'circle', source: 'flights',
+    filter: ['==', ['get', 'onGround'], true],
+    paint: {
+      'circle-radius': ['case', ['get', 'selected'], 5, 3.4],
+      'circle-color': ['match', ['get', 'server'],
+        'expert', '#4f8ef7', 'training', '#f5a623', 'casual', '#a855f7', '#7a8694'],
+      'circle-opacity': ['case', ['get', 'dimmed'], 0.4, 0.92],
+      'circle-stroke-width': ['case', ['get', 'selected'], 1.5, 0],
+      'circle-stroke-color': '#05070d',
+    },
+  });
+
+  // Airborne traffic — rotated plane icons, GPU-rendered
+  map.addLayer({
+    id: 'planes', type: 'symbol', source: 'flights',
+    filter: ['!', ['==', ['get', 'onGround'], true]],
+    layout: {
+      'icon-image': ['concat', 'plane-', ['get', 'server']],
+      'icon-rotate': ['get', 'track'],
+      'icon-rotation-alignment': 'map',
+      'icon-allow-overlap': true,
+      'icon-ignore-placement': true,
+      'icon-size': ['case', ['get', 'selected'], 0.58, 0.44],
+    },
+    paint: {
+      'icon-opacity': ['case', ['get', 'dimmed'], 0.45, 1],
+    },
+  });
+
+  // Interactions
+  for (const layer of ['planes', 'planes-ground']) {
+    map.on('click', layer, e => {
+      const id = e.features?.[0]?.properties?.id;
+      if (id) selectFlight(String(id));
+    });
+    map.on('mouseenter', layer, () => { map.getCanvas().style.cursor = 'pointer'; });
+    map.on('mouseleave', layer, () => { map.getCanvas().style.cursor = ''; });
+  }
 }
 
 /* ── Clear all path layers ───────────────────────────────────────────────────── */
 function clearPathLayers() {
-  trailLines.forEach(l => map?.removeLayer(l)); trailLines = [];
-  projLines .forEach(l => map?.removeLayer(l)); projLines  = [];
-  planLines .forEach(l => map?.removeLayer(l)); planLines  = [];
-}
-
-/* ── Render historical trail (halo + 5-step opacity fade) ───────────────────── */
-//  Mirrors the technique from infinitehorizon.app/tracker — a dark "halo" stroke
-//  drawn underneath the server-colored stroke so the line is readable on any
-//  tile background. Then the trail is split into N small sub-polylines, each
-//  with a stepped opacity (0.5 → 0.9). The Polaris twist:
-//    • single server color, not altitude rainbow (strict palette)
-//    • discrete opacity steps, not a smooth gradient
-//    • no box-shadow, no filter, no glow
-function renderTrail(coords, color) {
-  if (!coords || coords.length < 2) return;
-  const out = [];
-
-  // Constant weight everywhere — the OLD version varied weight per chunk
-  // (1.8 / 2.5 / 3.2) AND overlapped chunks, so transparency stacked at the
-  // seams and the line looked lumpy/inconsistent. Now: ONE constant width,
-  // and the only thing that changes along the trail is opacity (a clean fade
-  // from old → new). Boldness is uniform.
-  const WEIGHT  = 2.4;
-  const OP_MIN  = 0.32;   // oldest end of the trail
-  const OP_MAX  = 0.92;   // freshest end (at the plane)
-  const BANDS   = 8;      // opacity steps across the whole trail
-
-  for (const seg of splitAtAntimeridian(coords)) {
-    if (seg.length < 2) continue;
-
-    // Dark halo under the whole segment — single constant-width polyline
-    out.push(
-      L.polyline(seg, {
-        renderer: svgRenderer,
-        pane:     'flight-path-pane',
-        color:    HALO_COLOR,
-        weight:   WEIGHT + 1.6,
-        opacity:  0.5,
-        lineCap:  'round',
-        lineJoin: 'round',
-      }).addTo(map)
-    );
-
-    // Colored fade — equal-length bands, each sharing exactly ONE vertex with
-    // its neighbour (butt caps) so there's no double-drawn segment and thus no
-    // opacity stacking. Weight is identical for every band.
-    const n = seg.length;
-    for (let i = 0; i < BANDS; i++) {
-      const from = Math.floor(i       * (n - 1) / BANDS);
-      const to   = Math.floor((i + 1) * (n - 1) / BANDS) + 1;
-      const sub  = seg.slice(from, to);
-      if (sub.length < 2) continue;
-
-      const t  = BANDS === 1 ? 1 : i / (BANDS - 1);
-      const op = OP_MIN + t * (OP_MAX - OP_MIN);
-
-      out.push(
-        L.polyline(sub, {
-          renderer: svgRenderer,
-          pane:     'flight-path-pane',
-          color,
-          weight:   WEIGHT,
-          opacity:  op,
-          lineCap:  'round',
-          lineJoin: 'round',
-        }).addTo(map)
-      );
-    }
-  }
-
-  trailLines = out;
-}
-
-/* ── Render short white dashed projection (halo + dash) ────────────────────── */
-function renderProjection(f) {
-  if (!f || f.latitude == null || f.track == null || f.onGround) return;
-  if ((f.speed || 0) < 30) return;
-
-  // 4-minute look-ahead — the *immediate trajectory*. The filed flight plan
-  // shows the long-range route on its own polyline, so this stays short.
-  const seconds = 240;
-  const distKm  = (f.speed * 1.852 / 3600) * seconds;   // kt → km/h → km
-  if (distKm < 5) return;
-  const pts = projectAheadKm(f.latitude, f.longitude, f.track, distKm);
-  if (pts.length < 2) return;
-
-  const out = [];
-  for (const seg of splitAtAntimeridian(pts)) {
-    if (seg.length < 2) continue;
-
-    // halo
-    out.push(L.polyline(seg, {
-      renderer: svgRenderer,
-      pane:     'flight-path-pane',
-      color:    HALO_COLOR,
-      weight:   4,
-      opacity:  0.50,
-      lineCap:  'round',
-      lineJoin: 'round',
-    }).addTo(map));
-
-    // white dashed line
-    out.push(L.polyline(seg, {
-      renderer:  svgRenderer,
-      pane:      'flight-path-pane',
-      color:     '#f0f4f8',
-      weight:    2,
-      opacity:   0.85,
-      dashArray: '4 7',
-      lineCap:   'round',
-      lineJoin:  'round',
-    }).addTo(map));
-  }
-  projLines = out;
-}
-
-/* ── Render flight plan — FUTURE portion only ───────────────────────────────── */
-//  The PAST portion of the filed route is now dropped because it overlaps the
-//  actual flown trail and just adds visual noise (the trail IS the past). We
-//  show only the upcoming route, so the user sees "where it's actually going".
-function renderFlightPlanRoute(f) {
-  if (!flightPlanWPs || flightPlanWPs.length < 2 || !f) return;
-  const planPts = flightPlanWPs.map(w => [w.lat, w.lng]);
-  const { future } = splitPlanAtPlane(planPts, f.latitude, f.longitude);
-
-  const out = [];
-  for (const seg of splitAtAntimeridian(future)) {
-    if (seg.length < 2) continue;
-
-    // halo
-    out.push(L.polyline(seg, {
-      renderer: svgRenderer,
-      pane:     'flight-plan-pane',
-      color:    HALO_COLOR,
-      weight:   3,
-      opacity:  0.40,
-      lineCap:  'round',
-      lineJoin: 'round',
-    }).addTo(map));
-
-    // visible — single muted slate line, dashed
-    out.push(L.polyline(seg, {
-      renderer:  svgRenderer,
-      pane:      'flight-plan-pane',
-      color:     '#8b96a8',          // muted slate — clearly distinct from trail color
-      weight:    1.6,
-      opacity:   0.7,
-      dashArray: '6 8',
-      lineCap:   'butt',
-      lineJoin:  'round',
-    }).addTo(map));
-  }
-
-  planLines = out;
+  if (!mapReady) return;
+  for (const s of ['trail', 'projection', 'flightplan']) map.getSource(s)?.setData(emptyFC());
 }
 
 /* ── Master refresh: rebuild every path layer for the selected flight ───────── */
 function updateTrails() {
-  clearPathLayers();
-  if (!selectedId || !flightData[selectedId] || !map) return;
+  if (!mapReady) return;
+  const setData = (src, data) => map.getSource(src)?.setData(data);
+
+  if (!selectedId || !flightData[selectedId]) {
+    clearPathLayers();
+    return;
+  }
 
   const f     = flightData[selectedId];
   const color = sColor(f.server);
 
-  // Use server-fetched path if available; otherwise fall back to the
-  // client-side liveTrails accumulator (won't have history if just opened).
-  const trail = selectedTrail.length >= 2
-    ? selectedTrail.map(p => [p.lat, p.lng])
-    : (liveTrails[selectedId] || []);
+  // Trail (server path → live fallback). Points come as [lat,lng]; GeoJSON wants [lng,lat].
+  const trailPts = selectedTrail.length >= 2
+    ? selectedTrail.map(p => [p.lng, p.lat])
+    : (liveTrails[selectedId] || []).map(p => [p[1], p[0]]);
+  setData('trail', lineFC(trailPts));
+  map.setPaintProperty('trail-line', 'line-gradient', trailGradient(color));
 
-  renderTrail(trail, color);
-  renderProjection(f);
-  renderFlightPlanRoute(f);
+  // Projection — 4-minute look-ahead
+  let projFC = emptyFC();
+  if (f.latitude != null && f.track != null && !f.onGround && (f.speed || 0) >= 30) {
+    const distKm = (f.speed * 1.852 / 3600) * 240;
+    if (distKm >= 5) {
+      const pts = projectAheadKm(f.latitude, f.longitude, f.track, distKm).map(p => [p[1], p[0]]);
+      projFC = lineFC(pts);
+    }
+  }
+  setData('projection', projFC);
+
+  // Flight plan — future portion only
+  let planFC = emptyFC();
+  if (flightPlanWPs && flightPlanWPs.length >= 2) {
+    const planPts = flightPlanWPs.map(w => [w.lat, w.lng]);
+    const { future } = splitPlanAtPlane(planPts, f.latitude, f.longitude);
+    planFC = lineFC(future.map(p => [p[1], p[0]]));
+  }
+  setData('flightplan', planFC);
 }
 
-/* ── Marker update ───────────────────────────────────────────────────────────── */
+/* ── Plane source update (was updateMarkers) ────────────────────────────────── */
 function updateMarkers() {
-  if (!map) return;
+  if (!mapReady) return;
 
-  // IDs that should be visible right now
-  const visibleIds = new Set(
-    Object.values(flightData)
-      .filter(f =>
-        (currentServer === 'all' || f.server === currentServer) &&
-        f.latitude != null && f.longitude != null
-      )
-      .map(f => String(f.flightId))
-  );
-
-  // Remove markers no longer in view
-  for (const id of Object.keys(markers)) {
-    if (!visibleIds.has(id)) {
-      map.removeLayer(markers[id]);
-      delete markers[id];
-    }
+  const feats = [];
+  for (const f of Object.values(flightData)) {
+    if (!(currentServer === 'all' || f.server === currentServer)) continue;
+    if (f.latitude == null || f.longitude == null) continue;
+    const id = String(f.flightId);
+    feats.push({
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [f.longitude, f.latitude] },
+      properties: {
+        id,
+        track:    f.track ?? f.heading ?? 0,
+        server:   f.server,
+        onGround: !!f.onGround,
+        selected: id === selectedId,
+        dimmed:   !!selectedId && id !== selectedId,
+      },
+    });
   }
-
-  // Add or update markers
-  for (const id of visibleIds) {
-    const f   = flightData[id];
-    const pos = [f.latitude, f.longitude];
-    const ico = makeIcon(f);
-
-    if (markers[id]) {
-      markers[id].setLatLng(pos);
-      markers[id].setIcon(ico);
-      if (id === selectedId) markers[id].setZIndexOffset(1000);
-      else                   markers[id].setZIndexOffset(0);
-    } else {
-      const m = L.marker(pos, {
-        icon:          ico,
-        zIndexOffset:  id === selectedId ? 1000 : 0,
-        keyboard:      false,
-        riseOnHover:   true,
-      });
-      m.on('click', () => selectFlight(id));
-      m.addTo(map);
-      markers[id] = m;
-    }
-  }
-
+  map.getSource('flights')?.setData({ type: 'FeatureCollection', features: feats });
   updateTrails();
 }
 
@@ -1421,7 +1370,6 @@ function cleanStale() {
   let dirty = false;
   for (const id of Object.keys(flightLastSeen)) {
     if (now - flightLastSeen[id] > STALE_MS) {
-      if (markers[id]) { map?.removeLayer(markers[id]); delete markers[id]; }
       delete flightData[id];
       delete liveTrails[id];
       delete flightLastSeen[id];
@@ -1429,7 +1377,7 @@ function cleanStale() {
       dirty = true;
     }
   }
-  if (dirty) buildList();
+  if (dirty) { buildList(); updateMarkers(); }
 }
 
 /* ── Filtering helpers ───────────────────────────────────────────────────────── */
@@ -1522,10 +1470,13 @@ function selectFlight(id) {
   updateMarkers();   // re-dims other planes
   updateTrails();    // clears old trail/projection/plan layers immediately
 
-  if (f.latitude != null && f.longitude != null) {
-    map?.flyTo([f.latitude, f.longitude], Math.max(map.getZoom(), 6), {
-      duration: 1.2,
-      easeLinearity: 0.4,
+  if (mapReady && f.latitude != null && f.longitude != null) {
+    map.flyTo({
+      center: [f.longitude, f.latitude],
+      zoom:   Math.max(map.getZoom(), 5),
+      speed:  0.9,
+      curve:  1.4,
+      essential: true,
     });
   }
 
@@ -2047,13 +1998,8 @@ function setFilter(btn, server) {
     closeDetail();
   }
 
-  // Remove all markers and rebuild for new server
-  for (const id of Object.keys(markers)) {
-    map?.removeLayer(markers[id]);
-    delete markers[id];
-  }
   buildList();
-  updateMarkers();
+  updateMarkers();   // GeoJSON source rebuild handles the server filter
 }
 
 // Speed display is locked to knots — removed unit toggle per spec
@@ -2078,6 +2024,12 @@ async function loadPlaneSvg() {
     // If a flight is already selected, swap the placeholder hero plane to the real SVG
     if (selectedId) injectHeroPlane();
   } catch { /* silently fall back to built-in path */ }
+}
+
+// Idempotent wrapper so initMap and boot can both await the same single fetch.
+let _planeSvgPromise = null;
+function ensurePlaneSvg() {
+  return _planeSvgPromise || (_planeSvgPromise = loadPlaneSvg());
 }
 
 /* ── WebSocket ───────────────────────────────────────────────────────────────── */
@@ -2135,8 +2087,8 @@ function retry() {
 
 /* ── Boot ────────────────────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
+  ensurePlaneSvg();   // start the plane.svg fetch (initMap awaits the same promise)
   initMap();
-  loadPlaneSvg();   // async — loads plane.svg if present, no-ops silently if missing
   connectWS();
   setInterval(cleanStale, 60_000);
 });
