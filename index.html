@@ -60,11 +60,11 @@
       position: absolute;
       inset: 0;
       z-index: 0;
-      background: #060a0f;
+      background: #000000;   /* space — pure black behind the globe */
     }
 
     /* ── MapLibre dark-theme overrides ── */
-    .maplibregl-map      { background: #05070d; font-family: 'JetBrains Mono', monospace; }
+    .maplibregl-map      { background: #000000; font-family: 'JetBrains Mono', monospace; }
     .maplibregl-canvas   { outline: none; }
 
     /* Attribution — compact, dim, glassy */
@@ -833,11 +833,9 @@ const LIST_MAX  = 300;
 
 // ── Path / trail rendering constants ───────────────────────────────────────────
 const HALO_COLOR     = '#06080c';   // near-black outline under colored strokes
-const TRAIL_STEPS    = 5;           // sub-segment count for stepped opacity fade
-const TRAIL_OP_MIN   = 0.50;        // oldest sub-segment
-const TRAIL_OP_MAX   = 0.90;        // newest sub-segment
-const PROJECTION_MIN_S = 60;        // projection extrapolates ≥60 s ahead
-const PROJECTION_MAX_S = 300;       // … and at most 5 min — leaves room for flight plan
+const PATH_COLOR     = '#4f8ef7';   // ONE constant color for every path layer
+                                    // (trail, flight plan, projection) — no
+                                    // gradient fade, no per-server recoloring
 
 /* ── State ──────────────────────────────────────────────────────────────────── */
 const flightData     = {};  // flightId → flight object
@@ -1127,23 +1125,6 @@ function splitPlanAtPlane(pts, planeLat, planeLng) {
 /* ── Map helpers ─────────────────────────────────────────────────────────────── */
 const emptyFC = () => ({ type: 'FeatureCollection', features: [] });
 
-function hexToRgba(hex, a) {
-  const h = hex.replace('#', '');
-  const r = parseInt(h.slice(0, 2), 16);
-  const g = parseInt(h.slice(2, 4), 16);
-  const b = parseInt(h.slice(4, 6), 16);
-  return `rgba(${r},${g},${b},${a})`;
-}
-
-// Smooth transparent-tail → bright-head gradient for the trail line
-function trailGradient(hex) {
-  return ['interpolate', ['linear'], ['line-progress'],
-    0,    hexToRgba(hex, 0),
-    0.12, hexToRgba(hex, 0.12),
-    0.55, hexToRgba(hex, 0.55),
-    1,    hexToRgba(hex, 0.95)];
-}
-
 // Build a MultiLineString FeatureCollection from [lng,lat] points, breaking the
 // line wherever it crosses the antimeridian (Δlng > 180).
 function lineFC(lngLat) {
@@ -1190,6 +1171,27 @@ async function onStyleLoad() {
   // Globe projection — gracefully degrades to flat mercator if unsupported
   try { map.setProjection({ type: 'globe' }); } catch {}
 
+  // Space: pure black around the globe, no atmosphere glow (no-glow rule)
+  try {
+    map.setSky({
+      'sky-color':        '#000000',
+      'horizon-color':    '#000000',
+      'fog-color':        '#000000',
+      'atmosphere-blend': 0,
+    });
+  } catch {}
+
+  // Darken the basemap: near-black oceans + black background layer
+  try {
+    for (const lyr of map.getStyle().layers) {
+      if (lyr.type === 'background') {
+        map.setPaintProperty(lyr.id, 'background-color', '#000000');
+      } else if (lyr.type === 'fill' && /water|ocean|sea/i.test(lyr.id)) {
+        map.setPaintProperty(lyr.id, 'fill-color', '#020509');
+      }
+    }
+  } catch {}
+
   await ensurePlaneSvg();      // make sure plane.svg fetch attempt has finished
   await buildPlaneImages();    // server-colored plane icons → map images
   addMapSourcesAndLayers();
@@ -1216,33 +1218,35 @@ function addMapSourcesAndLayers() {
       'line-opacity': 0.5,
     },
   });
+  // Trail (flown path) — solid, constant color, constant opacity
   map.addLayer({
     id: 'trail-line', type: 'line', source: 'trail',
     layout: { 'line-cap': 'round', 'line-join': 'round' },
     paint: {
+      'line-color': PATH_COLOR,
       'line-width': ['interpolate', ['linear'], ['zoom'], 2, 2, 6, 2.6, 12, 3.4],
-      'line-gradient': trailGradient('#4f8ef7'),   // recolored per selection
+      'line-opacity': 0.9,
     },
   });
 
-  // Flight plan (future route) — muted slate dashed
+  // Flight plan (future route) — same color, dashed to read as "not yet flown"
   map.addLayer({
     id: 'plan-line', type: 'line', source: 'flightplan',
     layout: { 'line-cap': 'round', 'line-join': 'round' },
     paint: {
-      'line-color': '#8b96a8',
+      'line-color': PATH_COLOR,
       'line-width': 1.6,
-      'line-opacity': 0.7,
+      'line-opacity': 0.6,
       'line-dasharray': [2, 2.5],
     },
   });
 
-  // Short projection ahead — white dashed
+  // Short projection ahead — same color, tighter dash
   map.addLayer({
     id: 'projection-line', type: 'line', source: 'projection',
     layout: { 'line-cap': 'round', 'line-join': 'round' },
     paint: {
-      'line-color': '#f0f4f8',
+      'line-color': PATH_COLOR,
       'line-width': 2,
       'line-opacity': 0.85,
       'line-dasharray': [1.5, 2],
@@ -1307,15 +1311,14 @@ function updateTrails() {
     return;
   }
 
-  const f     = flightData[selectedId];
-  const color = sColor(f.server);
+  const f = flightData[selectedId];
 
   // Trail (server path → live fallback). Points come as [lat,lng]; GeoJSON wants [lng,lat].
+  // Color is the constant PATH_COLOR baked into the layer — nothing to recolor here.
   const trailPts = selectedTrail.length >= 2
     ? selectedTrail.map(p => [p.lng, p.lat])
     : (liveTrails[selectedId] || []).map(p => [p[1], p[0]]);
   setData('trail', lineFC(trailPts));
-  map.setPaintProperty('trail-line', 'line-gradient', trailGradient(color));
 
   // Projection — 4-minute look-ahead
   let projFC = emptyFC();
