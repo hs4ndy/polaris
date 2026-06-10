@@ -18,6 +18,8 @@ const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '')
 // In-memory cache: flightId (string) → enriched flight object
 const cache         = {};
 const clients       = new Set();
+let   lastPollTs    = 0;      // when the last successful poll completed
+let   pollIdleLogged = false; // one-shot "paused" log so we don't spam every 15 s
 let   aircraftNames = {};   // aircraftId (GUID) → human-readable name, e.g. "Airbus A320"
 let   liveryNames   = {};   // liveryId  (GUID) → human-readable livery, e.g. "American Airlines"
 
@@ -154,6 +156,18 @@ async function poll() {
     return;
   }
 
+  // Per Infinite Flight's request: don't hit their API when nobody is
+  // watching. Polling resumes instantly when a client connects (see the
+  // wss connection handler, which calls poll() if the cache is stale).
+  if (clients.size === 0) {
+    if (!pollIdleLogged) {
+      console.log('[poll] paused — no connected clients');
+      pollIdleLogged = true;
+    }
+    return;
+  }
+  pollIdleLogged = false;
+
   try {
     const sessionsRes = await apiGet('/sessions');
     if (!Array.isArray(sessionsRes?.result)) {
@@ -251,6 +265,7 @@ async function poll() {
     }
 
     const flights = Object.values(cache);
+    lastPollTs = now;
     broadcast({ type: 'update', flights, ts: now });
 
     console.log(
@@ -415,6 +430,10 @@ wss.on('connection', (ws, req) => {
     flights: Object.values(cache),
     ts:      Date.now(),
   }));
+
+  // If polling was paused (no clients) the cache is stale — refresh now so
+  // this client doesn't sit on old data until the next interval tick.
+  if (Date.now() - lastPollTs > POLL_BASE) poll();
 
   // This server is push-only — ignore anything the client sends.
   ws.on('message', () => { /* intentionally ignored */ });

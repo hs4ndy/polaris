@@ -652,6 +652,60 @@
     /* Departure / Destination cards — larger ICAOs for the headline route */
     .route-icao { font-size: 16px; font-weight: 700; letter-spacing: 0.06em; color: var(--text); }
 
+    /* ── Idle overlay — shown after 10 min of inactivity (per IF's request) ── */
+    #idle-card {
+      position: absolute;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    #idle-card.show { display: flex; }
+    .idle-inner {
+      width: 340px;
+      padding: 28px 26px 24px;
+      text-align: center;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      box-shadow:
+        0 8px 48px rgba(0,0,0,0.65),
+        inset 0 1px 0 rgba(255,255,255,0.11);
+    }
+    .idle-title {
+      font-family: 'Exo', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      margin-bottom: 8px;
+    }
+    .idle-sub {
+      font-size: 11px;
+      color: var(--text2);
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+    #idle-resume {
+      background: rgba(79,142,247,0.15);
+      border: 1px solid rgba(79,142,247,0.45);
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 10px 18px;
+      border-radius: 7px;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    #idle-resume:hover { background: rgba(79,142,247,0.25); border-color: rgba(79,142,247,0.6); }
+
     /* Mobile */
     @media (max-width: 768px) {
       #left-sb  { display: none; }
@@ -793,6 +847,18 @@
 
       <div id="d-server-row"></div>
 
+    </div>
+  </div>
+
+  <!-- ══════════════ IDLE OVERLAY (per IF API usage policy) ══════════════ -->
+  <div id="idle-card" role="dialog" aria-modal="true" aria-labelledby="idle-title">
+    <div class="idle-inner">
+      <div class="idle-title" id="idle-title">Still tracking?</div>
+      <div class="idle-sub">
+        Live updates were paused after 10 minutes of inactivity
+        to reduce load on the Infinite Flight API.
+      </div>
+      <button id="idle-resume" onclick="resumeFromIdle()">Resume live updates</button>
     </div>
   </div>
 
@@ -2070,6 +2136,7 @@ function handleFlights(flights) {
 let ws, wsRetry = 0;
 
 function connectWS() {
+  if (idlePaused) return;   // don't reconnect while the idle card is up
   isOnline = false;
   try { ws = new WebSocket(WS_URL); } catch { retry(); return; }
   ws.onopen    = () => { wsRetry = 0; isOnline = true; };
@@ -2084,8 +2151,36 @@ function connectWS() {
 }
 
 function retry() {
+  if (idlePaused) return;   // intentional close — stay offline until resume
   isOnline = false;
   setTimeout(connectWS, Math.min(1000 * 2 ** wsRetry++, 30_000));
+}
+
+/* ── Idle pause (per Infinite Flight's API usage policy) ─────────────────────── */
+//  After 10 minutes without user input, the WebSocket is closed (which also
+//  lets the proxy stop polling the IF API once all clients are idle) and a
+//  card asks the user to resume.
+const IDLE_MS    = 10 * 60 * 1000;
+let idlePaused   = false;
+let lastActivity = Date.now();
+
+function noteActivity() { lastActivity = Date.now(); }
+
+function pauseForIdle() {
+  if (idlePaused) return;
+  idlePaused = true;
+  isOnline   = false;
+  try { ws?.close(); } catch {}
+  document.getElementById('idle-card').classList.add('show');
+}
+
+function resumeFromIdle() {
+  if (!idlePaused) return;
+  idlePaused   = false;
+  lastActivity = Date.now();
+  document.getElementById('idle-card').classList.remove('show');
+  wsRetry = 0;
+  connectWS();
 }
 
 /* ── Boot ────────────────────────────────────────────────────────────────────── */
@@ -2094,6 +2189,14 @@ document.addEventListener('DOMContentLoaded', () => {
   initMap();
   connectWS();
   setInterval(cleanStale, 60_000);
+
+  // Idle detection — any input counts as activity; checked every 30 s
+  for (const ev of ['pointerdown', 'pointermove', 'keydown', 'wheel', 'touchstart']) {
+    window.addEventListener(ev, noteActivity, { passive: true });
+  }
+  setInterval(() => {
+    if (!idlePaused && Date.now() - lastActivity >= IDLE_MS) pauseForIdle();
+  }, 30_000);
 });
 </script>
 </body>
