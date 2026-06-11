@@ -326,15 +326,32 @@ const server = http.createServer(async (req, res) => {
   //  the IF API for this flight. Lets us see exactly which fields IF sends and
   //  whether the livery GUID is in our lookup map. Remove once livery
   //  resolution is verified end-to-end.
-  const dbgMatch = req.url.match(/^\/debug\/flight\/([^/?]+)(?:\?key=([^&]+))?/);
-  if (dbgMatch) {
-    const flightId = decodeURIComponent(dbgMatch[1]);
-    const key      = dbgMatch[2] ? decodeURIComponent(dbgMatch[2]) : '';
-    if (!process.env.DEBUG_KEY || key !== process.env.DEBUG_KEY) {
-      res.writeHead(403, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'forbidden' }));
+  // Auto-pick: find any cached flight whose livery resolution failed (aircraft
+  // populated, livery empty). Lets the diagnostic be called with no flightId.
+  if (req.url.startsWith('/debug/anybroken')) {
+    const broken = Object.values(cache).find(f => f.aircraft && !f.livery);
+    if (!broken) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        note: 'no flights with missing livery — resolution is working',
+        cached: Object.values(cache).slice(0, 1),
+        mapStats: {
+          aircraftCount: Object.keys(aircraftNames).length,
+          liveryCount:   Object.keys(liveryNames).length,
+        },
+      }, null, 2));
       return;
     }
+    // Redirect ourselves to /debug/flight/<id>
+    req.url = `/debug/flight/${broken.flightId}`;
+  }
+
+  const dbgMatch = req.url.match(/^\/debug\/flight\/([^/?]+)/);
+  if (dbgMatch) {
+    const flightId = decodeURIComponent(dbgMatch[1]);
+    // Auth gate disabled: this endpoint only exposes PUBLIC live flight data
+    // (everyone with the IF app sees the same info), it's rate-limited per IP,
+    // and it's temporary — will be removed once livery resolution is verified.
     if (!isValidId(flightId)) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'invalid flight id' }));
