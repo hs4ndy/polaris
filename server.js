@@ -320,6 +320,76 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // ── DEBUG: temporary diagnostic endpoint for livery resolution ──
+  //  GET /debug/flight/:flightId?key=<DEBUG_KEY>
+  //  Returns the enriched cache entry + the RAW flight object straight from
+  //  the IF API for this flight. Lets us see exactly which fields IF sends and
+  //  whether the livery GUID is in our lookup map. Remove once livery
+  //  resolution is verified end-to-end.
+  const dbgMatch = req.url.match(/^\/debug\/flight\/([^/?]+)(?:\?key=([^&]+))?/);
+  if (dbgMatch) {
+    const flightId = decodeURIComponent(dbgMatch[1]);
+    const key      = dbgMatch[2] ? decodeURIComponent(dbgMatch[2]) : '';
+    if (!process.env.DEBUG_KEY || key !== process.env.DEBUG_KEY) {
+      res.writeHead(403, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'forbidden' }));
+      return;
+    }
+    if (!isValidId(flightId)) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'invalid flight id' }));
+      return;
+    }
+    const cached = cache[flightId];
+    if (!cached || !cached.sessionId) {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'flight not in cache' }));
+      return;
+    }
+    try {
+      // Re-fetch the live flights list for this session and find our flight
+      const flightsRes = await apiGet(`/sessions/${cached.sessionId}/flights`);
+      const raw = Array.isArray(flightsRes?.result)
+        ? flightsRes.result.find(f => String(f.flightId) === flightId)
+        : null;
+
+      // Collect the casing variants we'd accept
+      const lvIdRaw = raw ? (raw.liveryId || raw.liveryID || null) : null;
+      const acIdRaw = raw ? (raw.aircraftId || raw.aircraftID || null) : null;
+
+      const liverySample = Object.entries(liveryNames).slice(0, 3)
+        .map(([id, name]) => ({ id, name }));
+
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        flightId,
+        cached,
+        rawKeys:       raw ? Object.keys(raw) : null,
+        rawLiveryId:   lvIdRaw,
+        rawAircraftId: acIdRaw,
+        liveryLookup: {
+          liveryGuidPresentOnFlight: !!lvIdRaw,
+          liveryGuidInOurMap:        lvIdRaw ? Object.prototype.hasOwnProperty.call(liveryNames, lvIdRaw) : false,
+          resolvedLiveryName:        lvIdRaw ? (liveryNames[lvIdRaw] || null) : null,
+        },
+        aircraftLookup: {
+          aircraftGuidPresentOnFlight: !!acIdRaw,
+          aircraftGuidInOurMap:        acIdRaw ? Object.prototype.hasOwnProperty.call(aircraftNames, acIdRaw) : false,
+          resolvedAircraftName:        acIdRaw ? (aircraftNames[acIdRaw] || null) : null,
+        },
+        mapStats: {
+          aircraftCount: Object.keys(aircraftNames).length,
+          liveryCount:   Object.keys(liveryNames).length,
+          liverySample,
+        },
+      }, null, 2));
+    } catch (e) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
   // Full flown track: GET /path/:flightId
   // Hits the IF Live API /sessions/{sid}/flights/{fid}/route endpoint to get
   // the ENTIRE flight history (from takeoff or earlier), then merges any
