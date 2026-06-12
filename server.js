@@ -96,15 +96,18 @@ function apiGet(path) {
 }
 
 // ── Aircraft + livery metadata (fetched at boot, refreshed every 6 h) ─────────
-//  GET /liveries returns one row per livery, each carrying BOTH the aircraft
-//  type (aircraftID + aircraftName) and the livery (id + liveryName, which is
-//  usually the airline, e.g. "American Airlines"). So a single call populates
-//  both maps. /aircraft is a fallback only if /liveries fails to give us types.
+//  GET /aircraft/liveries returns one row per livery, each carrying BOTH the
+//  aircraft type (aircraftID + aircraftName) and the livery (id + liveryName,
+//  usually the airline, e.g. "American Airlines"). One call populates both
+//  maps. /aircraft is a fallback only if the liveries call fails to give types.
+//  NOTE: the path is /aircraft/liveries — NOT /liveries. Using the wrong path
+//  silently 404'd, leaving liveryNames empty so no flight ever showed an
+//  airline, while the /aircraft fallback still filled aircraft types.
 async function refreshMeta() {
   if (!API_KEY) return;
 
   try {
-    const res  = await apiGet('/liveries');
+    const res  = await apiGet('/aircraft/liveries');
     const list = Array.isArray(res?.result) ? res.result : [];
     for (const l of list) {
       const acId = l.aircraftID || l.aircraftId;
@@ -114,9 +117,9 @@ async function refreshMeta() {
       if (acId && acNm) aircraftNames[acId] = acNm;
       if (lvId && lvNm) liveryNames[lvId]   = lvNm;
     }
-    console.log(`[meta] /liveries: ${list.length} rows → ${Object.keys(aircraftNames).length} aircraft, ${Object.keys(liveryNames).length} liveries`);
+    console.log(`[meta] /aircraft/liveries: ${list.length} rows → ${Object.keys(aircraftNames).length} aircraft, ${Object.keys(liveryNames).length} liveries`);
   } catch (e) {
-    console.error('[meta] /liveries failed:', e.message);
+    console.error('[meta] /aircraft/liveries failed:', e.message);
   }
 
   // Fallback: populate aircraft names from /aircraft if liveries gave us none
