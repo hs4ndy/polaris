@@ -1,1 +1,4370 @@
-{}
+{
+  "Generic|Airbus A318": {
+    "file": "airbus-a318--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Infinite Flight - 2015|Airbus A318": {
+    "file": "airbus-a318--infinite-flight-2015.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "ACJ - Livery 1|Airbus A318": {
+    "file": "airbus-a318--acj-livery-1.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "ACJ - Livery 2|Airbus A318": {
+    "file": "airbus-a318--acj-livery-2.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "ACJ - Livery 3|Airbus A318": {
+    "file": "airbus-a318--acj-livery-3.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "ACJ - Livery 4|Airbus A318": {
+    "file": "airbus-a318--acj-livery-4.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air France|Airbus A318": {
+    "file": "airbus-a318--air-france.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "British Airways|Airbus A318": {
+    "file": "airbus-a318--british-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Avianca|Airbus A318": {
+    "file": "airbus-a318--avianca.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Tarom|Airbus A318": {
+    "file": "airbus-a318--tarom.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Mexicana|Airbus A318": {
+    "file": "airbus-a318--mexicana.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Frontier|Airbus A318": {
+    "file": "airbus-a318--frontier.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Airbus - Old|Airbus A318": {
+    "file": "airbus-a318--airbus-old.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Airbus - New|Airbus A318": {
+    "file": "airbus-a318--airbus-new.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Infinite Flight - 2018|Airbus A318": {
+    "file": "airbus-a318--infinite-flight-2018.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "ACJ - Livery 5|Airbus A318": {
+    "file": "airbus-a318--acj-livery-5.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Airbus A319": {
+    "file": "airbus-a319--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Berlin|Airbus A319": {
+    "file": "airbus-a319--air-berlin.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Northwest Airlines|Airbus A319": {
+    "file": "airbus-a319--northwest-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Canada|Airbus A319": {
+    "file": "airbus-a319--air-canada.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air France|Airbus A319": {
+    "file": "airbus-a319--air-france.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "British Airways|Airbus A319": {
+    "file": "airbus-a319--british-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Brussels Airlines|Airbus A319": {
+    "file": "airbus-a319--brussels-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Delta Air Lines|Airbus A319": {
+    "file": "airbus-a319--delta-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "EasyJet|Airbus A319": {
+    "file": "airbus-a319--easyjet.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "LAN|Airbus A319": {
+    "file": "airbus-a319--lan.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Qatar Airways|Airbus A319": {
+    "file": "airbus-a319--qatar-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "TigerAir|Airbus A319": {
+    "file": "airbus-a319--tigerair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "S7|Airbus A319": {
+    "file": "airbus-a319--s7.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Tunisair|Airbus A319": {
+    "file": "airbus-a319--tunisair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Volaris|Airbus A319": {
+    "file": "airbus-a319--volaris.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Cebu Pacific|Airbus A319": {
+    "file": "airbus-a319--cebu-pacific.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Canada Rouge|Airbus A319": {
+    "file": "airbus-a319--air-canada-rouge.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Croatia Airlines|Airbus A319": {
+    "file": "airbus-a319--croatia-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Saudia|Airbus A319": {
+    "file": "airbus-a319--saudia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "SilkAir|Airbus A319": {
+    "file": "airbus-a319--silkair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Swiss International Air Lines|Airbus A319": {
+    "file": "airbus-a319--swiss-international-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "TAM|Airbus A319": {
+    "file": "airbus-a319--tam.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Azerbaijan Airlines|Airbus A319": {
+    "file": "airbus-a319--azerbaijan-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Eurowings|Airbus A319": {
+    "file": "airbus-a319--eurowings.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lufthansa|Airbus A319": {
+    "file": "airbus-a319--lufthansa.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "LATAM|Airbus A319": {
+    "file": "airbus-a319--latam.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "TAP Air Portugal|Airbus A319": {
+    "file": "airbus-a319--tap-air-portugal.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Scandinavian Airlines - Retro|Airbus A319": {
+    "file": "airbus-a319--scandinavian-airlines-retro.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Airbus A320": {
+    "file": "airbus-a320--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Aeroflot|Airbus A320": {
+    "file": "airbus-a320--aeroflot.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "AirAsia|Airbus A320": {
+    "file": "airbus-a320--airasia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Batik Air|Airbus A320": {
+    "file": "airbus-a320--batik-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "IndiGo|Airbus A320": {
+    "file": "airbus-a320--indigo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "JetBlue|Airbus A320": {
+    "file": "airbus-a320--jetblue.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Libyan Airlines|Airbus A320": {
+    "file": "airbus-a320--libyan-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air New Zealand|Airbus A320": {
+    "file": "airbus-a320--air-new-zealand.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lufthansa|Airbus A320": {
+    "file": "airbus-a320--lufthansa.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Scandinavian Airlines|Airbus A320": {
+    "file": "airbus-a320--scandinavian-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Spirit Airlines|Airbus A320": {
+    "file": "airbus-a320--spirit-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "United Airlines|Airbus A320": {
+    "file": "airbus-a320--united-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Airways|Airbus A320": {
+    "file": "airbus-a320--us-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Virgin America|Airbus A320": {
+    "file": "airbus-a320--virgin-america.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air France|Airbus A320": {
+    "file": "airbus-a320--air-france.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "American Airlines|Airbus A320": {
+    "file": "airbus-a320--american-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "JetStar|Airbus A320": {
+    "file": "airbus-a320--jetstar.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Wizz Air|Airbus A320": {
+    "file": "airbus-a320--wizz-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "EasyJet|Airbus A320": {
+    "file": "airbus-a320--easyjet.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Vueling|Airbus A320": {
+    "file": "airbus-a320--vueling.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "TAP Air Portugal|Airbus A320": {
+    "file": "airbus-a320--tap-air-portugal.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "DutchBird|Airbus A320": {
+    "file": "airbus-a320--dutchbird.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Frontier - Alberta and Clipper|Airbus A320": {
+    "file": "airbus-a320--frontier-alberta-and-clipper.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Frontier - Colorado|Airbus A320": {
+    "file": "airbus-a320--frontier-colorado.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Frontier - Hugh the Manatee|Airbus A320": {
+    "file": "airbus-a320--frontier-hugh-the-manatee.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Frontier - Ozzy|Airbus A320": {
+    "file": "airbus-a320--frontier-ozzy.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Frontier - Sheldon|Airbus A320": {
+    "file": "airbus-a320--frontier-sheldon.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Alaska Airlines|Airbus A320": {
+    "file": "airbus-a320--alaska-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "WOW Air|Airbus A320": {
+    "file": "airbus-a320--wow-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "QantasLink|Airbus A320": {
+    "file": "airbus-a320--qantaslink.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "British Airways|Airbus A320": {
+    "file": "airbus-a320--british-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "LATAM|Airbus A320": {
+    "file": "airbus-a320--latam.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Peach Aviation|Airbus A320": {
+    "file": "airbus-a320--peach-aviation.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Allegiant Air|Airbus A320": {
+    "file": "airbus-a320--allegiant-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Aer Lingus|Airbus A320": {
+    "file": "airbus-a320--aer-lingus.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Airbus A321": {
+    "file": "airbus-a321--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air India|Airbus A321": {
+    "file": "airbus-a321--air-india.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Aer Lingus|Airbus A321": {
+    "file": "airbus-a321--aer-lingus.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Alitalia|Airbus A321": {
+    "file": "airbus-a321--alitalia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "American Airlines|Airbus A321": {
+    "file": "airbus-a321--american-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "ANA|Airbus A321": {
+    "file": "airbus-a321--ana.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Asiana Airlines|Airbus A321": {
+    "file": "airbus-a321--asiana-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Austrian Airlines|Airbus A321": {
+    "file": "airbus-a321--austrian-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Dragonair|Airbus A321": {
+    "file": "airbus-a321--dragonair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Etihad Airways|Airbus A321": {
+    "file": "airbus-a321--etihad-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Etihad Airways - 2015|Airbus A321": {
+    "file": "airbus-a321--etihad-airways-2015.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "EVA Air|Airbus A321": {
+    "file": "airbus-a321--eva-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Swiss International Air Lines|Airbus A321": {
+    "file": "airbus-a321--swiss-international-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Finnair|Airbus A321": {
+    "file": "airbus-a321--finnair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Gulf Air|Airbus A321": {
+    "file": "airbus-a321--gulf-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Iberia|Airbus A321": {
+    "file": "airbus-a321--iberia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Middle East Airlines|Airbus A321": {
+    "file": "airbus-a321--middle-east-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Philippine Airlines|Airbus A321": {
+    "file": "airbus-a321--philippine-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Thomas Cook|Airbus A321": {
+    "file": "airbus-a321--thomas-cook.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Turkish Airlines|Airbus A321": {
+    "file": "airbus-a321--turkish-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "VietJet Air|Airbus A321": {
+    "file": "airbus-a321--vietjet-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Vietnam Airlines|Airbus A321": {
+    "file": "airbus-a321--vietnam-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Delta Air Lines|Airbus A321": {
+    "file": "airbus-a321--delta-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Frontier - Virginia the Wolf|Airbus A321": {
+    "file": "airbus-a321--frontier-virginia-the-wolf.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "JetBlue|Airbus A321": {
+    "file": "airbus-a321--jetblue.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Spirit Airlines|Airbus A321": {
+    "file": "airbus-a321--spirit-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "British Airways|Airbus A321": {
+    "file": "airbus-a321--british-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Canada|Airbus A321": {
+    "file": "airbus-a321--air-canada.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Wizz Air|Airbus A321": {
+    "file": "airbus-a321--wizz-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Cebu Pacific|Airbus A321": {
+    "file": "airbus-a321--cebu-pacific.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Qatar Airways|Airbus A321": {
+    "file": "airbus-a321--qatar-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "UPS|Airbus A330-200F": {
+    "file": "airbus-a330-200f--ups.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Turkish Airlines Cargo|Airbus A330-200F": {
+    "file": "airbus-a330-200f--turkish-airlines-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Etihad Cargo|Airbus A330-200F": {
+    "file": "airbus-a330-200f--etihad-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lufthansa|Airbus A330-300": {
+    "file": "airbus-a330-300--lufthansa.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Cathay Pacific|Airbus A330-300": {
+    "file": "airbus-a330-300--cathay-pacific.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Swiss International Air Lines|Airbus A330-300": {
+    "file": "airbus-a330-300--swiss-international-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Delta Air Lines|Airbus A330-300": {
+    "file": "airbus-a330-300--delta-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Canada|Airbus A330-300": {
+    "file": "airbus-a330-300--air-canada.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Scandinavian Airlines|Airbus A330-300": {
+    "file": "airbus-a330-300--scandinavian-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Airlines|Airbus A330-300": {
+    "file": "airbus-a330-300--china-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "EgyptAir|Airbus A330-300": {
+    "file": "airbus-a330-300--egyptair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Airbus A330-300": {
+    "file": "airbus-a330-300--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lufthansa|Airbus A340-600": {
+    "file": "airbus-a340-600--lufthansa.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Thai Airways|Airbus A340-600": {
+    "file": "airbus-a340-600--thai-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "South African Airways|Airbus A340-600": {
+    "file": "airbus-a340-600--south-african-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Virgin Atlantic - Old|Airbus A340-600": {
+    "file": "airbus-a340-600--virgin-atlantic-old.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Airbus|Airbus A340-600": {
+    "file": "airbus-a340-600--airbus.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Virgin Atlantic|Airbus A340-600": {
+    "file": "airbus-a340-600--virgin-atlantic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Etihad Airways - Formula One|Airbus A340-600": {
+    "file": "airbus-a340-600--etihad-airways-formula-one.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Qatar Airways|Airbus A340-600": {
+    "file": "airbus-a340-600--qatar-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Airbus A340-600": {
+    "file": "airbus-a340-600--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air France|Airbus A380": {
+    "file": "airbus-a380--air-france.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Asiana Airlines|Airbus A380": {
+    "file": "airbus-a380--asiana-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Qantas|Airbus A380": {
+    "file": "airbus-a380--qantas.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Qatar Airways|Airbus A380": {
+    "file": "airbus-a380--qatar-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Singapore Airlines|Airbus A380": {
+    "file": "airbus-a380--singapore-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lufthansa|Airbus A380": {
+    "file": "airbus-a380--lufthansa.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "British Airways|Airbus A380": {
+    "file": "airbus-a380--british-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Thai Airways|Airbus A380": {
+    "file": "airbus-a380--thai-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Malaysia Airlines|Airbus A380": {
+    "file": "airbus-a380--malaysia-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Etihad Airways|Airbus A380": {
+    "file": "airbus-a380--etihad-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Airbus A380": {
+    "file": "airbus-a380--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "AirTran|Boeing 717-200": {
+    "file": "boeing-717-200--airtran.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "AirTran - Atlanta Falcons|Boeing 717-200": {
+    "file": "boeing-717-200--airtran-atlanta-falcons.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Bangkok Air|Boeing 717-200": {
+    "file": "boeing-717-200--bangkok-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Blue1|Boeing 717-200": {
+    "file": "boeing-717-200--blue1.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Delta Air Lines|Boeing 717-200": {
+    "file": "boeing-717-200--delta-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Hawaiian Airlines|Boeing 717-200": {
+    "file": "boeing-717-200--hawaiian-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "MexicanaClick|Boeing 717-200": {
+    "file": "boeing-717-200--mexicanaclick.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "QantasLink|Boeing 717-200": {
+    "file": "boeing-717-200--qantaslink.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Quantum Air|Boeing 717-200": {
+    "file": "boeing-717-200--quantum-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Spanair|Boeing 717-200": {
+    "file": "boeing-717-200--spanair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Boeing 717-200": {
+    "file": "boeing-717-200--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Boeing 737-700": {
+    "file": "boeing-737-700--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "WestJet|Boeing 737-700": {
+    "file": "boeing-737-700--westjet.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Turkish Airlines|Boeing 737-700": {
+    "file": "boeing-737-700--turkish-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "TUIfly|Boeing 737-700": {
+    "file": "boeing-737-700--tuifly.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "KLM|Boeing 737-700": {
+    "file": "boeing-737-700--klm.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "GOL|Boeing 737-700": {
+    "file": "boeing-737-700--gol.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "AirTran|Boeing 737-700": {
+    "file": "boeing-737-700--airtran.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Berlin|Boeing 737-700": {
+    "file": "boeing-737-700--air-berlin.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "AeroMexico|Boeing 737-700": {
+    "file": "boeing-737-700--aeromexico.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air China|Boeing 737-700": {
+    "file": "boeing-737-700--air-china.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Luxair|Boeing 737-700": {
+    "file": "boeing-737-700--luxair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Southwest - Canyon Blue|Boeing 737-700": {
+    "file": "boeing-737-700--southwest-canyon-blue.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Southwest - Desert Gold|Boeing 737-700": {
+    "file": "boeing-737-700--southwest-desert-gold.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Southwest - Heart|Boeing 737-700": {
+    "file": "boeing-737-700--southwest-heart.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Southwest - Illinois One|Boeing 737-700": {
+    "file": "boeing-737-700--southwest-illinois-one.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Southwest - Shamu|Boeing 737-700": {
+    "file": "boeing-737-700--southwest-shamu.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Fiji Airways|Boeing 737-700": {
+    "file": "boeing-737-700--fiji-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "KLM - 2014|Boeing 737-700": {
+    "file": "boeing-737-700--klm-2014.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "TAAG Angola Airlines|Boeing 737-700": {
+    "file": "boeing-737-700--taag-angola-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Scandinavian Airlines|Boeing 737-700": {
+    "file": "boeing-737-700--scandinavian-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "United Airlines|Boeing 737-700": {
+    "file": "boeing-737-700--united-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "BBJ - Infinite Flight - 2014|Boeing 737-700": {
+    "file": "boeing-737-700--bbj-infinite-flight-2014.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "BBJ - Infinite Flight - 2015|Boeing 737-700": {
+    "file": "boeing-737-700--bbj-infinite-flight-2015.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Air Force|Boeing 737-700": {
+    "file": "boeing-737-700--us-air-force.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "BBJ - Gold and Red|Boeing 737-700": {
+    "file": "boeing-737-700--bbj-gold-and-red.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "BBJ - Black and Purple|Boeing 737-700": {
+    "file": "boeing-737-700--bbj-black-and-purple.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "BBJ - Grey and Black|Boeing 737-700": {
+    "file": "boeing-737-700--bbj-grey-and-black.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "BBJ - Infinite Flight - 2018|Boeing 737-700": {
+    "file": "boeing-737-700--bbj-infinite-flight-2018.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Boeing 737-800": {
+    "file": "boeing-737-800--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Alaska Airlines|Boeing 737-800": {
+    "file": "boeing-737-800--alaska-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "American Airlines|Boeing 737-800": {
+    "file": "boeing-737-800--american-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "American Airlines - Old|Boeing 737-800": {
+    "file": "boeing-737-800--american-airlines-old.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Delta Air Lines|Boeing 737-800": {
+    "file": "boeing-737-800--delta-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "El Al|Boeing 737-800": {
+    "file": "boeing-737-800--el-al.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Garuda Indonesia|Boeing 737-800": {
+    "file": "boeing-737-800--garuda-indonesia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "JAL Express|Boeing 737-800": {
+    "file": "boeing-737-800--jal-express.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Malaysia Airlines|Boeing 737-800": {
+    "file": "boeing-737-800--malaysia-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Norwegian Air Shuttle|Boeing 737-800": {
+    "file": "boeing-737-800--norwegian-air-shuttle.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Royal Air Maroc|Boeing 737-800": {
+    "file": "boeing-737-800--royal-air-maroc.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Ryanair|Boeing 737-800": {
+    "file": "boeing-737-800--ryanair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Southwest - Canyon Blue|Boeing 737-800": {
+    "file": "boeing-737-800--southwest-canyon-blue.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Thomson|Boeing 737-800": {
+    "file": "boeing-737-800--thomson.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Transavia|Boeing 737-800": {
+    "file": "boeing-737-800--transavia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "TUIfly|Boeing 737-800": {
+    "file": "boeing-737-800--tuifly.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "United Airlines|Boeing 737-800": {
+    "file": "boeing-737-800--united-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Jet2|Boeing 737-800": {
+    "file": "boeing-737-800--jet2.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Caribbean Airlines|Boeing 737-800": {
+    "file": "boeing-737-800--caribbean-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Qantas|Boeing 737-800": {
+    "file": "boeing-737-800--qantas.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "GOL - 2015|Boeing 737-800": {
+    "file": "boeing-737-800--gol-2015.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Aerolineas Argentinas|Boeing 737-800": {
+    "file": "boeing-737-800--aerolineas-argentinas.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Scandinavian Airlines|Boeing 737-800": {
+    "file": "boeing-737-800--scandinavian-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Arik Air|Boeing 737-800": {
+    "file": "boeing-737-800--arik-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "British Airways - Comair|Boeing 737-800": {
+    "file": "boeing-737-800--british-airways-comair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "EgyptAir|Boeing 737-800": {
+    "file": "boeing-737-800--egyptair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Flydubai|Boeing 737-800": {
+    "file": "boeing-737-800--flydubai.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Kulula|Boeing 737-800": {
+    "file": "boeing-737-800--kulula.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "LOT Polish Airlines|Boeing 737-800": {
+    "file": "boeing-737-800--lot-polish-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Mango|Boeing 737-800": {
+    "file": "boeing-737-800--mango.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "South African Airways|Boeing 737-800": {
+    "file": "boeing-737-800--south-african-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Southwest - Heart|Boeing 737-800": {
+    "file": "boeing-737-800--southwest-heart.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "TUI|Boeing 737-800": {
+    "file": "boeing-737-800--tui.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Virgin Australia|Boeing 737-800": {
+    "file": "boeing-737-800--virgin-australia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Webjet|Boeing 737-800": {
+    "file": "boeing-737-800--webjet.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "American Airlines - TWA|Boeing 737-800": {
+    "file": "boeing-737-800--american-airlines-twa.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "American Airlines - Astrojet|Boeing 737-800": {
+    "file": "boeing-737-800--american-airlines-astrojet.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Westjet|Boeing 737-800": {
+    "file": "boeing-737-800--westjet.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "GOL+|Boeing 737-800": {
+    "file": "boeing-737-800--gol.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Boeing 737-900": {
+    "file": "boeing-737-900--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Alaska Airlines|Boeing 737-900": {
+    "file": "boeing-737-900--alaska-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lion Air|Boeing 737-900": {
+    "file": "boeing-737-900--lion-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Korean Air|Boeing 737-900": {
+    "file": "boeing-737-900--korean-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "United Airlines|Boeing 737-900": {
+    "file": "boeing-737-900--united-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Factory|Boeing 737-900": {
+    "file": "boeing-737-900--factory.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Ukraine International Airlines|Boeing 737-900": {
+    "file": "boeing-737-900--ukraine-international-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "KLM|Boeing 737-900": {
+    "file": "boeing-737-900--klm.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Turkish Airlines|Boeing 737-900": {
+    "file": "boeing-737-900--turkish-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Delta Air Lines|Boeing 737-900": {
+    "file": "boeing-737-900--delta-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "BBJ3|Boeing 737-900": {
+    "file": "boeing-737-900--bbj3.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Jet Airways|Boeing 737-900": {
+    "file": "boeing-737-900--jet-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Aeroflot|Boeing 737-900": {
+    "file": "boeing-737-900--aeroflot.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Sriwijaya Air|Boeing 737-900": {
+    "file": "boeing-737-900--sriwijaya-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Malindo Air|Boeing 737-900": {
+    "file": "boeing-737-900--malindo-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Alaska Airlines - 2016|Boeing 737-900": {
+    "file": "boeing-737-900--alaska-airlines-2016.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Alaska Airlines - Virgin|Boeing 737-900": {
+    "file": "boeing-737-900--alaska-airlines-virgin.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Spicejet|Boeing 737-900": {
+    "file": "boeing-737-900--spicejet.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Boeing 747-200": {
+    "file": "boeing-747-200--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Canada|Boeing 747-200": {
+    "file": "boeing-747-200--air-canada.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Alitalia|Boeing 747-200": {
+    "file": "boeing-747-200--alitalia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Iberia|Boeing 747-200": {
+    "file": "boeing-747-200--iberia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Iran Air|Boeing 747-200": {
+    "file": "boeing-747-200--iran-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Japan Airlines|Boeing 747-200": {
+    "file": "boeing-747-200--japan-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Northwest Airlines|Boeing 747-200": {
+    "file": "boeing-747-200--northwest-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Olympic|Boeing 747-200": {
+    "file": "boeing-747-200--olympic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Pakistan International Airlines|Boeing 747-200": {
+    "file": "boeing-747-200--pakistan-international-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "PAN AM|Boeing 747-200": {
+    "file": "boeing-747-200--pan-am.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Scandinavian Airlines|Boeing 747-200": {
+    "file": "boeing-747-200--scandinavian-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "South African Airways|Boeing 747-200": {
+    "file": "boeing-747-200--south-african-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "KLM|Boeing 747-200": {
+    "file": "boeing-747-200--klm.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "TAP Air Portugal|Boeing 747-200": {
+    "file": "boeing-747-200--tap-air-portugal.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Boeing 747-400": {
+    "file": "boeing-747-400--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air France|Boeing 747-400": {
+    "file": "boeing-747-400--air-france.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Atlas Air|Boeing 747-400": {
+    "file": "boeing-747-400--atlas-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "KLM|Boeing 747-400": {
+    "file": "boeing-747-400--klm.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "KLM - 2014|Boeing 747-400": {
+    "file": "boeing-747-400--klm-2014.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Asiana Airlines|Boeing 747-400": {
+    "file": "boeing-747-400--asiana-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Philippine Airlines|Boeing 747-400": {
+    "file": "boeing-747-400--philippine-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lufthansa|Boeing 747-400": {
+    "file": "boeing-747-400--lufthansa.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "British Airways|Boeing 747-400": {
+    "file": "boeing-747-400--british-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Cathay Pacific|Boeing 747-400": {
+    "file": "boeing-747-400--cathay-pacific.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Qantas|Boeing 747-400": {
+    "file": "boeing-747-400--qantas.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "United Airlines|Boeing 747-400": {
+    "file": "boeing-747-400--united-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Thai Airways|Boeing 747-400": {
+    "file": "boeing-747-400--thai-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Delta Air Lines|Boeing 747-400": {
+    "file": "boeing-747-400--delta-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Airlines|Boeing 747-400": {
+    "file": "boeing-747-400--china-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Malaysia Airlines|Boeing 747-400": {
+    "file": "boeing-747-400--malaysia-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air India|Boeing 747-400": {
+    "file": "boeing-747-400--air-india.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Boeing 747-8": {
+    "file": "boeing-747-8--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Bridge Cargo|Boeing 747-8": {
+    "file": "boeing-747-8--air-bridge-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air China|Boeing 747-8": {
+    "file": "boeing-747-8--air-china.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "BBJ|Boeing 747-8": {
+    "file": "boeing-747-8--bbj.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Boeing|Boeing 747-8": {
+    "file": "boeing-747-8--boeing.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Boeing Freight|Boeing 747-8": {
+    "file": "boeing-747-8--boeing-freight.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Cargolux|Boeing 747-8": {
+    "file": "boeing-747-8--cargolux.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lufthansa|Boeing 747-8": {
+    "file": "boeing-747-8--lufthansa.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Nippon Cargo Airlines|Boeing 747-8": {
+    "file": "boeing-747-8--nippon-cargo-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Infinite Flight - 2015|Boeing 747-8": {
+    "file": "boeing-747-8--infinite-flight-2015.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lufthansa - 2018|Boeing 747-8": {
+    "file": "boeing-747-8--lufthansa-2018.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Seattle Seahawks|Boeing 747-8": {
+    "file": "boeing-747-8--seattle-seahawks.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "American Airlines - 2013|Boeing 757-200": {
+    "file": "boeing-757-200--american-airlines-2013.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Delta Air Lines|Boeing 757-200": {
+    "file": "boeing-757-200--delta-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Icelandair|Boeing 757-200": {
+    "file": "boeing-757-200--icelandair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Monarch Airlines|Boeing 757-200": {
+    "file": "boeing-757-200--monarch-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Air Force|Boeing 757-200": {
+    "file": "boeing-757-200--us-air-force.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "British Airways|Boeing 757-200": {
+    "file": "boeing-757-200--british-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Boeing 757-200": {
+    "file": "boeing-757-200--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "American Airlines - Old|Boeing 767-300": {
+    "file": "boeing-767-300--american-airlines-old.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "KLM|Boeing 767-300": {
+    "file": "boeing-767-300--klm.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Canada|Boeing 767-300": {
+    "file": "boeing-767-300--air-canada.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "British Airways|Boeing 767-300": {
+    "file": "boeing-767-300--british-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Delta Air Lines|Boeing 767-300": {
+    "file": "boeing-767-300--delta-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Hawaiian Airlines|Boeing 767-300": {
+    "file": "boeing-767-300--hawaiian-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Qantas|Boeing 767-300": {
+    "file": "boeing-767-300--qantas.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "LAN|Boeing 767-300": {
+    "file": "boeing-767-300--lan.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "United Continental|Boeing 767-300": {
+    "file": "boeing-767-300--united-continental.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air France|Boeing 767-300": {
+    "file": "boeing-767-300--air-france.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "United Airlines|Boeing 767-300": {
+    "file": "boeing-767-300--united-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Thomas Cook|Boeing 767-300": {
+    "file": "boeing-767-300--thomas-cook.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Boeing 767-300": {
+    "file": "boeing-767-300--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Asiana Airlines|Boeing 777-200ER": {
+    "file": "boeing-777-200er--asiana-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "American Airlines|Boeing 777-200ER": {
+    "file": "boeing-777-200er--american-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Infinite Flight - 2019|Boeing 777-200ER": {
+    "file": "boeing-777-200er--infinite-flight-2019.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Alitalia|Boeing 777-200ER": {
+    "file": "boeing-777-200er--alitalia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Delta Air Lines|Boeing 777-200ER": {
+    "file": "boeing-777-200er--delta-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air France|Boeing 777-200ER": {
+    "file": "boeing-777-200er--air-france.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "ANA|Boeing 777-200ER": {
+    "file": "boeing-777-200er--ana.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "British Airways|Boeing 777-200ER": {
+    "file": "boeing-777-200er--british-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Japan Airlines|Boeing 777-200ER": {
+    "file": "boeing-777-200er--japan-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Malaysia Airlines|Boeing 777-200ER": {
+    "file": "boeing-777-200er--malaysia-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "United Airlines - Old|Boeing 777-200ER": {
+    "file": "boeing-777-200er--united-airlines-old.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "American Airlines - oneworld|Boeing 777-200ER": {
+    "file": "boeing-777-200er--american-airlines-oneworld.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Thai Airways|Boeing 777-200ER": {
+    "file": "boeing-777-200er--thai-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Omni Air International|Boeing 777-200ER": {
+    "file": "boeing-777-200er--omni-air-international.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Boeing 777-200ER": {
+    "file": "boeing-777-200er--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "United Airlines|Boeing 777-200ER": {
+    "file": "boeing-777-200er--united-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Korean Air|Boeing 777-200ER": {
+    "file": "boeing-777-200er--korean-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "KLM|Boeing 777-200ER": {
+    "file": "boeing-777-200er--klm.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Southern Air|Boeing 777F": {
+    "file": "boeing-777f--southern-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "FedEx|Boeing 777F": {
+    "file": "boeing-777f--fedex.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "AeroLogic|Boeing 777F": {
+    "file": "boeing-777f--aerologic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "TNT|Boeing 777F": {
+    "file": "boeing-777f--tnt.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Emirates SkyCargo|Boeing 777F": {
+    "file": "boeing-777f--emirates-skycargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Southern Cargo|Boeing 777F": {
+    "file": "boeing-777f--china-southern-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Qatar Cargo|Boeing 777F": {
+    "file": "boeing-777f--qatar-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Etihad Cargo|Boeing 777F": {
+    "file": "boeing-777f--etihad-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Cargo|Boeing 777F": {
+    "file": "boeing-777f--china-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "LAN Cargo|Boeing 777F": {
+    "file": "boeing-777f--lan-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Boeing 777F": {
+    "file": "boeing-777f--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air France Cargo|Boeing 777F": {
+    "file": "boeing-777f--air-france-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lufthansa Cargo|Boeing 777F": {
+    "file": "boeing-777f--lufthansa-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Korean Air Cargo|Boeing 777F": {
+    "file": "boeing-777f--korean-air-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Boeing 777-200LR": {
+    "file": "boeing-777-200lr--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Austral|Boeing 777-200LR": {
+    "file": "boeing-777-200lr--air-austral.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Canada|Boeing 777-200LR": {
+    "file": "boeing-777-200lr--air-canada.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air India|Boeing 777-200LR": {
+    "file": "boeing-777-200lr--air-india.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "CEIBA Intercontinental|Boeing 777-200LR": {
+    "file": "boeing-777-200lr--ceiba-intercontinental.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Delta Air Lines|Boeing 777-200LR": {
+    "file": "boeing-777-200lr--delta-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Emirates|Boeing 777-200LR": {
+    "file": "boeing-777-200lr--emirates.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Turkmenistan Airlines|Boeing 777-200LR": {
+    "file": "boeing-777-200lr--turkmenistan-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "KLM|Boeing 777-300ER": {
+    "file": "boeing-777-300er--klm.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Turkish Airlines|Boeing 777-300ER": {
+    "file": "boeing-777-300er--turkish-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Philippine Airlines|Boeing 777-300ER": {
+    "file": "boeing-777-300er--philippine-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Airlines|Boeing 777-300ER": {
+    "file": "boeing-777-300er--china-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air France|Boeing 777-300ER": {
+    "file": "boeing-777-300er--air-france.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Swiss International Air Lines|Boeing 777-300ER": {
+    "file": "boeing-777-300er--swiss-international-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Canada|Boeing 777-300ER": {
+    "file": "boeing-777-300er--air-canada.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air New Zealand - All Blacks|Boeing 777-300ER": {
+    "file": "boeing-777-300er--air-new-zealand-all-blacks.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air New Zealand|Boeing 777-300ER": {
+    "file": "boeing-777-300er--air-new-zealand.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "American Airlines|Boeing 777-300ER": {
+    "file": "boeing-777-300er--american-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Aeroflot|Boeing 777-300ER": {
+    "file": "boeing-777-300er--aeroflot.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Cathay Pacific|Boeing 777-300ER": {
+    "file": "boeing-777-300er--cathay-pacific.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Emirates|Boeing 777-300ER": {
+    "file": "boeing-777-300er--emirates.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Etihad Airways|Boeing 777-300ER": {
+    "file": "boeing-777-300er--etihad-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Garuda Indonesia|Boeing 777-300ER": {
+    "file": "boeing-777-300er--garuda-indonesia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Qatar Airways|Boeing 777-300ER": {
+    "file": "boeing-777-300er--qatar-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Singapore Airlines|Boeing 777-300ER": {
+    "file": "boeing-777-300er--singapore-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Boeing 777-300ER": {
+    "file": "boeing-777-300er--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Virgin Australia|Boeing 777-300ER": {
+    "file": "boeing-777-300er--virgin-australia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "British Airways|Boeing 777-300ER": {
+    "file": "boeing-777-300er--british-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "KLM - Orange Pride|Boeing 777-300ER": {
+    "file": "boeing-777-300er--klm-orange-pride.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "ANA|Boeing 787-10": {
+    "file": "boeing-787-10--ana.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air France|Boeing 787-10": {
+    "file": "boeing-787-10--air-france.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Boeing|Boeing 787-10": {
+    "file": "boeing-787-10--boeing.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "British Airways|Boeing 787-10": {
+    "file": "boeing-787-10--british-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "El Al|Boeing 787-10": {
+    "file": "boeing-787-10--el-al.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "EVA Air|Boeing 787-10": {
+    "file": "boeing-787-10--eva-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Etihad Airways|Boeing 787-10": {
+    "file": "boeing-787-10--etihad-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Boeing 787-10": {
+    "file": "boeing-787-10--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "KLM|Boeing 787-10": {
+    "file": "boeing-787-10--klm.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Singapore Airlines|Boeing 787-10": {
+    "file": "boeing-787-10--singapore-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "United Airlines|Boeing 787-10": {
+    "file": "boeing-787-10--united-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Boeing 787-8": {
+    "file": "boeing-787-8--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "AeroMexico|Boeing 787-8": {
+    "file": "boeing-787-8--aeromexico.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Austral|Boeing 787-8": {
+    "file": "boeing-787-8--air-austral.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air India|Boeing 787-8": {
+    "file": "boeing-787-8--air-india.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Avianca|Boeing 787-8": {
+    "file": "boeing-787-8--avianca.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Azerbaijan Airlines|Boeing 787-8": {
+    "file": "boeing-787-8--azerbaijan-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Boeing|Boeing 787-8": {
+    "file": "boeing-787-8--boeing.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Southern|Boeing 787-8": {
+    "file": "boeing-787-8--china-southern.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Delta Air Lines|Boeing 787-8": {
+    "file": "boeing-787-8--delta-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Ethiopian Airlines|Boeing 787-8": {
+    "file": "boeing-787-8--ethiopian-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "JetStar|Boeing 787-8": {
+    "file": "boeing-787-8--jetstar.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "LOT Polish Airlines|Boeing 787-8": {
+    "file": "boeing-787-8--lot-polish-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Oman Air|Boeing 787-8": {
+    "file": "boeing-787-8--oman-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Qatar Airways|Boeing 787-8": {
+    "file": "boeing-787-8--qatar-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Royal Air Maroc|Boeing 787-8": {
+    "file": "boeing-787-8--royal-air-maroc.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Royal Jordanian|Boeing 787-8": {
+    "file": "boeing-787-8--royal-jordanian.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "TUI|Boeing 787-8": {
+    "file": "boeing-787-8--tui.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Xiamen Air|Boeing 787-8": {
+    "file": "boeing-787-8--xiamen-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Kenya Airways|Boeing 787-8": {
+    "file": "boeing-787-8--kenya-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Infinite Flight - 2016|Boeing 787-8": {
+    "file": "boeing-787-8--infinite-flight-2016.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Thai Airways|Boeing 787-8": {
+    "file": "boeing-787-8--thai-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Canada|Boeing 787-9": {
+    "file": "boeing-787-9--air-canada.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air China|Boeing 787-9": {
+    "file": "boeing-787-9--air-china.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Europa|Boeing 787-9": {
+    "file": "boeing-787-9--air-europa.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air New Zealand|Boeing 787-9": {
+    "file": "boeing-787-9--air-new-zealand.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Tahiti Nui|Boeing 787-9": {
+    "file": "boeing-787-9--air-tahiti-nui.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "American Airlines|Boeing 787-9": {
+    "file": "boeing-787-9--american-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "British Airways|Boeing 787-9": {
+    "file": "boeing-787-9--british-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Boeing 787-9": {
+    "file": "boeing-787-9--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Japan Airlines|Boeing 787-9": {
+    "file": "boeing-787-9--japan-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "KLM|Boeing 787-9": {
+    "file": "boeing-787-9--klm.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "LATAM|Boeing 787-9": {
+    "file": "boeing-787-9--latam.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Norwegian Air Shuttle|Boeing 787-9": {
+    "file": "boeing-787-9--norwegian-air-shuttle.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Qantas|Boeing 787-9": {
+    "file": "boeing-787-9--qantas.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Saudia|Boeing 787-9": {
+    "file": "boeing-787-9--saudia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Scoot|Boeing 787-9": {
+    "file": "boeing-787-9--scoot.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "TUI|Boeing 787-9": {
+    "file": "boeing-787-9--tui.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "United Airlines|Boeing 787-9": {
+    "file": "boeing-787-9--united-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Vietnam Airlines|Boeing 787-9": {
+    "file": "boeing-787-9--vietnam-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Virgin Atlantic|Boeing 787-9": {
+    "file": "boeing-787-9--virgin-atlantic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|CRJ-200": {
+    "file": "crj-200--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Canada Express|CRJ-200": {
+    "file": "crj-200--air-canada-express.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "American Eagle|CRJ-200": {
+    "file": "crj-200--american-eagle.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Aruba Airlines|CRJ-200": {
+    "file": "crj-200--aruba-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Belavia|CRJ-200": {
+    "file": "crj-200--belavia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Delta Air Lines|CRJ-200": {
+    "file": "crj-200--delta-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "J-Air|CRJ-200": {
+    "file": "crj-200--j-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Kendell Airlines|CRJ-200": {
+    "file": "crj-200--kendell-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "MexicanaLink|CRJ-200": {
+    "file": "crj-200--mexicanalink.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Northwest Airlines|CRJ-200": {
+    "file": "crj-200--northwest-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "SA Express|CRJ-200": {
+    "file": "crj-200--sa-express.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "United Express - Old|CRJ-200": {
+    "file": "crj-200--united-express-old.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "UTair Aviation|CRJ-200": {
+    "file": "crj-200--utair-aviation.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Infinite Flight - 2018|CRJ-200": {
+    "file": "crj-200--infinite-flight-2018.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|CRJ-700": {
+    "file": "crj-700--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Adria Airways|CRJ-700": {
+    "file": "crj-700--adria-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Alaska Airlines|CRJ-700": {
+    "file": "crj-700--alaska-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "American Eagle|CRJ-700": {
+    "file": "crj-700--american-eagle.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "British Airways|CRJ-700": {
+    "file": "crj-700--british-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Delta Air Lines|CRJ-700": {
+    "file": "crj-700--delta-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Frontier|CRJ-700": {
+    "file": "crj-700--frontier.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "HOP!|CRJ-700": {
+    "file": "crj-700--hop.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Nordica|CRJ-700": {
+    "file": "crj-700--nordica.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Shandong Airlines|CRJ-700": {
+    "file": "crj-700--shandong-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "SA Express|CRJ-700": {
+    "file": "crj-700--sa-express.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "United Express|CRJ-700": {
+    "file": "crj-700--united-express.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Infinite Flight - 2018|CRJ-700": {
+    "file": "crj-700--infinite-flight-2018.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|CRJ-900": {
+    "file": "crj-900--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Canada Express|CRJ-900": {
+    "file": "crj-900--air-canada-express.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "AirOne|CRJ-900": {
+    "file": "crj-900--airone.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "American Eagle|CRJ-900": {
+    "file": "crj-900--american-eagle.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Bombardier|CRJ-900": {
+    "file": "crj-900--bombardier.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Express Airlines|CRJ-900": {
+    "file": "crj-900--china-express-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Delta Air Lines|CRJ-900": {
+    "file": "crj-900--delta-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Eurowings|CRJ-900": {
+    "file": "crj-900--eurowings.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Iraqi Airways|CRJ-900": {
+    "file": "crj-900--iraqi-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lufthansa CityLine|CRJ-900": {
+    "file": "crj-900--lufthansa-cityline.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Northwest Airlines|CRJ-900": {
+    "file": "crj-900--northwest-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Scandinavian Airlines|CRJ-900": {
+    "file": "crj-900--scandinavian-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Tunisair Express|CRJ-900": {
+    "file": "crj-900--tunisair-express.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lufthansa CityLine- 2018|CRJ-900": {
+    "file": "crj-900--lufthansa-cityline-2018.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|CRJ-1000": {
+    "file": "crj-1000--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air France - Brit Air|CRJ-1000": {
+    "file": "crj-1000--air-france-brit-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Arik Air|CRJ-1000": {
+    "file": "crj-1000--arik-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Binter Canarias|CRJ-1000": {
+    "file": "crj-1000--binter-canarias.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Bombardier|CRJ-1000": {
+    "file": "crj-1000--bombardier.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Garuda Indonesia|CRJ-1000": {
+    "file": "crj-1000--garuda-indonesia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "HOP!|CRJ-1000": {
+    "file": "crj-1000--hop.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Iberia - New Air Nostrum|CRJ-1000": {
+    "file": "crj-1000--iberia-new-air-nostrum.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Iberia - Retro Air Nostrum|CRJ-1000": {
+    "file": "crj-1000--iberia-retro-air-nostrum.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "MyAir|CRJ-1000": {
+    "file": "crj-1000--myair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Garuda Indonesia - Skyteam|CRJ-1000": {
+    "file": "crj-1000--garuda-indonesia-skyteam.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Yakutia Airlines|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--yakutia-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Island Air|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--island-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Baltic|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--air-baltic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Berlin|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--air-berlin.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Canada Express|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--air-canada-express.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "ANA|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--ana.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Austrian Airlines|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--austrian-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Croatia Airlines|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--croatia-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Ethiopian Airlines|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--ethiopian-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Flybe|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--flybe.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Horizon Air|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--horizon-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "PAL Express|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--pal-express.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "QantasLink|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--qantaslink.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "SpiceJet|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--spicejet.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Tassili Algeria|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--tassili-algeria.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "WestJet Encore|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--westjet-encore.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Infinite Flight - 2015|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--infinite-flight-2015.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lufthansa Regional|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--lufthansa-regional.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "United Express|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--united-express.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Bombardier|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--bombardier.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Luxair|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--luxair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Porter Airlines|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--porter-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "SA Express|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--sa-express.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Malev|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--malev.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Wideroe|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--wideroe.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Securite Civile|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--securite-civile.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Cessna 208": {
+    "file": "cessna-208--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Caraibes|Cessna 208": {
+    "file": "cessna-208--air-caraibes.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Gum Air|Cessna 208": {
+    "file": "cessna-208--gum-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Kenmore Air|Cessna 208": {
+    "file": "cessna-208--kenmore-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "D-FDAK|Cessna 208": {
+    "file": "cessna-208--d-fdak.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "N208LD|Cessna 208": {
+    "file": "cessna-208--n208ld.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Sounds Air|Cessna 208": {
+    "file": "cessna-208--sounds-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Westwind Aviation|Cessna 208": {
+    "file": "cessna-208--westwind-aviation.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Zanair|Cessna 208": {
+    "file": "cessna-208--zanair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Colombia Army|Cessna 208": {
+    "file": "cessna-208--colombia-army.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Iraqi Air Force|Cessna 208": {
+    "file": "cessna-208--iraqi-air-force.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "FedEx|Cessna 208": {
+    "file": "cessna-208--fedex.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "DHL|Cessna 208": {
+    "file": "cessna-208--dhl.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Airnet Systems|Cessna 208": {
+    "file": "cessna-208--airnet-systems.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Castle Aviation|Cessna 208": {
+    "file": "cessna-208--castle-aviation.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Mario's Air|Cessna 208": {
+    "file": "cessna-208--mario-s-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Martinaire|Cessna 208": {
+    "file": "cessna-208--martinaire.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Med Airlines|Cessna 208": {
+    "file": "cessna-208--med-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Skylink Express|Cessna 208": {
+    "file": "cessna-208--skylink-express.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Cirrus SR22 GTS": {
+    "file": "cirrus-sr22-gts--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Private|Cirrus SR22 GTS": {
+    "file": "cirrus-sr22-gts--private.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Gray and White|Cirrus SR22 GTS": {
+    "file": "cirrus-sr22-gts--gray-and-white.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Red and White|Cirrus SR22 GTS": {
+    "file": "cirrus-sr22-gts--red-and-white.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Brown and White|Cirrus SR22 GTS": {
+    "file": "cirrus-sr22-gts--brown-and-white.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Canada Express|E175": {
+    "file": "e175--air-canada-express.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|E175": {
+    "file": "e175--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "KLM Cityhopper|E190": {
+    "file": "e190--klm-cityhopper.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|E190": {
+    "file": "e190--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Air Force - 175th Wing|A-10": {
+    "file": "a-10--us-air-force-175th-wing.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Air Force - 188th Wing|A-10": {
+    "file": "a-10--us-air-force-188th-wing.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Air Force - 25th FS|A-10": {
+    "file": "a-10--us-air-force-25th-fs.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Air Force - 303rd FS|A-10": {
+    "file": "a-10--us-air-force-303rd-fs.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Air Force - 343rd Wing|A-10": {
+    "file": "a-10--us-air-force-343rd-wing.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Air Force - 354th FS|A-10": {
+    "file": "a-10--us-air-force-354th-fs.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Air Force - 66th WS|A-10": {
+    "file": "a-10--us-air-force-66th-ws.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Air Force - 75th FS|A-10": {
+    "file": "a-10--us-air-force-75th-fs.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Air Force - Arctic Camo|A-10": {
+    "file": "a-10--us-air-force-arctic-camo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Air Force|F-16": {
+    "file": "f-16--us-air-force.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Navy - Tanks / Armament|F-14": {
+    "file": "f-14--us-navy-tanks-armament.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Navy - Armament|F-14": {
+    "file": "f-14--us-navy-armament.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Navy - Tanks|F-14": {
+    "file": "f-14--us-navy-tanks.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Navy - Default|F-14": {
+    "file": "f-14--us-navy-default.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Navy - Blue Angels Fat Albert|C-130H": {
+    "file": "c-130h--us-navy-blue-angels-fat-albert.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Royal Netherlands Air Force|C-130H": {
+    "file": "c-130h--royal-netherlands-air-force.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Navy|C-130H": {
+    "file": "c-130h--us-navy.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Egypt Air Force|C-130H": {
+    "file": "c-130h--egypt-air-force.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Belgian Air Component|C-130H": {
+    "file": "c-130h--belgian-air-component.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Royal Air Force|C-130J": {
+    "file": "c-130j--royal-air-force.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Air Force - Moody AFB|C-130J": {
+    "file": "c-130j--us-air-force-moody-afb.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Coast Guard|C-130J": {
+    "file": "c-130j--us-coast-guard.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Royal Air Force - 50 Years|C-130J": {
+    "file": "c-130j--royal-air-force-50-years.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Air Force - Hurricane Hunter|C-130J": {
+    "file": "c-130j--us-air-force-hurricane-hunter.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Indian Air Force|C-130J-30": {
+    "file": "c-130j-30--indian-air-force.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Royal Air Force of Oman|C-130J-30": {
+    "file": "c-130j-30--royal-air-force-of-oman.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Air Force - Little Rock AFB|C-130J-30": {
+    "file": "c-130j-30--us-air-force-little-rock-afb.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Royal Danish Air Force|C-130J-30": {
+    "file": "c-130j-30--royal-danish-air-force.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Royal Canadian Air Force|C-130J-30": {
+    "file": "c-130j-30--royal-canadian-air-force.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Army Air Forces - Miss Virginia|P-38": {
+    "file": "p-38--us-army-air-forces-miss-virginia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air France|DC-10": {
+    "file": "dc-10--air-france.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air New Zealand|DC-10": {
+    "file": "dc-10--air-new-zealand.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Avensa|DC-10": {
+    "file": "dc-10--avensa.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "British Airways|DC-10": {
+    "file": "dc-10--british-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Canadian Airlines International|DC-10": {
+    "file": "dc-10--canadian-airlines-international.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Condor|DC-10": {
+    "file": "dc-10--condor.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Continental Airlines|DC-10": {
+    "file": "dc-10--continental-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|DC-10": {
+    "file": "dc-10--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Monarch Airlines|DC-10": {
+    "file": "dc-10--monarch-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Northwest Airlines|DC-10": {
+    "file": "dc-10--northwest-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Pakistan International Airlines|DC-10": {
+    "file": "dc-10--pakistan-international-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Singapore Airlines|DC-10": {
+    "file": "dc-10--singapore-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "National Airlines|DC-10": {
+    "file": "dc-10--national-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Omni Air International|DC-10": {
+    "file": "dc-10--omni-air-international.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|DC-10F": {
+    "file": "dc-10f--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "10 Tanker Air Carrier|DC-10F": {
+    "file": "dc-10f--10-tanker-air-carrier.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Royal Netherlands Air Force - KDC-10|DC-10F": {
+    "file": "dc-10f--royal-netherlands-air-force-kdc-10.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Arrow Air|DC-10F": {
+    "file": "dc-10f--arrow-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Avient|DC-10F": {
+    "file": "dc-10f--avient.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "DAS Air Cargo|DC-10F": {
+    "file": "dc-10f--das-air-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Emery Worldwide|DC-10F": {
+    "file": "dc-10f--emery-worldwide.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "FedEx|DC-10F": {
+    "file": "dc-10f--fedex.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Gemini Air Cargo|DC-10F": {
+    "file": "dc-10f--gemini-air-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Kelowna Flightcraft Air Charter|DC-10F": {
+    "file": "dc-10f--kelowna-flightcraft-air-charter.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Solar Cargo|DC-10F": {
+    "file": "dc-10f--solar-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Navy - Blue Angels 1|F/A-18E Super Hornet": {
+    "file": "f-a-18e-super-hornet--us-navy-blue-angels-1.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|MD-11": {
+    "file": "md-11--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Alitalia|MD-11": {
+    "file": "md-11--alitalia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "American Airlines|MD-11": {
+    "file": "md-11--american-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Airlines|MD-11": {
+    "file": "md-11--china-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Delta Air Lines|MD-11": {
+    "file": "md-11--delta-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Garuda Indonesia|MD-11": {
+    "file": "md-11--garuda-indonesia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Japan Airlines|MD-11": {
+    "file": "md-11--japan-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "KLM|MD-11": {
+    "file": "md-11--klm.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Malaysia Airlines|MD-11": {
+    "file": "md-11--malaysia-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Swiss International Air Lines|MD-11": {
+    "file": "md-11--swiss-international-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Thai Airways|MD-11": {
+    "file": "md-11--thai-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Infinite Flight - Retro|MD-11": {
+    "file": "md-11--infinite-flight-retro.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Philippine Airlines|MD-11": {
+    "file": "md-11--philippine-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Saudi Arabian Government|MD-11": {
+    "file": "md-11--saudi-arabian-government.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|MD-11F": {
+    "file": "md-11f--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Aeroflot Cargo|MD-11F": {
+    "file": "md-11f--aeroflot-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Centurion Air Cargo|MD-11F": {
+    "file": "md-11f--centurion-air-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Ethiopian Cargo|MD-11F": {
+    "file": "md-11f--ethiopian-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "FedEx|MD-11F": {
+    "file": "md-11f--fedex.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lufthansa Cargo|MD-11F": {
+    "file": "md-11f--lufthansa-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Martinair Cargo|MD-11F": {
+    "file": "md-11f--martinair-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Saudia|MD-11F": {
+    "file": "md-11f--saudia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "UPS|MD-11F": {
+    "file": "md-11f--ups.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Varig Log|MD-11F": {
+    "file": "md-11f--varig-log.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "World Airways|MD-11F": {
+    "file": "md-11f--world-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Royal Australian Air Force|Spitfire": {
+    "file": "spitfire--royal-australian-air-force.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|TBM-930": {
+    "file": "tbm-930--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Maroon|TBM-930": {
+    "file": "tbm-930--maroon.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Navy Blue|TBM-930": {
+    "file": "tbm-930--navy-blue.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Black, Red & White|TBM-930": {
+    "file": "tbm-930--black-red-white.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Charcoal|TBM-930": {
+    "file": "tbm-930--charcoal.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Sea Blue|TBM-930": {
+    "file": "tbm-930--sea-blue.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Red Stripe|TBM-930": {
+    "file": "tbm-930--red-stripe.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "French Army|TBM-930": {
+    "file": "tbm-930--french-army.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Infinite Flight - Dark|TBM-930": {
+    "file": "tbm-930--infinite-flight-dark.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Infinite Flight - Light|TBM-930": {
+    "file": "tbm-930--infinite-flight-light.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "White, Red and Black|TBM-930": {
+    "file": "tbm-930--white-red-and-black.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Default|Cessna 172": {
+    "file": "cessna-172--default.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "TAM|Boeing 777-300ER": {
+    "file": "boeing-777-300er--tam.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Singapore Airlines|Airbus A330-300": {
+    "file": "airbus-a330-300--singapore-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Thai Airways|Airbus A330-300": {
+    "file": "airbus-a330-300--thai-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Srilankan Airlines|Airbus A330-300": {
+    "file": "airbus-a330-300--srilankan-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "South African Airways|Airbus A330-300": {
+    "file": "airbus-a330-300--south-african-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Red & White|CubCrafters XCub": {
+    "file": "cubcrafters-xcub--red-white.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Yellow & Gray|CubCrafters XCub": {
+    "file": "cubcrafters-xcub--yellow-gray.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Black & Gray|CubCrafters XCub": {
+    "file": "cubcrafters-xcub--black-gray.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Launch Edition|CubCrafters XCub": {
+    "file": "cubcrafters-xcub--launch-edition.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Yellow|CubCrafters XCub": {
+    "file": "cubcrafters-xcub--yellow.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "EAA 50th|CubCrafters XCub": {
+    "file": "cubcrafters-xcub--eaa-50th.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Orange & Gray|CubCrafters XCub": {
+    "file": "cubcrafters-xcub--orange-gray.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "F-HATZ|Cessna 172": {
+    "file": "cessna-172--f-hatz.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "N456DX|Cessna 172": {
+    "file": "cessna-172--n456dx.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "N1322K|Cessna 172": {
+    "file": "cessna-172--n1322k.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "YellowBlue|Cessna 172": {
+    "file": "cessna-172--yellowblue.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Embry Riddle|Cessna 172": {
+    "file": "cessna-172--embry-riddle.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Civil Air Patrol|Cessna 172": {
+    "file": "cessna-172--civil-air-patrol.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Near North Aviation|Cessna 172": {
+    "file": "cessna-172--near-north-aviation.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Aegean Airlines|Airbus A320": {
+    "file": "airbus-a320--aegean-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Aer Lingus - 2019|Airbus A320": {
+    "file": "airbus-a320--aer-lingus-2019.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Avianca|Airbus A320": {
+    "file": "airbus-a320--avianca.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Azul|Airbus A320": {
+    "file": "airbus-a320--azul.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "VivaAerobus|Airbus A320": {
+    "file": "airbus-a320--vivaaerobus.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lufthansa - 2018|Airbus A320": {
+    "file": "airbus-a320--lufthansa-2018.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Eurowings|Airbus A320": {
+    "file": "airbus-a320--eurowings.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Aer Lingus|Airbus A350-900": {
+    "file": "airbus-a350-900--aer-lingus.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Aeroflot|Airbus A350-900": {
+    "file": "airbus-a350-900--aeroflot.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Afriqiyah Airways|Airbus A350-900": {
+    "file": "airbus-a350-900--afriqiyah-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Caraibes|Airbus A350-900": {
+    "file": "airbus-a350-900--air-caraibes.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air France|Airbus A350-900": {
+    "file": "airbus-a350-900--air-france.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Mauritius|Airbus A350-900": {
+    "file": "airbus-a350-900--air-mauritius.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Airbus - Factory Carbon|Airbus A350-900": {
+    "file": "airbus-a350-900--airbus-factory-carbon.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Asiana Airlines|Airbus A350-900": {
+    "file": "airbus-a350-900--asiana-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Cathay Pacific|Airbus A350-900": {
+    "file": "airbus-a350-900--cathay-pacific.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Airlines|Airbus A350-900": {
+    "file": "airbus-a350-900--china-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Eastern Airlines|Airbus A350-900": {
+    "file": "airbus-a350-900--china-eastern-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Delta Air Lines|Airbus A350-900": {
+    "file": "airbus-a350-900--delta-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Ethiopian Airlines|Airbus A350-900": {
+    "file": "airbus-a350-900--ethiopian-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Evelop Airlines|Airbus A350-900": {
+    "file": "airbus-a350-900--evelop-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Finnair|Airbus A350-900": {
+    "file": "airbus-a350-900--finnair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "FrenchBee|Airbus A350-900": {
+    "file": "airbus-a350-900--frenchbee.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Airbus A350-900": {
+    "file": "airbus-a350-900--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Iberia|Airbus A350-900": {
+    "file": "airbus-a350-900--iberia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Infinite Flight - 2019|Airbus A350-900": {
+    "file": "airbus-a350-900--infinite-flight-2019.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Japan Airlines|Airbus A350-900": {
+    "file": "airbus-a350-900--japan-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "KLM|Airbus A350-900": {
+    "file": "airbus-a350-900--klm.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "LATAM|Airbus A350-900": {
+    "file": "airbus-a350-900--latam.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lufthansa|Airbus A350-900": {
+    "file": "airbus-a350-900--lufthansa.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Malaysia Airlines|Airbus A350-900": {
+    "file": "airbus-a350-900--malaysia-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Philippine Airlines|Airbus A350-900": {
+    "file": "airbus-a350-900--philippine-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Qatar Airways|Airbus A350-900": {
+    "file": "airbus-a350-900--qatar-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Scandinavian Airlines|Airbus A350-900": {
+    "file": "airbus-a350-900--scandinavian-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Singapore Airlines|Airbus A350-900": {
+    "file": "airbus-a350-900--singapore-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "TAM|Airbus A350-900": {
+    "file": "airbus-a350-900--tam.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Thai Airways|Airbus A350-900": {
+    "file": "airbus-a350-900--thai-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Turkish Airlines|Airbus A350-900": {
+    "file": "airbus-a350-900--turkish-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "United Airlines|Airbus A350-900": {
+    "file": "airbus-a350-900--united-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Vietnam Airlines|Airbus A350-900": {
+    "file": "airbus-a350-900--vietnam-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Nordwind Airlines|Boeing 777-200ER": {
+    "file": "boeing-777-200er--nordwind-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Ukraine International Airlines|Boeing 777-200ER": {
+    "file": "boeing-777-200er--ukraine-international-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Austrian Airlines|Boeing 777-200ER": {
+    "file": "boeing-777-200er--austrian-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "TAAG Angola Airlines|Boeing 777-200ER": {
+    "file": "boeing-777-200er--taag-angola-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Varig|Boeing 777-200ER": {
+    "file": "boeing-777-200er--varig.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Kenya Airways|Boeing 737-800": {
+    "file": "boeing-737-800--kenya-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "United Airlines - 2019|Boeing 737-800": {
+    "file": "boeing-737-800--united-airlines-2019.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air India|Boeing 777-300ER": {
+    "file": "boeing-777-300er--air-india.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Kuwait Airways|Boeing 777-300ER": {
+    "file": "boeing-777-300er--kuwait-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Saudia|Boeing 777-300ER": {
+    "file": "boeing-777-300er--saudia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Ethiopian Cargo|Boeing 777F": {
+    "file": "boeing-777f--ethiopian-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "EVA Air Cargo|Boeing 777F": {
+    "file": "boeing-777f--eva-air-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Saudia Cargo|Boeing 777F": {
+    "file": "boeing-777f--saudia-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Turkish Cargo|Boeing 777F": {
+    "file": "boeing-777f--turkish-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "ANA Cargo|Boeing 777F": {
+    "file": "boeing-777f--ana-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "DHL|Boeing 777F": {
+    "file": "boeing-777f--dhl.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "EVA Air|Boeing 777-300ER": {
+    "file": "boeing-777-300er--eva-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "United Airlines - 2019|Boeing 777-300ER": {
+    "file": "boeing-777-300er--united-airlines-2019.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Crystal Luxury Air|Boeing 777-200LR": {
+    "file": "boeing-777-200lr--crystal-luxury-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Boeing|Boeing 777-200LR": {
+    "file": "boeing-777-200lr--boeing.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Iraqi Airways|Boeing 777-200LR": {
+    "file": "boeing-777-200lr--iraqi-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "EgyptAir|Boeing 777-300ER": {
+    "file": "boeing-777-300er--egyptair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "La Compagnie|Boeing 757-200": {
+    "file": "boeing-757-200--la-compagnie.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Jet2|Boeing 757-200": {
+    "file": "boeing-757-200--jet2.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Cabo Verde|Boeing 757-200": {
+    "file": "boeing-757-200--cabo-verde.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Baltic|Boeing 757-200": {
+    "file": "boeing-757-200--air-baltic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Aer Lingus|Boeing 757-200": {
+    "file": "boeing-757-200--aer-lingus.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Ghana International Airlines|Boeing 757-200": {
+    "file": "boeing-757-200--ghana-international-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Southern|Boeing 757-200": {
+    "file": "boeing-757-200--china-southern.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Uzbekistan Airways|Boeing 757-200": {
+    "file": "boeing-757-200--uzbekistan-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Astana|Boeing 757-200": {
+    "file": "boeing-757-200--air-astana.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "America West|Boeing 757-200": {
+    "file": "boeing-757-200--america-west.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "LAPA|Boeing 757-200": {
+    "file": "boeing-757-200--lapa.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Royal Nepal Airlines|Boeing 757-200": {
+    "file": "boeing-757-200--royal-nepal-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "EC Air|Boeing 757-200": {
+    "file": "boeing-757-200--ec-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "TUI|Boeing 757-200": {
+    "file": "boeing-757-200--tui.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Guyana Airways|Boeing 757-200": {
+    "file": "boeing-757-200--guyana-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air China|Boeing 757-200": {
+    "file": "boeing-757-200--air-china.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "United Airlines|Boeing 757-200": {
+    "file": "boeing-757-200--united-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Ladeco|Boeing 757-200": {
+    "file": "boeing-757-200--ladeco.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Infinite Flight|Boeing 757-200": {
+    "file": "boeing-757-200--infinite-flight.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Sunday Airlines|Boeing 757-200": {
+    "file": "boeing-757-200--sunday-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "American Airlines - 1968|Boeing 757-200": {
+    "file": "boeing-757-200--american-airlines-1968.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Airways|Boeing 757-200": {
+    "file": "boeing-757-200--us-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Finnair|Boeing 757-200": {
+    "file": "boeing-757-200--finnair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "AeroMexico|Boeing 757-200": {
+    "file": "boeing-757-200--aeromexico.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "DutchBird|Boeing 757-200": {
+    "file": "boeing-757-200--dutchbird.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "EasyJet - 2015|Airbus A320": {
+    "file": "airbus-a320--easyjet-2015.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Delta Air Lines|Airbus A320": {
+    "file": "airbus-a320--delta-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "JetSMART|Airbus A320": {
+    "file": "airbus-a320--jetsmart.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Sky Airlines|Airbus A320": {
+    "file": "airbus-a320--sky-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Turkish Airlines|Boeing 787-9": {
+    "file": "boeing-787-9--turkish-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "WestJet|Boeing 787-9": {
+    "file": "boeing-787-9--westjet.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "ANA|Boeing 777-300ER": {
+    "file": "boeing-777-300er--ana.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "LATAM|Boeing 777-300ER": {
+    "file": "boeing-777-300er--latam.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air India|Airbus A320": {
+    "file": "airbus-a320--air-india.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Zimbabwe|Airbus A320": {
+    "file": "airbus-a320--air-zimbabwe.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Infinite Flight - 10 Year Anniversary|Airbus A350-900": {
+    "file": "airbus-a350-900--infinite-flight-10-year-anniversary.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Infinite Flight - 10 Year Anniversary|Cessna 172": {
+    "file": "cessna-172--infinite-flight-10-year-anniversary.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "KLM|Airbus A330-300": {
+    "file": "airbus-a330-300--klm.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Aer Lingus|Airbus A330-300": {
+    "file": "airbus-a330-300--aer-lingus.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Qantas|Airbus A330-300": {
+    "file": "airbus-a330-300--qantas.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Turkish Airlines|Airbus A330-300": {
+    "file": "airbus-a330-300--turkish-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Southern|Airbus A330-300": {
+    "file": "airbus-a330-300--china-southern.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Virgin Atlantic|Airbus A330-300": {
+    "file": "airbus-a330-300--virgin-atlantic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Brussels Airlines|Airbus A330-300": {
+    "file": "airbus-a330-300--brussels-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Jet Airways|Airbus A330-300": {
+    "file": "airbus-a330-300--jet-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air China|Airbus A330-300": {
+    "file": "airbus-a330-300--air-china.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Cebu Pacific|Airbus A330-300": {
+    "file": "airbus-a330-300--cebu-pacific.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Hainan Airlines|Airbus A330-300": {
+    "file": "airbus-a330-300--hainan-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Oman Air|Airbus A330-300": {
+    "file": "airbus-a330-300--oman-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Edelweiss Air|Airbus A330-300": {
+    "file": "airbus-a330-300--edelweiss-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "TAP Air Portugal|Airbus A330-900": {
+    "file": "airbus-a330-900--tap-air-portugal.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Mauritius|Airbus A330-900": {
+    "file": "airbus-a330-900--air-mauritius.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Senegal|Airbus A330-900": {
+    "file": "airbus-a330-900--air-senegal.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Citilink|Airbus A330-900": {
+    "file": "airbus-a330-900--citilink.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Corsair|Airbus A330-900": {
+    "file": "airbus-a330-900--corsair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Delta Air Lines|Airbus A330-900": {
+    "file": "airbus-a330-900--delta-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Garuda Indonesia|Airbus A330-900": {
+    "file": "airbus-a330-900--garuda-indonesia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Airbus A330-900": {
+    "file": "airbus-a330-900--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Iberojet|Airbus A330-900": {
+    "file": "airbus-a330-900--iberojet.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lion Air|Airbus A330-900": {
+    "file": "airbus-a330-900--lion-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Azul - Rosa|Airbus A330-900": {
+    "file": "airbus-a330-900--azul-rosa.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Belgium|Airbus A330-900": {
+    "file": "airbus-a330-900--air-belgium.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Korean Air|Boeing 777-300ER": {
+    "file": "boeing-777-300er--korean-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Baltic|Airbus A220-300": {
+    "file": "airbus-a220-300--air-baltic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Baltic - Estonian Flag|Airbus A220-300": {
+    "file": "airbus-a220-300--air-baltic-estonian-flag.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Canada|Airbus A220-300": {
+    "file": "airbus-a220-300--air-canada.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Austral|Airbus A220-300": {
+    "file": "airbus-a220-300--air-austral.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Tanzania|Airbus A220-300": {
+    "file": "airbus-a220-300--air-tanzania.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "EgyptAir Express|Airbus A220-300": {
+    "file": "airbus-a220-300--egyptair-express.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "EgyptAir|Airbus A220-300": {
+    "file": "airbus-a220-300--egyptair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Breeze Airways|Airbus A220-300": {
+    "file": "airbus-a220-300--breeze-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Ibom Air|Airbus A220-300": {
+    "file": "airbus-a220-300--ibom-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Canada - Retro|Airbus A220-300": {
+    "file": "airbus-a220-300--air-canada-retro.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air France|Airbus A220-300": {
+    "file": "airbus-a220-300--air-france.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Manas|Airbus A220-300": {
+    "file": "airbus-a220-300--air-manas.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Delta Air Lines|Airbus A220-300": {
+    "file": "airbus-a220-300--delta-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "JetBlue|Airbus A220-300": {
+    "file": "airbus-a220-300--jetblue.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Swiss International Air Lines|Airbus A220-300": {
+    "file": "airbus-a220-300--swiss-international-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Korean Air|Airbus A220-300": {
+    "file": "airbus-a220-300--korean-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Airbus|Airbus A220-300": {
+    "file": "airbus-a220-300--airbus.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Vanuatu|Airbus A220-300": {
+    "file": "airbus-a220-300--air-vanuatu.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Bombardier|Airbus A220-300": {
+    "file": "airbus-a220-300--bombardier.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Iraqi Airways|Airbus A220-300": {
+    "file": "airbus-a220-300--iraqi-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Airbus A220-300": {
+    "file": "airbus-a220-300--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Pegasus Airlines|Boeing 737-800": {
+    "file": "boeing-737-800--pegasus-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "UPS|Boeing 747-8": {
+    "file": "boeing-747-8--ups.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Mokulele|Cessna 208": {
+    "file": "cessna-208--mokulele.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Congo Airways|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--congo-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Copa Airlines|Boeing 737-800": {
+    "file": "boeing-737-800--copa-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Avelo|Boeing 737-800": {
+    "file": "boeing-737-800--avelo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "JetBlue - Shantay|Airbus A320": {
+    "file": "airbus-a320--jetblue-shantay.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Infinite Flight - Pride 2022|Airbus A320": {
+    "file": "airbus-a320--infinite-flight-pride-2022.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "AeroMexico|Boeing 787-9": {
+    "file": "boeing-787-9--aeromexico.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Vistara|Boeing 787-9": {
+    "file": "boeing-787-9--vistara.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Citilink|Airbus A320": {
+    "file": "airbus-a320--citilink.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "LATAM|Airbus A321": {
+    "file": "airbus-a321--latam.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Navy - VX-9 Vampires|F/A-18E Super Hornet": {
+    "file": "f-a-18e-super-hornet--us-navy-vx-9-vampires.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Navy - Maverick|F/A-18E Super Hornet": {
+    "file": "f-a-18e-super-hornet--us-navy-maverick.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Navy - VFA-87 Golden Warriors|F/A-18E Super Hornet": {
+    "file": "f-a-18e-super-hornet--us-navy-vfa-87-golden-warriors.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Navy - VFA-105 Gunslingers|F/A-18E Super Hornet": {
+    "file": "f-a-18e-super-hornet--us-navy-vfa-105-gunslingers.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Navy - VFA-14 Tophatters|F/A-18E Super Hornet": {
+    "file": "f-a-18e-super-hornet--us-navy-vfa-14-tophatters.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic Aggressor|F/A-18E Super Hornet": {
+    "file": "f-a-18e-super-hornet--generic-aggressor.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Infinite Flight|F/A-18E Super Hornet": {
+    "file": "f-a-18e-super-hornet--infinite-flight.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Kuwait Air Force|F/A-18E Super Hornet": {
+    "file": "f-a-18e-super-hornet--kuwait-air-force.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Navy - VFA-81 Sharknado|F/A-18E Super Hornet": {
+    "file": "f-a-18e-super-hornet--us-navy-vfa-81-sharknado.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Navy - VFA-31 Tomcatters|F/A-18E Super Hornet": {
+    "file": "f-a-18e-super-hornet--us-navy-vfa-31-tomcatters.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Drukair|Airbus A319": {
+    "file": "airbus-a319--drukair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Fiji Airways|Airbus A350-900": {
+    "file": "airbus-a350-900--fiji-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Finnair|Airbus A330-300": {
+    "file": "airbus-a330-300--finnair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Vistara|Airbus A320": {
+    "file": "airbus-a320--vistara.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Saudia|Airbus A330-300": {
+    "file": "airbus-a330-300--saudia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "AeroMexico|Boeing 737-800": {
+    "file": "boeing-737-800--aeromexico.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Alaska Airlines|E175": {
+    "file": "e175--alaska-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Alitalia CityLiner|E175": {
+    "file": "e175--alitalia-cityliner.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "American Airlines|E175": {
+    "file": "e175--american-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Belavia|E175": {
+    "file": "e175--belavia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Delta Air Lines|E175": {
+    "file": "e175--delta-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Flybe|E175": {
+    "file": "e175--flybe.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Fuji Dream Airlines|E175": {
+    "file": "e175--fuji-dream-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "KLM Cityhopper|E175": {
+    "file": "e175--klm-cityhopper.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "LOT Polish Airlines|E175": {
+    "file": "e175--lot-polish-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Mauritania Airlines|E175": {
+    "file": "e175--mauritania-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Oman Air|E175": {
+    "file": "e175--oman-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Republic Airways|E175": {
+    "file": "e175--republic-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Royal Jordanian|E175": {
+    "file": "e175--royal-jordanian.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "TRIP Linhas Aereas|E175": {
+    "file": "e175--trip-linhas-aereas.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "United Airlines|E175": {
+    "file": "e175--united-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "ANA|Boeing 787-9": {
+    "file": "boeing-787-9--ana.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Korean Air|Boeing 787-9": {
+    "file": "boeing-787-9--korean-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Sun Country Airlines|Boeing 737-800": {
+    "file": "boeing-737-800--sun-country-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "REX Airlines|Boeing 737-800": {
+    "file": "boeing-737-800--rex-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Edelweiss Air|Airbus A320": {
+    "file": "airbus-a320--edelweiss-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "ITA Transportes Aéreos|Airbus A320": {
+    "file": "airbus-a320--ita-transportes-a-reos.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lufthansa|Airbus A321": {
+    "file": "airbus-a321--lufthansa.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "American Airlines|Airbus A319": {
+    "file": "airbus-a319--american-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Volotea Airlines|Airbus A319": {
+    "file": "airbus-a319--volotea-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Southern|Airbus A350-900": {
+    "file": "airbus-a350-900--china-southern.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Private - Tulip|E175": {
+    "file": "e175--private-tulip.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Embraer|E175": {
+    "file": "e175--embraer.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Aerolineas Argentinas|E190": {
+    "file": "e190--aerolineas-argentinas.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "AeroMexico|E190": {
+    "file": "e190--aeromexico.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air France Hop|E190": {
+    "file": "e190--air-france-hop.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Breeze Airways|E190": {
+    "file": "e190--breeze-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Bulgaria Air|E190": {
+    "file": "e190--bulgaria-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Southern|E190": {
+    "file": "e190--china-southern.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "TUI|E190": {
+    "file": "e190--tui.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "British Airways - BA CityFlyer|E190": {
+    "file": "e190--british-airways-ba-cityflyer.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Airlink|E190": {
+    "file": "e190--airlink.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "GX Airlines|E190": {
+    "file": "e190--gx-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Tianjin Airlines|E190": {
+    "file": "e190--tianjin-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Finnair|E190": {
+    "file": "e190--finnair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air France - 2021|Boeing 777-300ER": {
+    "file": "boeing-777-300er--air-france-2021.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Jazeera Airways|Airbus A320": {
+    "file": "airbus-a320--jazeera-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Gulf Air|Boeing 787-9": {
+    "file": "boeing-787-9--gulf-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lufthansa|Boeing 787-9": {
+    "file": "boeing-787-9--lufthansa.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Eastern Airlines|Airbus A320": {
+    "file": "airbus-a320--china-eastern-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air China|Boeing 737-800": {
+    "file": "boeing-737-800--air-china.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "TAP Express|E190": {
+    "file": "e190--tap-express.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Amaszonas|E190": {
+    "file": "e190--amaszonas.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Azul|E190": {
+    "file": "e190--azul.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Copa Airlines|E190": {
+    "file": "e190--copa-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Helvetic Airways|E190": {
+    "file": "e190--helvetic-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lufthansa Regional|E190": {
+    "file": "e190--lufthansa-regional.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "J-Air|E190": {
+    "file": "e190--j-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "JetBlue - Blueprint|E190": {
+    "file": "e190--jetblue-blueprint.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Aegean Airlines - 2020|Airbus A320": {
+    "file": "airbus-a320--aegean-airlines-2020.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Buta Airways|E190": {
+    "file": "e190--buta-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Kenya Airways|E190": {
+    "file": "e190--kenya-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Condor|Airbus A321": {
+    "file": "airbus-a321--condor.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Southern Airways Express|Cessna 208": {
+    "file": "cessna-208--southern-airways-express.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Azul Conecta|Cessna 208": {
+    "file": "cessna-208--azul-conecta.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Trans Island Airways|Cessna 208": {
+    "file": "cessna-208--trans-island-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Xiamen Airlines|Boeing 737-800": {
+    "file": "boeing-737-800--xiamen-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "GOL - 2018|Boeing 737-700": {
+    "file": "boeing-737-700--gol-2018.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Swoop|Boeing 737-800": {
+    "file": "boeing-737-800--swoop.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Flair Airlines|Boeing 737-800": {
+    "file": "boeing-737-800--flair-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "ANA|Boeing 737-800": {
+    "file": "boeing-737-800--ana.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Jet Airways|Boeing 777-300ER": {
+    "file": "boeing-777-300er--jet-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air China|Boeing 777-300ER": {
+    "file": "boeing-777-300er--air-china.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Juneyao Air|Boeing 787-9": {
+    "file": "boeing-787-9--juneyao-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air India Express|Boeing 737-800": {
+    "file": "boeing-737-800--air-india-express.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Challenger 350": {
+    "file": "challenger-350--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Jet Mach|Challenger 350": {
+    "file": "challenger-350--jet-mach.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Sunwest Aviation|Challenger 350": {
+    "file": "challenger-350--sunwest-aviation.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "NetJets Europe|Challenger 350": {
+    "file": "challenger-350--netjets-europe.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "NetJets|Challenger 350": {
+    "file": "challenger-350--netjets.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Clay Lacy Aviation|Challenger 350": {
+    "file": "challenger-350--clay-lacy-aviation.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Flexjet|Challenger 350": {
+    "file": "challenger-350--flexjet.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Bombardier|Challenger 350": {
+    "file": "challenger-350--bombardier.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Airshare|Challenger 350": {
+    "file": "challenger-350--airshare.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Catreus Aviation|Challenger 350": {
+    "file": "challenger-350--catreus-aviation.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Infinite Flight|Challenger 350": {
+    "file": "challenger-350--infinite-flight.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Luxaviation Belgium|Challenger 350": {
+    "file": "challenger-350--luxaviation-belgium.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Hyperion Aviation|Challenger 350": {
+    "file": "challenger-350--hyperion-aviation.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Aviação Havan|Challenger 350": {
+    "file": "challenger-350--avia-o-havan.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "European Flight Service|Challenger 350": {
+    "file": "challenger-350--european-flight-service.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Sundt Air|Challenger 350": {
+    "file": "challenger-350--sundt-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "ExecuJet|Challenger 350": {
+    "file": "challenger-350--execujet.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Super Air Jet|Airbus A320": {
+    "file": "airbus-a320--super-air-jet.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Busan|Airbus A320": {
+    "file": "airbus-a320--air-busan.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lauda Europe|Airbus A320": {
+    "file": "airbus-a320--lauda-europe.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Vueling|Airbus A321": {
+    "file": "airbus-a321--vueling.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Azul|Airbus A350-900": {
+    "file": "airbus-a350-900--azul.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air China|Airbus A350-900": {
+    "file": "airbus-a350-900--air-china.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Southern|Boeing 737-800": {
+    "file": "boeing-737-800--china-southern.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "SunExpress|Boeing 737-800": {
+    "file": "boeing-737-800--sunexpress.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Europa|Boeing 737-800": {
+    "file": "boeing-737-800--air-europa.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Sunwing Airlines|Boeing 737-800": {
+    "file": "boeing-737-800--sunwing-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Jet2 holidays|Boeing 737-800": {
+    "file": "boeing-737-800--jet2-holidays.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "AnadoluJet|Boeing 737-800": {
+    "file": "boeing-737-800--anadolujet.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "American Airlines|Boeing 787-8": {
+    "file": "boeing-787-8--american-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Canada|Boeing 787-8": {
+    "file": "boeing-787-8--air-canada.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "HB-CRW|Challenger 350": {
+    "file": "challenger-350--hb-crw.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "ITA Airways|Airbus A350-900": {
+    "file": "airbus-a350-900--ita-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Japan Airlines|Boeing 777-300ER": {
+    "file": "boeing-777-300er--japan-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Garuda Indonesia|Airbus A330-300": {
+    "file": "airbus-a330-300--garuda-indonesia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Virgin Atlantic|Airbus A330-900": {
+    "file": "airbus-a330-900--virgin-atlantic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Bahamasair|Boeing 737-700": {
+    "file": "boeing-737-700--bahamasair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Atlas Air|Boeing 747-8": {
+    "file": "boeing-747-8--atlas-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Silk Way West Airlines|Boeing 747-8": {
+    "file": "boeing-747-8--silk-way-west-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Norse Atlantic Airways|Boeing 787-9": {
+    "file": "boeing-787-9--norse-atlantic-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "N930DH|TBM-930": {
+    "file": "tbm-930--n930dh.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Condor|Airbus A330-900": {
+    "file": "airbus-a330-900--condor.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "United Airlines - 2019|Boeing 787-9": {
+    "file": "boeing-787-9--united-airlines-2019.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Hainan Airlines|Boeing 787-9": {
+    "file": "boeing-787-9--hainan-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Spirit Airlines - 2014|Airbus A320": {
+    "file": "airbus-a320--spirit-airlines-2014.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Pegasus Airlines|Airbus A320": {
+    "file": "airbus-a320--pegasus-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Titan Airways|Airbus A321": {
+    "file": "airbus-a321--titan-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "ANA - Lani|Airbus A380": {
+    "file": "airbus-a380--ana-lani.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "ANA - Kai|Airbus A380": {
+    "file": "airbus-a380--ana-kai.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "ANA - La|Airbus A380": {
+    "file": "airbus-a380--ana-la.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Southern|Airbus A380": {
+    "file": "airbus-a380--china-southern.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Emirates - 50th Anniversary|Airbus A380": {
+    "file": "airbus-a380--emirates-50th-anniversary.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Hi Fly|Airbus A380": {
+    "file": "airbus-a380--hi-fly.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Airbus|Airbus A380": {
+    "file": "airbus-a380--airbus.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Infinite Flight|Airbus A380": {
+    "file": "airbus-a380--infinite-flight.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Global Airlines|Airbus A380": {
+    "file": "airbus-a380--global-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Etihad Airways - Choose UK|Airbus A380": {
+    "file": "airbus-a380--etihad-airways-choose-uk.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Emirates - 1999|Airbus A380": {
+    "file": "airbus-a380--emirates-1999.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lufthansa - 2018|Airbus A380": {
+    "file": "airbus-a380--lufthansa-2018.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "JetBlue - A Defining MoMint|Airbus A321": {
+    "file": "airbus-a321--jetblue-a-defining-momint.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Pelita Air|Airbus A320": {
+    "file": "airbus-a320--pelita-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "ITA Airways|Airbus A320": {
+    "file": "airbus-a320--ita-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Austrian Airlines - Star Alliance|Airbus A320": {
+    "file": "airbus-a320--austrian-airlines-star-alliance.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Serbia|Airbus A320": {
+    "file": "airbus-a320--air-serbia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Pakistan International Airlines|Airbus A320": {
+    "file": "airbus-a320--pakistan-international-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Turkish Airlines|Airbus A320": {
+    "file": "airbus-a320--turkish-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Philippine Airlines|Airbus A330-300": {
+    "file": "airbus-a330-300--philippine-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Discover Airlines|Airbus A330-300": {
+    "file": "airbus-a330-300--discover-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Eastern Airlines|Airbus A330-300": {
+    "file": "airbus-a330-300--china-eastern-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Corendon Airlines|Boeing 737-800": {
+    "file": "boeing-737-800--corendon-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Hainan Airlines|Boeing 737-800": {
+    "file": "boeing-737-800--hainan-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Azerbaijan Airlines|Boeing 757-200": {
+    "file": "boeing-757-200--azerbaijan-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "United Airlines - 2019|Boeing 757-200": {
+    "file": "boeing-757-200--united-airlines-2019.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Singapore Airlines|Boeing 737-800": {
+    "file": "boeing-737-800--singapore-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Norwegian Air Sweden|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--norwegian-air-sweden.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Flybondi|Boeing 737-800": {
+    "file": "boeing-737-800--flybondi.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Arabia|Airbus A320": {
+    "file": "airbus-a320--air-arabia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Business Wings|Cessna 208": {
+    "file": "cessna-208--business-wings.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "St Barth Commuter|Cessna 208": {
+    "file": "cessna-208--st-barth-commuter.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Bohai|Cessna 208": {
+    "file": "cessna-208--bohai.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "IndiaOne Air|Cessna 208": {
+    "file": "cessna-208--indiaone-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Susi Air|Cessna 208": {
+    "file": "cessna-208--susi-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Azul Cargo|Cessna 208": {
+    "file": "cessna-208--azul-cargo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Makers Air|Cessna 208": {
+    "file": "cessna-208--makers-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Sansa|Cessna 208": {
+    "file": "cessna-208--sansa.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Haiyan General Aviation|Cessna 208": {
+    "file": "cessna-208--haiyan-general-aviation.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air India|Airbus A350-900": {
+    "file": "airbus-a350-900--air-india.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "United Airlines - 2019|Boeing 777-200ER": {
+    "file": "boeing-777-200er--united-airlines-2019.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "British Airways - oneworld|Boeing 777-200ER": {
+    "file": "boeing-777-200er--british-airways-oneworld.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Aerolineas Argentinas|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--aerolineas-argentinas.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Canada|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--air-canada.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air India Express|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--air-india-express.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Akasa Air|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--akasa-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "American Airlines|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--american-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Buzz|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--buzz.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Caribbean Airlines|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--caribbean-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Southern|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--china-southern.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Ethiopian Airlines|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--ethiopian-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Fiji Airways|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--fiji-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Flair Airlines|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--flair-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Icelandair|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--icelandair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "LOT Polish Airlines|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--lot-polish-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Singapore Airlines|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--singapore-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "SunExpress|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--sunexpress.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Malta Air|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--malta-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Korean Air|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--korean-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lion Air|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--lion-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Qatar Airways|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--qatar-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Ryanair|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--ryanair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Southwest Airlines|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--southwest-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Spicejet|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--spicejet.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "TUI|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--tui.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Turkish Airlines|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--turkish-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "United Airlines|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--united-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Virgin Australia|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--virgin-australia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "WestJet|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--westjet.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Cathay Pacific - oneworld|Boeing 777-300ER": {
+    "file": "boeing-777-300er--cathay-pacific-oneworld.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Thai Airways - Star Alliance|Airbus A350-900": {
+    "file": "airbus-a350-900--thai-airways-star-alliance.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Southern|Boeing 777-300ER": {
+    "file": "boeing-777-300er--china-southern.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air France|Boeing 787-9": {
+    "file": "boeing-787-9--air-france.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air China|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--air-china.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Alaska Airlines|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--alaska-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Arajet|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--arajet.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Asky Airlines|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--asky-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Batik Air Malaysia|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--batik-air-malaysia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Cayman Airways|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--cayman-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Hainan Airlines|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--hainan-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Boeing|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--boeing.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Jeju Air|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--jeju-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Oman Air|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--oman-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Royal Air Maroc|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--royal-air-maroc.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Shandong Airlines|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--shandong-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "ITA Airways|Airbus A220-300": {
+    "file": "airbus-a220-300--ita-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "QantasLink|Airbus A220-300": {
+    "file": "airbus-a220-300--qantaslink.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Fiji Airways|Airbus A330-300": {
+    "file": "airbus-a330-300--fiji-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Cebu Pacific|Airbus A330-900": {
+    "file": "airbus-a330-900--cebu-pacific.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Starlux Airlines|Airbus A330-900": {
+    "file": "airbus-a330-900--starlux-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Eastern Airlines|Boeing 777-300ER": {
+    "file": "boeing-777-300er--china-eastern-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Thai Airways|Boeing 777-300ER": {
+    "file": "boeing-777-300er--thai-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "ANA|Boeing 787-8": {
+    "file": "boeing-787-8--ana.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Etihad Airways|Boeing 787-9": {
+    "file": "boeing-787-9--etihad-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Infinite Flight|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--infinite-flight.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Emirates|Airbus A350-900": {
+    "file": "airbus-a350-900--emirates.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Allegiant Air|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--allegiant-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Copa Airlines|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--copa-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Qatar Airways - Retro|Boeing 777-300ER": {
+    "file": "boeing-777-300er--qatar-airways-retro.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Japan Airlines|Boeing 787-8": {
+    "file": "boeing-787-8--japan-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Hawaiian Airlines|Boeing 787-9": {
+    "file": "boeing-787-9--hawaiian-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Edelweiss Air|Airbus A350-900": {
+    "file": "airbus-a350-900--edelweiss-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Delta Air Lines - 100 Years|Airbus A350-900": {
+    "file": "airbus-a350-900--delta-air-lines-100-years.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Sichuan Airlines|Airbus A350-900": {
+    "file": "airbus-a350-900--sichuan-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "South African Airways|Airbus A350-900": {
+    "file": "airbus-a350-900--south-african-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Piper PA28 Archer": {
+    "file": "piper-pa28-archer--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Infinite Flight Academy|Piper PA28 Archer": {
+    "file": "piper-pa28-archer--infinite-flight-academy.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Infinite Flight - 2021|Airbus A330-900": {
+    "file": "airbus-a330-900--infinite-flight-2021.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air China|Airbus A319": {
+    "file": "airbus-a319--air-china.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Force One|Boeing 747-200": {
+    "file": "boeing-747-200--air-force-one.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Korean Air|Boeing 747-8": {
+    "file": "boeing-747-8--korean-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Avianca|Airbus A330-300": {
+    "file": "airbus-a330-300--avianca.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Iberia|Airbus A330-300": {
+    "file": "airbus-a330-300--iberia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Aeroflot|Airbus A330-300": {
+    "file": "airbus-a330-300--aeroflot.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Transat|Airbus A330-300": {
+    "file": "airbus-a330-300--air-transat.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "RwandAir|Airbus A330-300": {
+    "file": "airbus-a330-300--rwandair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Aircalin|Airbus A330-900": {
+    "file": "airbus-a330-900--aircalin.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Hi Fly|Airbus A330-900": {
+    "file": "airbus-a330-900--hi-fly.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Azul|Airbus A330-900": {
+    "file": "airbus-a330-900--azul.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Starlux Airlines|Airbus A350-900": {
+    "file": "airbus-a350-900--starlux-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Emirates - 2023|Airbus A380": {
+    "file": "airbus-a380--emirates-2023.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Korean Air|Airbus A380": {
+    "file": "airbus-a380--korean-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "flydubai|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--flydubai.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "AeroMexico|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--aeromexico.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "GOL|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--gol.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "AeroMexico|Boeing 777-200ER": {
+    "file": "boeing-777-200er--aeromexico.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "American Airlines - 1968|Boeing 777-200ER": {
+    "file": "boeing-777-200er--american-airlines-1968.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Ethiopian Airlines|Boeing 777-200LR": {
+    "file": "boeing-777-200lr--ethiopian-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Qatar Airways|Boeing 777-200LR": {
+    "file": "boeing-777-200lr--qatar-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Pakistan International Airlines|Boeing 777-200LR": {
+    "file": "boeing-777-200lr--pakistan-international-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Air Force - AC-130|C-130H": {
+    "file": "c-130h--us-air-force-ac-130.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Safarilink|Cessna 208": {
+    "file": "cessna-208--safarilink.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "JM Aviation|Challenger 350": {
+    "file": "challenger-350--jm-aviation.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Conviasa|E190": {
+    "file": "e190--conviasa.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "JetBlue|E190": {
+    "file": "e190--jetblue.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "QantasLink|E190": {
+    "file": "e190--qantaslink.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "SpaceX|Boeing 737-800": {
+    "file": "boeing-737-800--spacex.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "AirAsia X|Airbus A330-900": {
+    "file": "airbus-a330-900--airasia-x.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Airbus|Airbus A330-900": {
+    "file": "airbus-a330-900--airbus.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Alaska Airlines - Salmon People|Boeing 737-800": {
+    "file": "boeing-737-800--alaska-airlines-salmon-people.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Pakistan International Airlines - 2017|Airbus A320": {
+    "file": "airbus-a320--pakistan-international-airlines-2017.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Turkish Airlines - Sharklets|Airbus A321": {
+    "file": "airbus-a321--turkish-airlines-sharklets.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Qatar Airways|Airbus A330-300": {
+    "file": "airbus-a330-300--qatar-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lion Air|Airbus A330-300": {
+    "file": "airbus-a330-300--lion-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "VietJet Air|Airbus A330-300": {
+    "file": "airbus-a330-300--vietjet-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Airbus A330-200": {
+    "file": "airbus-a330-200--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air France|Airbus A330-200": {
+    "file": "airbus-a330-200--air-france.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "KLM|Airbus A330-200": {
+    "file": "airbus-a330-200--klm.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Level|Airbus A330-200": {
+    "file": "airbus-a330-200--level.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Wamos Air|Airbus A330-200": {
+    "file": "airbus-a330-200--wamos-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Aerolineas Argentinas|Airbus A330-200": {
+    "file": "airbus-a330-200--aerolineas-argentinas.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Algerie|Airbus A330-200": {
+    "file": "airbus-a330-200--air-algerie.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Turkish Airlines|Airbus A330-200": {
+    "file": "airbus-a330-200--turkish-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Privilege Style|Airbus A330-200": {
+    "file": "airbus-a330-200--privilege-style.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Hawaiian Airlines|Airbus A330-200": {
+    "file": "airbus-a330-200--hawaiian-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Qantas|Airbus A330-200": {
+    "file": "airbus-a330-200--qantas.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Aer Lingus|Airbus A330-200": {
+    "file": "airbus-a330-200--aer-lingus.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Transat|Airbus A330-200": {
+    "file": "airbus-a330-200--air-transat.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lufthansa - 100 Years|Airbus A380": {
+    "file": "airbus-a380--lufthansa-100-years.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Malaysia Airlines|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--malaysia-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Garuda Indonesia|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--garuda-indonesia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Airbus A330-800": {
+    "file": "airbus-a330-800--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Greenland|Airbus A330-800": {
+    "file": "airbus-a330-800--air-greenland.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Uganda Airlines|Airbus A330-800": {
+    "file": "airbus-a330-800--uganda-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Kuwait Airways|Airbus A330-800": {
+    "file": "airbus-a330-800--kuwait-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Airbus|Airbus A330-800": {
+    "file": "airbus-a330-800--airbus.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Canada Jetz|Airbus A320": {
+    "file": "airbus-a320--air-canada-jetz.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "AJet|Boeing 737-800": {
+    "file": "boeing-737-800--ajet.png",
+    "credit": "Jan Polet — helpathand.nl"
+  }
+}

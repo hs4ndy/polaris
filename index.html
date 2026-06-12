@@ -574,7 +574,8 @@
       border: 1px solid rgba(255,255,255,0.07);
       border-radius: 7px;
       overflow: hidden;
-      aspect-ratio: 16 / 9;
+      /* Library images are 300×123 side-profile renders — match their shape */
+      aspect-ratio: 300 / 123;
     }
     .d-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .d-photo-credit {
@@ -807,7 +808,9 @@
       <!-- Aircraft photo (community-submitted IF screenshot, hidden when no match) -->
       <div class="d-section" id="d-photo-section" style="display:none">
         <div class="d-photo">
-          <img id="d-photo-img" alt="" loading="lazy">
+          <!-- No loading="lazy": the panel is transform-translated off-screen
+               when closed, and lazy images never load while off-viewport -->
+          <img id="d-photo-img" alt="">
           <div class="d-photo-credit" id="d-photo-credit"></div>
         </div>
       </div>
@@ -2224,8 +2227,10 @@ function ensurePlaneSvg() {
 let photoManifest = null;
 let _photoManifestPromise = null;
 function ensurePhotoManifest() {
+  // no-cache → revalidate with the server (ETag/304) so a freshly deployed
+  // manifest isn't shadowed by the browser's heuristic cache
   return _photoManifestPromise ||
-    (_photoManifestPromise = fetch('photos.json')
+    (_photoManifestPromise = fetch('photos.json', { cache: 'no-cache' })
       .then(r => r.ok ? r.json() : {})
       .then(j => { photoManifest = (j && typeof j === 'object') ? j : {}; })
       .catch(() => { photoManifest = {}; }));

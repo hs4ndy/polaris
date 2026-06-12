@@ -8,6 +8,7 @@ node_modules/
 
 # Editor / agent scratch (contains saved reference material, not source)
 .claude/
+.scratch/
 
 # Logs
 *.log
