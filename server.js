@@ -22,6 +22,7 @@ let   lastPollTs    = 0;      // when the last successful poll completed
 let   pollIdleLogged = false; // one-shot "paused" log so we don't spam every 15 s
 let   aircraftNames = {};   // aircraftId (GUID) → human-readable name, e.g. "Airbus A320"
 let   liveryNames   = {};   // liveryId  (GUID) → human-readable livery, e.g. "American Airlines"
+let   liveryPairs   = [];   // [{aircraft, livery}] — full catalog for tooling/matching
 
 // ── Security: per-IP rate limiting ──────────────────────────────────────────────
 //  Fixed-window counter. Cheap, in-memory, no deps. Tuned generously enough
@@ -109,6 +110,7 @@ async function refreshMeta() {
   try {
     const res  = await apiGet('/aircraft/liveries');
     const list = Array.isArray(res?.result) ? res.result : [];
+    const pairs = [];
     for (const l of list) {
       const acId = l.aircraftID || l.aircraftId;
       const acNm = l.aircraftName || l.aircraft;
@@ -116,7 +118,9 @@ async function refreshMeta() {
       const lvNm = l.liveryName || l.livery || l.name;
       if (acId && acNm) aircraftNames[acId] = acNm;
       if (lvId && lvNm) liveryNames[lvId]   = lvNm;
+      if (acNm && lvNm) pairs.push({ aircraft: acNm, livery: lvNm });
     }
+    if (pairs.length) liveryPairs = pairs;
     console.log(`[meta] /aircraft/liveries: ${list.length} rows → ${Object.keys(aircraftNames).length} aircraft, ${Object.keys(liveryNames).length} liveries`);
   } catch (e) {
     console.error('[meta] /aircraft/liveries failed:', e.message);
@@ -320,6 +324,16 @@ const server = http.createServer(async (req, res) => {
   if (req.url === '/' || req.url === '') {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('Polaris IF Proxy running');
+    return;
+  }
+
+  // Livery catalog: GET /meta/liveries
+  // Full {aircraft, livery} pair list straight from the in-memory metadata —
+  // no upstream call, cheap to serve. Used by tooling (photo matcher) and
+  // available for future client features (filters, search).
+  if (req.url.startsWith('/meta/liveries')) {
+    res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600' });
+    res.end(JSON.stringify({ result: liveryPairs }));
     return;
   }
 
