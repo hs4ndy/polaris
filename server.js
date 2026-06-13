@@ -32,7 +32,11 @@ let   liveryPairs   = [];   // [{aircraft, livery}] — full catalog for tooling
 const planMeta            = {};
 const PLAN_TTL_MS         = 30 * 60 * 1000;   // re-fetch a flight's plan at most every 30 min
 const PLAN_IDS_PER_CALL   = 10;               // IF API hard cap per bulk request
-const PLAN_CALLS_PER_POLL = 5;                // ≤ 50 flights enriched per poll cycle
+// ≤ 250 flights enriched per poll. Cold start covers a few-thousand-flight
+// world in ~2-3 min, then drops to near-zero (only new flights / TTL refreshes)
+// since enrichPlans only queries flights missing fresh dep/dest. Calls are
+// sequential, so a full batch is ~6-8s — well inside the 15s poll interval.
+const PLAN_CALLS_PER_POLL = 25;
 
 // ── Security: per-IP rate limiting ──────────────────────────────────────────────
 //  Fixed-window counter. Cheap, in-memory, no deps. Tuned generously enough
