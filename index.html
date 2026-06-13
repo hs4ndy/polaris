@@ -1875,8 +1875,10 @@ function refreshRouteFields() {
   }
 
   // ── Loaded: dep/dest names resolved once by resolveRoute() at fetch time ──
-  set('d-dep-icao',  flightPlanDepName  || '—');
-  set('d-dest-icao', flightPlanDestName || '—');
+  // Display the real-world IATA code (CUN, LHR, DFW) when we can map the ICAO;
+  // otherwise fall back to the ICAO unchanged.
+  set('d-dep-icao',  flightPlanDepName  ? iataCode(flightPlanDepName)  : '—');
+  set('d-dest-icao', flightPlanDestName ? iataCode(flightPlanDestName) : '—');
 
   const prog = computeRouteProgress(flightPlanWPs, f.latitude, f.longitude);
   if (!prog) {
@@ -2236,6 +2238,28 @@ function ensurePhotoManifest() {
       .catch(() => { photoManifest = {}; }));
 }
 
+/* ── ICAO → IATA airport codes ──────────────────────────────────────────────── */
+//  IF only ever gives 4-letter ICAO codes (KDFW, MMUN, EGLL). Real-world
+//  trackers show the 3-letter IATA (DFW, CUN, LHR). There's no formula —
+//  outside the US, ICAO and IATA are unrelated — so we look them up in a
+//  bundled map built from the public-domain OurAirports dataset.
+let airportIata = null;
+let _airportsPromise = null;
+function ensureAirports() {
+  return _airportsPromise ||
+    (_airportsPromise = fetch('airports.json', { cache: 'no-cache' })
+      .then(r => r.ok ? r.json() : {})
+      .then(j => { airportIata = (j && typeof j === 'object') ? j : {}; })
+      .catch(() => { airportIata = {}; }));
+}
+
+// Returns the IATA code for an ICAO when known, else the input unchanged.
+function iataCode(icao) {
+  if (!icao) return icao;
+  const k = String(icao).trim().toUpperCase();
+  return (airportIata && airportIata[k]) || icao;
+}
+
 function renderPhoto(f) {
   const section = document.getElementById('d-photo-section');
   if (!section) return;
@@ -2340,6 +2364,7 @@ function resumeFromIdle() {
 document.addEventListener('DOMContentLoaded', () => {
   ensurePlaneSvg();      // start the plane.svg fetch (initMap awaits the same promise)
   ensurePhotoManifest(); // load community photo manifest in the background
+  ensureAirports();      // ICAO→IATA map for real-world airport codes
   initMap();
   connectWS();
   setInterval(cleanStale, 60_000);
