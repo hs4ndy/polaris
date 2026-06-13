@@ -34,7 +34,7 @@
       --glow-amber:   rgba(245, 166, 35, 0.22);
       --glow-purple:  rgba(168, 85, 247, 0.22);
       --sidebar-w: 300px;
-      --detail-w:  350px;
+      --detail-w:  392px;   /* ~12% wider than the original 350px */
     }
 
     html, body {
@@ -564,9 +564,6 @@
     .dg-lbl { font-size: 8px; color: var(--text3); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 5px; }
     .dg-val { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; }
 
-    /* Server row */
-    #d-server-row { padding: 12px 16px 0; font-size: 11px; color: var(--text2); }
-
     /* ── Aircraft photo (community-submitted IF screenshot) ── */
     .d-photo {
       position: relative;
@@ -838,30 +835,7 @@
         </div>
       </div>
 
-      <!-- Live flight data (Altitude / Speed / Vert Speed / Track) -->
-      <div class="d-section" style="margin-top:14px">
-        <div class="d-sec-label">Flight Data</div>
-        <div class="d-grid">
-          <div class="dg-card"><div class="dg-lbl">Altitude</div><div class="dg-val" id="d-alt">—</div></div>
-          <div class="dg-card"><div class="dg-lbl">Speed</div><div class="dg-val" id="d-spd">—</div></div>
-          <div class="dg-card"><div class="dg-lbl">Vert Speed</div><div class="dg-val" id="d-vs">—</div></div>
-          <div class="dg-card"><div class="dg-lbl">Track</div><div class="dg-val" id="d-trk">—</div></div>
-        </div>
-      </div>
-
-      <!-- Performance chart — altitude (amber) + speed (accent) over the flight -->
-      <div class="d-section" style="margin-top:14px" id="d-chart-section">
-        <div class="d-sec-label">Performance</div>
-        <div id="d-chart-wrap">
-          <div class="d-chart-lgnd">
-            <span style="color:var(--amber)"><i></i>ALT</span>
-            <span style="color:var(--accent)"><i></i>SPD</span>
-          </div>
-          <svg id="d-chart-svg" viewBox="0 0 300 140" preserveAspectRatio="none"></svg>
-        </div>
-      </div>
-
-      <!-- Aircraft: type + airline/livery (reference info) -->
+      <!-- Aircraft: type + airline/livery -->
       <div class="d-section" style="margin-top:14px" id="d-aircraft-section">
         <div class="d-sec-label">Aircraft</div>
         <div class="dg-card" style="margin-bottom:6px">
@@ -874,13 +848,34 @@
         </div>
       </div>
 
+      <!-- Live flight data (Altitude / Speed / Vert Speed / Track) -->
+      <div class="d-section" style="margin-top:14px">
+        <div class="d-sec-label">Flight Data</div>
+        <div class="d-grid">
+          <div class="dg-card"><div class="dg-lbl">Altitude</div><div class="dg-val" id="d-alt">—</div></div>
+          <div class="dg-card"><div class="dg-lbl">Speed</div><div class="dg-val" id="d-spd">—</div></div>
+          <div class="dg-card"><div class="dg-lbl">Vert Speed</div><div class="dg-val" id="d-vs">—</div></div>
+          <div class="dg-card"><div class="dg-lbl">Track</div><div class="dg-val" id="d-trk">—</div></div>
+        </div>
+      </div>
+
+      <!-- Graph — altitude (amber) + speed (accent) over the flight -->
+      <div class="d-section" style="margin-top:14px" id="d-chart-section">
+        <div class="d-sec-label">Graph</div>
+        <div id="d-chart-wrap">
+          <div class="d-chart-lgnd">
+            <span style="color:var(--amber)"><i></i>ALT</span>
+            <span style="color:var(--accent)"><i></i>SPD</span>
+          </div>
+          <svg id="d-chart-svg" viewBox="0 0 300 140" preserveAspectRatio="none"></svg>
+        </div>
+      </div>
+
       <!-- Waypoint progress list -->
       <div id="d-waypoints-section">
         <div class="d-sec-label">Waypoints</div>
         <div id="d-waypoints"></div>
       </div>
-
-      <div id="d-server-row"></div>
 
     </div>
   </div>
@@ -1765,9 +1760,6 @@ function renderDetail(f) {
   refreshRouteFields();
   renderChart();
   renderWaypoints(f);
-
-  document.getElementById('d-server-row').innerHTML =
-    `<span style="color:${col}">■</span>&nbsp;${esc(f.serverName || f.server || '')}`;
 }
 
 /* ── Route progress (Dep/Dest/Flown/To Go/Progress/ETA) ─────────────────────── */
@@ -2066,26 +2058,9 @@ function renderChart() {
     svg.appendChild(dot);
   }
 
-  // Top corners: CURRENT live values (more useful than MAX, which never changes)
-  if (lastAlt) {
-    const altLbl = document.createElementNS(NS, 'text');
-    altLbl.setAttribute('x', padL);
-    altLbl.setAttribute('y', 11);
-    altLbl.setAttribute('class', 'd-chart-lbl');
-    altLbl.setAttribute('fill', '#f5a623');
-    altLbl.textContent = `ALT ${fmtAltShort(lastAlt.alt)}`;
-    svg.appendChild(altLbl);
-  }
-  if (lastSpd) {
-    const spdLbl = document.createElementNS(NS, 'text');
-    spdLbl.setAttribute('x', W - padR);
-    spdLbl.setAttribute('y', 11);
-    spdLbl.setAttribute('text-anchor', 'end');
-    spdLbl.setAttribute('class', 'd-chart-lbl');
-    spdLbl.setAttribute('fill', '#4f8ef7');
-    spdLbl.textContent = `SPD ${Math.round(lastSpd.spd)} KT`;
-    svg.appendChild(spdLbl);
-  }
+  // (Current ALT/SPD values intentionally omitted here — the Flight Data
+  //  section directly above shows them, and drawing them in the top corners
+  //  collided with the FL gridline labels and the ALT/SPD legend.)
 
   // Time-axis corner labels — Departure (start) / Now (end)
   const elapsedMin = (tMax - tMin) / 60_000;
