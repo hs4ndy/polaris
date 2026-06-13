@@ -38,6 +38,9 @@ const PLAN_IDS_PER_CALL   = 10;               // IF API hard cap per bulk reques
 // sequential, so a full batch is ~6-8s — well inside the 15s poll interval.
 const PLAN_CALLS_PER_POLL = 25;
 
+// Diagnostic snapshot of the most recent enrichPlans run (exposed at /meta/routes)
+let enrichStats = { ran: 0, calls: 0, ok: 0, failed: 0, plansSeen: 0, withRoute: 0, lastErr: '', sampleResultLen: null };
+
 // ── Security: per-IP rate limiting ──────────────────────────────────────────────
 //  Fixed-window counter. Cheap, in-memory, no deps. Tuned generously enough
 //  for normal browsing (a session clicks a handful of flights/min) but low
@@ -178,29 +181,40 @@ async function enrichPlans(updated) {
     (bySession[f.sessionId] = bySession[f.sessionId] || []).push(id);
   }
 
+  const stats = { ran: now, calls: 0, ok: 0, failed: 0, plansSeen: 0, withRoute: 0, lastErr: '', sampleResultLen: null };
   let calls = 0;
   outer:
   for (const [sid, ids] of Object.entries(bySession)) {
     for (let i = 0; i < ids.length; i += PLAN_IDS_PER_CALL) {
       if (calls >= PLAN_CALLS_PER_POLL) break outer;
       const chunk = ids.slice(i, i + PLAN_IDS_PER_CALL);
-      calls++;
+      calls++; stats.calls++;
       try {
         // IF expects an object with a flightIds array — NOT a bare array
         const res   = await apiPost(`/sessions/${sid}/flights/flightplans`, { flightIds: chunk });
         const plans = Array.isArray(res?.result) ? res.result : [];
+        stats.ok++;
+        if (stats.sampleResultLen === null) {
+          stats.sampleResultLen = plans.length;
+          if (!plans.length) stats.lastErr = `errorCode=${res?.errorCode}`;  // capture why empty
+        }
         for (const p of plans) {
+          if (!p) continue;                       // bulk endpoint returns null for planless flights
+          stats.plansSeen++;
           const { dep, dest } = extractDepDest(p);
+          if (dep && dest) stats.withRoute++;
           planMeta[String(p.flightId)] = { dep, dest, ts: now };
         }
         // Mark requested-but-not-returned IDs as attempted so we don't retry
         // them every single poll (no filed plan → empty dep/dest, TTL applies)
         for (const id of chunk) if (!planMeta[id]) planMeta[id] = { dep: '', dest: '', ts: now };
       } catch (e) {
-        // Transient failure — leave them uncached so a later poll retries
+        stats.failed++;
+        stats.lastErr = e.message || String(e);
       }
     }
   }
+  enrichStats = stats;
 
   // Drop meta for flights that have left the world
   for (const id of Object.keys(planMeta)) if (!updated[id]) delete planMeta[id];
@@ -451,6 +465,21 @@ const server = http.createServer(async (req, res) => {
   if (req.url.startsWith('/meta/liveries')) {
     res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600' });
     res.end(JSON.stringify({ result: liveryPairs }));
+    return;
+  }
+
+  // Route-coverage diagnostic: GET /meta/routes (temporary)
+  if (req.url.startsWith('/meta/routes')) {
+    const all     = Object.values(cache);
+    const withDep = all.filter(f => f.dep && f.dest);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      total:      all.length,
+      withRoute:  withDep.length,
+      planMeta:   Object.keys(planMeta).length,
+      lastEnrich: enrichStats,
+      sample:     withDep.slice(0, 6).map(f => ({ cs: f.callsign, dep: f.dep, dest: f.dest })),
+    }, null, 2));
     return;
   }
 
