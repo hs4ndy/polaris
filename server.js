@@ -24,6 +24,16 @@ let   aircraftNames = {};   // aircraftId (GUID) → human-readable name, e.g. "
 let   liveryNames   = {};   // liveryId  (GUID) → human-readable livery, e.g. "American Airlines"
 let   liveryPairs   = [];   // [{aircraft, livery}] — full catalog for tooling/matching
 
+// Departure/destination ICAO per flight, for route search ("DFW-BZN"). Built
+// incrementally from the bulk flight-plans endpoint (POST, max 10 IDs/call) a
+// few batches per poll so we never hammer the IF API. Plans rarely change, so
+// once cached an entry is reused for a long time.
+//   planMeta[flightId] = { dep, dest, ts }
+const planMeta            = {};
+const PLAN_TTL_MS         = 30 * 60 * 1000;   // re-fetch a flight's plan at most every 30 min
+const PLAN_IDS_PER_CALL   = 10;               // IF API hard cap per bulk request
+const PLAN_CALLS_PER_POLL = 5;                // ≤ 50 flights enriched per poll cycle
+
 // ── Security: per-IP rate limiting ──────────────────────────────────────────────
 //  Fixed-window counter. Cheap, in-memory, no deps. Tuned generously enough
 //  for normal browsing (a session clicks a handful of flights/min) but low
@@ -94,6 +104,90 @@ function apiGet(path) {
     req.on('error', reject);
     req.setTimeout(10000, () => { req.destroy(); reject(new Error('request timeout')); });
   });
+}
+
+// ── HTTP POST helper (JSON body) ────────────────────────────────────────────────
+function apiPost(path, bodyObj) {
+  return new Promise((resolve, reject) => {
+    const body     = JSON.stringify(bodyObj);
+    const fullPath = `/public/v2${path}${path.includes('?') ? '&' : '?'}apikey=${API_KEY}`;
+    const req = https.request(
+      {
+        hostname: API_HOST, path: fullPath, method: 'POST',
+        headers: {
+          'Content-Type':   'application/json',
+          'Content-Length': Buffer.byteLength(body),
+          Accept:           'application/json',
+        },
+      },
+      res => {
+        let buf = '';
+        res.on('data', c => (buf += c));
+        res.on('end', () => {
+          try { resolve(JSON.parse(buf)); }
+          catch { reject(new Error('JSON parse failed')); }
+        });
+      }
+    );
+    req.on('error', reject);
+    req.setTimeout(10000, () => { req.destroy(); reject(new Error('request timeout')); });
+    req.write(body);
+    req.end();
+  });
+}
+
+// Extract departure/destination ICAO from a flight plan. The flat `waypoints`
+// string array's first and last 4-letter ICAO codes are the filed origin and
+// destination for the vast majority of plans.
+function extractDepDest(plan) {
+  const names = Array.isArray(plan?.waypoints) ? plan.waypoints : [];
+  const icaos = names
+    .map(n => String(n || '').trim().toUpperCase())
+    .filter(n => /^[A-Z]{4}$/.test(n));
+  if (!icaos.length) return { dep: '', dest: '' };
+  return { dep: icaos[0], dest: icaos[icaos.length - 1] };
+}
+
+// Incrementally fill planMeta for flights that lack a fresh dep/dest, a few
+// bulk calls per invocation. `updated` is { flightId → flight } from this poll.
+async function enrichPlans(updated) {
+  if (!API_KEY) return;
+  const now = Date.now();
+
+  // Group flights still needing plan data by their session
+  const bySession = {};
+  for (const [id, f] of Object.entries(updated)) {
+    const m = planMeta[id];
+    if (m && now - m.ts < PLAN_TTL_MS) continue;
+    if (!f.sessionId) continue;
+    (bySession[f.sessionId] = bySession[f.sessionId] || []).push(id);
+  }
+
+  let calls = 0;
+  outer:
+  for (const [sid, ids] of Object.entries(bySession)) {
+    for (let i = 0; i < ids.length; i += PLAN_IDS_PER_CALL) {
+      if (calls >= PLAN_CALLS_PER_POLL) break outer;
+      const chunk = ids.slice(i, i + PLAN_IDS_PER_CALL);
+      calls++;
+      try {
+        const res   = await apiPost(`/sessions/${sid}/flights/flightplans`, chunk);
+        const plans = Array.isArray(res?.result) ? res.result : [];
+        for (const p of plans) {
+          const { dep, dest } = extractDepDest(p);
+          planMeta[String(p.flightId)] = { dep, dest, ts: now };
+        }
+        // Mark requested-but-not-returned IDs as attempted so we don't retry
+        // them every single poll (no filed plan → empty dep/dest, TTL applies)
+        for (const id of chunk) if (!planMeta[id]) planMeta[id] = { dep: '', dest: '', ts: now };
+      } catch (e) {
+        // Transient failure — leave them uncached so a later poll retries
+      }
+    }
+  }
+
+  // Drop meta for flights that have left the world
+  for (const id of Object.keys(planMeta)) if (!updated[id]) delete planMeta[id];
 }
 
 // ── Aircraft + livery metadata (fetched at boot, refreshed every 6 h) ─────────
@@ -214,6 +308,7 @@ async function poll() {
           // The IF Live API uses inconsistent casing across endpoints — accept both
           const acId = f.aircraftId || f.aircraftID || '';
           const lvId = f.liveryId   || f.liveryID   || '';
+          const pm   = planMeta[id];                    // dep/dest filled in by enrichPlans
           updated[id] = {
             flightId:            id,
             username:            f.username            || '',
@@ -230,6 +325,8 @@ async function poll() {
             onGround:            f.onGround,
             aircraft:            aircraftNames[acId] || '',
             livery:              liveryNames[lvId]   || '',
+            dep:                 pm?.dep  || '',         // departure ICAO (route search)
+            dest:                pm?.dest || '',         // destination ICAO (route search)
             server,
             serverName:          session.name,
             sessionId:           session.id,            // needed for flightplan lookup
@@ -280,6 +377,10 @@ async function poll() {
       `${sessionsRes.result.length} sessions | ` +
       `${clients.size} client(s)`
     );
+
+    // Enrich a few flights' dep/dest after broadcasting (doesn't delay the
+    // position update). The values land on the next poll's broadcast.
+    await enrichPlans(updated);
   } catch (e) {
     console.error('[poll] fatal:', e.message);
   }
@@ -334,6 +435,22 @@ const server = http.createServer(async (req, res) => {
   if (req.url.startsWith('/meta/liveries')) {
     res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600' });
     res.end(JSON.stringify({ result: liveryPairs }));
+    return;
+  }
+
+  // Route-coverage diagnostic: GET /meta/routes
+  // How many cached flights have a resolved dep/dest (for route search), plus
+  // a small sample. Read-only, cheap, no upstream call.
+  if (req.url.startsWith('/meta/routes')) {
+    const all     = Object.values(cache);
+    const withDep = all.filter(f => f.dep && f.dest);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      total:     all.length,
+      withRoute: withDep.length,
+      planMeta:  Object.keys(planMeta).length,
+      sample:    withDep.slice(0, 8).map(f => ({ callsign: f.callsign, dep: f.dep, dest: f.dest })),
+    }, null, 2));
     return;
   }
 
