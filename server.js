@@ -136,14 +136,25 @@ function apiPost(path, bodyObj) {
   });
 }
 
-// Extract departure/destination ICAO from a flight plan. The flat `waypoints`
-// string array's first and last 4-letter ICAO codes are the filed origin and
-// destination for the vast majority of plans.
+// Extract departure/destination ICAO from a flight plan. First/last 4-letter
+// ICAO codes in the route are the filed origin and destination. Prefer the flat
+// `waypoints` string array; fall back to names in flightPlanItems.
 function extractDepDest(plan) {
-  const names = Array.isArray(plan?.waypoints) ? plan.waypoints : [];
-  const icaos = names
+  let icaos = (Array.isArray(plan?.waypoints) ? plan.waypoints : [])
     .map(n => String(n || '').trim().toUpperCase())
     .filter(n => /^[A-Z]{4}$/.test(n));
+
+  if (!icaos.length && Array.isArray(plan?.flightPlanItems)) {
+    const names = [];
+    (function walk(items) {
+      for (const it of items || []) {
+        if (it && it.name) names.push(String(it.name).trim().toUpperCase());
+        if (it && Array.isArray(it.children)) walk(it.children);
+      }
+    })(plan.flightPlanItems);
+    icaos = names.filter(n => /^[A-Z]{4}$/.test(n));
+  }
+
   if (!icaos.length) return { dep: '', dest: '' };
   return { dep: icaos[0], dest: icaos[icaos.length - 1] };
 }
@@ -171,7 +182,8 @@ async function enrichPlans(updated) {
       const chunk = ids.slice(i, i + PLAN_IDS_PER_CALL);
       calls++;
       try {
-        const res   = await apiPost(`/sessions/${sid}/flights/flightplans`, chunk);
+        // IF expects an object with a flightIds array — NOT a bare array
+        const res   = await apiPost(`/sessions/${sid}/flights/flightplans`, { flightIds: chunk });
         const plans = Array.isArray(res?.result) ? res.result : [];
         for (const p of plans) {
           const { dep, dest } = extractDepDest(p);
