@@ -450,21 +450,6 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // Route-coverage diagnostic: GET /meta/routes
-  // How many cached flights have a resolved dep/dest (for route search), plus
-  // a small sample. Read-only, cheap, no upstream call.
-  if (req.url.startsWith('/meta/routes')) {
-    const all     = Object.values(cache);
-    const withDep = all.filter(f => f.dep && f.dest);
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({
-      total:     all.length,
-      withRoute: withDep.length,
-      planMeta:  Object.keys(planMeta).length,
-      sample:    withDep.slice(0, 8).map(f => ({ callsign: f.callsign, dep: f.dep, dest: f.dest })),
-    }, null, 2));
-    return;
-  }
 
   // Full flown track: GET /path/:flightId
   // Hits the IF Live API /sessions/{sid}/flights/{fid}/route endpoint to get
