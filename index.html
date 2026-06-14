@@ -1443,6 +1443,13 @@ function addMapSourcesAndLayers() {
     map.on('mouseenter', layer, () => { map.getCanvas().style.cursor = 'pointer'; });
     map.on('mouseleave', layer, () => { map.getCanvas().style.cursor = ''; });
   }
+
+  // Click empty map (not on a plane) to deselect — like a real tracker.
+  map.on('click', e => {
+    if (!selectedId) return;
+    const hits = map.queryRenderedFeatures(e.point, { layers: ['planes', 'planes-ground'] });
+    if (!hits.length) closeDetail();
+  });
 }
 
 /* ── Clear all path layers ───────────────────────────────────────────────────── */
