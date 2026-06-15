@@ -311,7 +311,8 @@
     .fl-sep { color: var(--text3); }
     .s-badge { font-size: 9px; padding: 1px 5px; border-radius: 3px; line-height: 1.5; }
 
-    .fl-empty   { padding: 36px 14px; text-align: center; font-size: 12px; color: var(--text3); letter-spacing: 0.04em; }
+    .fl-empty   { padding: 36px 14px; text-align: center; font-size: 12px; color: var(--text2); letter-spacing: 0.04em; line-height: 1.5; }
+    .fl-empty-hint { margin-top: 8px; font-size: 10.5px; color: var(--text3); line-height: 1.5; }
     .fl-overflow{ padding: 8px 14px; text-align: center; font-size: 10px; color: var(--text3); border-top: 1px solid var(--border); }
 
     /* Beta footer */
@@ -765,7 +766,7 @@
             <circle cx="6.5" cy="6.5" r="4"/><line x1="10" y1="10" x2="14" y2="14"/>
           </svg>
         </span>
-        <input id="search-input" type="text" placeholder="Search callsign, pilot, or route (DFW-BZN)"
+        <input id="search-input" type="text" placeholder="Search callsign, pilot, or route (JFK-LAX)"
                oninput="filterSearch(this.value)" autocomplete="off" spellcheck="false">
       </div>
     </div>
@@ -1587,7 +1588,20 @@ function buildList() {
 
   const list = document.getElementById('flight-list');
   if (!vis.length) {
-    list.innerHTML = `<div class="fl-empty">${isOnline ? 'No flights' : 'Connecting…'}</div>`;
+    let msg = isOnline ? 'No flights' : 'Connecting…';
+    if (isOnline && searchQuery) {
+      const route = parseRouteQuery(searchQuery);
+      if (route) {
+        // The search ran fine — this route just has no live traffic. Say so
+        // explicitly so an empty result doesn't read as "broken".
+        const lbl = `${route.from || '✱'} → ${route.to || '✱'}`;
+        msg = `<div>No active flights on ${esc(lbl)}</div>`
+            + `<div class="fl-empty-hint">Routes need a filed flight plan — try a busier one (e.g. JFK-LAX) or the “all” servers tab.</div>`;
+      } else {
+        msg = `No flights matching “${esc(searchQuery)}”`;
+      }
+    }
+    list.innerHTML = `<div class="fl-empty">${msg}</div>`;
     return;
   }
 
