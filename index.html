@@ -1572,13 +1572,25 @@ function getVisible() {
   const route = searchQuery ? parseRouteQuery(searchQuery) : null;
   const q     = searchQuery ? searchQuery.toLowerCase() : '';
   return Object.values(flightData).filter(f => {
-    if (currentServer !== 'all' && f.server !== currentServer) return false;
+    // A route search is a "find this flight anywhere" action, so it ignores the
+    // active server tab — filed routes live mostly on Expert, but you might be
+    // browsing Casual. All other views still respect the selected server.
+    if (!route && currentServer !== 'all' && f.server !== currentServer) return false;
     if (!searchQuery) return true;
     if (route) return flightMatchesRoute(f, route);
     return (f.callsign || '').toLowerCase().includes(q)
         || (f.username || '').toLowerCase().includes(q)
         || (f.virtualOrganization || '').toLowerCase().includes(q);
   });
+}
+
+// Fraction of all flights that have a resolved dep/dest. Low right after the
+// proxy cold-starts (it fills routes in over a couple of polls), which is the
+// difference between "no flights on this route" and "route data not ready yet".
+function routeCoverage() {
+  const all = Object.values(flightData);
+  if (!all.length) return 1;
+  return all.filter(f => f.dep || f.dest).length / all.length;
 }
 
 /* ── Sidebar list ────────────────────────────────────────────────────────────── */
@@ -1592,11 +1604,18 @@ function buildList() {
     if (isOnline && searchQuery) {
       const route = parseRouteQuery(searchQuery);
       if (route) {
-        // The search ran fine — this route just has no live traffic. Say so
-        // explicitly so an empty result doesn't read as "broken".
         const lbl = `${route.from || '✱'} → ${route.to || '✱'}`;
-        msg = `<div>No active flights for ${esc(lbl)}</div>`
-            + `<div class="fl-empty-hint">Make sure the route is filed or typed in correctly (e.g. JFK-LAX)</div>`;
+        if (routeCoverage() < 0.12) {
+          // Proxy just woke up — route data is still streaming in. Don't claim
+          // the route is empty when we simply haven't loaded the plans yet.
+          msg = `<div>Loading route data…</div>`
+              + `<div class="fl-empty-hint">Departure &amp; arrival info is still loading — try again in a few seconds.</div>`;
+        } else {
+          // The search ran fine — this route just has no live traffic. Say so
+          // explicitly so an empty result doesn't read as "broken".
+          msg = `<div>No active flights for ${esc(lbl)}</div>`
+              + `<div class="fl-empty-hint">Make sure the route is filed or typed in correctly (e.g. JFK-LAX)</div>`;
+        }
       } else {
         msg = `No flights matching “${esc(searchQuery)}”`;
       }
