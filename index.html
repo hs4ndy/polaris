@@ -1595,8 +1595,8 @@ function buildList() {
         // The search ran fine — this route just has no live traffic. Say so
         // explicitly so an empty result doesn't read as "broken".
         const lbl = `${route.from || '✱'} → ${route.to || '✱'}`;
-        msg = `<div>No active flights on ${esc(lbl)}</div>`
-            + `<div class="fl-empty-hint">Routes need a filed flight plan — try a busier one (e.g. JFK-LAX) or the “all” servers tab.</div>`;
+        msg = `<div>No active flights for ${esc(lbl)}</div>`
+            + `<div class="fl-empty-hint">Make sure the route is filed or typed in correctly (e.g. JFK-LAX)</div>`;
       } else {
         msg = `No flights matching “${esc(searchQuery)}”`;
       }
