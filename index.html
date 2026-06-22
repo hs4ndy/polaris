@@ -1493,14 +1493,19 @@ function updateTrails() {
   }
   setData('projection', projFC);
 
-  // Flight plan — future portion only, densified along great circles so the
-  // drawn line matches the path the plane actually flies (and so the
-  // closest-leg split can't pick a wildly wrong leg on long direct routes).
+  // Forward line — a DIRECT great-circle from the plane straight to its
+  // destination airport (the plan's final waypoint), like FR24 and other
+  // trackers. We deliberately ignore the filed intermediate waypoints: aircraft
+  // turn off them, so a line that traced the filed route sat a few pixels off
+  // the plane. Anchoring at the live position keeps the dotted line glued to
+  // the aircraft. The solid trail (where it's been) is untouched.
   let planFC = emptyFC();
-  if (hasPlan) {
-    const planPts = densifyRoute(flightPlanWPs.map(w => [w.lat, w.lng]));
-    const { future } = splitPlanAtPlane(planPts, f.latitude, f.longitude);
-    planFC = lineFC(future.map(p => [p[1], p[0]]));
+  if (hasPlan && f.latitude != null && f.longitude != null) {
+    const dest = flightPlanWPs[flightPlanWPs.length - 1];
+    if (dest && dest.lat != null && dest.lng != null) {
+      const direct = densifyRoute([[f.latitude, f.longitude], [dest.lat, dest.lng]]);
+      planFC = lineFC(direct.map(p => [p[1], p[0]]));
+    }
   }
   setData('flightplan', planFC);
 }
