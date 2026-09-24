@@ -17,6 +17,8 @@
 
 const fs   = require('fs');
 const path = require('path');
+const dns  = require('dns').promises;
+const https = require('https');
 
 const ROOT       = path.join(__dirname, '..');
 const HTML_PATH  = path.join(ROOT, '.scratch', 'liveries.html');
@@ -27,6 +29,47 @@ const SOURCE     = 'https://www.helpathand.nl/janpolet/infinite-flight-aircraft-
 const CREDIT     = 'Jan Polet — helpathand.nl';
 const DRY        = process.argv.includes('--dry');
 const REFRESH    = process.argv.includes('--refresh');
+
+// Some Windows DNS configurations cannot resolve the photo host even while
+// browsers can. Resolve through a public DNS server only if the system fails,
+// then retain normal TLS hostname verification for every HTTPS request.
+let siteAddress;
+async function siteIp() {
+  if (!siteAddress) siteAddress = (async () => {
+    try { return (await dns.lookup('www.helpathand.nl', { family: 4 })).address; }
+    catch {
+      const resolver = new dns.Resolver();
+      resolver.setServers(['1.1.1.1']);
+      const addresses = await resolver.resolve4('www.helpathand.nl');
+      if (!addresses.length) throw new Error('photo host DNS returned no IPv4 address');
+      return addresses[0];
+    }
+  })();
+  return siteAddress;
+}
+
+async function siteGet(url) {
+  const address = await siteIp();
+  return new Promise((resolve, reject) => {
+    const req = https.get(url, {
+      lookup: (_host, opts, cb) => opts.all
+        ? cb(null, [{ address, family: 4 }])
+        : cb(null, address, 4),
+      headers: { 'User-Agent': 'Mozilla/5.0 (PolarisPhotoBuilder)', 'Connection': 'close' },
+      timeout: 20000,
+    }, res => {
+      const chunks = [];
+      res.on('data', chunk => chunks.push(chunk));
+      res.on('end', () => {
+        if (res.statusCode !== 200) return reject(new Error(`HTTP ${res.statusCode}`));
+        resolve(Buffer.concat(chunks));
+      });
+      res.on('error', reject);
+    });
+    req.on('timeout', () => req.destroy(new Error('photo host timeout')));
+    req.on('error', reject);
+  });
+}
 
 // ── Parse the TablePress rows ───────────────────────────────────────────────
 function parseSiteRows(html) {
@@ -90,6 +133,7 @@ const LIVERY_ALIASES = {
   'Iberia - New Air Nostrum':  'Air Nostrum New',
   'Iberia - Retro Air Nostrum':'Air Nostrum Retro',
   'TUI':                       'TUIfly',
+  'US Air Force - KC-10 Extender': 'US Air Force KC-10A Extender',
 };
 
 // The API abbreviates "United States" to "US"; the site doesn't.
@@ -177,14 +221,7 @@ async function download(url, dest) {
   let lastErr;
   for (let i = 0; i < 4; i++) {
     try {
-      const res = await fetch(url, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (PolarisPhotoBuilder)',
-          'Connection': 'close',
-        },
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const buf = Buffer.from(await res.arrayBuffer());
+      const buf = await siteGet(url);
       if (buf.length < 1000 || !buf.subarray(0, 8).equals(Buffer.from('89504e470d0a1a0a', 'hex'))) {
         throw new Error('response is not a PNG image');
       }
@@ -205,9 +242,7 @@ const slugify = s => String(s).toLowerCase()
 (async () => {
   const html = REFRESH
     ? await (async () => {
-        const res = await fetch(SOURCE);
-        if (!res.ok) throw new Error(`source page HTTP ${res.status}`);
-        return res.text();
+        return (await siteGet(SOURCE)).toString('utf8');
       })()
     : fs.readFileSync(HTML_PATH, 'utf8');
   const siteRows = parseSiteRows(html);
@@ -223,6 +258,14 @@ const slugify = s => String(s).toLowerCase()
   const matchFn  = buildMatcher(siteRows);
   const manifest = fs.existsSync(MANIFEST)
     ? JSON.parse(fs.readFileSync(MANIFEST, 'utf8')) : {};
+  // IF renamed this type in its API. Reuse the existing 35 images under the
+  // live key instead of downloading duplicates that still would not display.
+  for (const key of Object.keys(manifest)) {
+    if (!key.endsWith('|Airbus A321neo')) continue;
+    const liveKey = key.replace(/\|Airbus A321neo$/, '|Airbus A321 NEO');
+    if (!manifest[liveKey]) manifest[liveKey] = manifest[key];
+    delete manifest[key];
+  }
   const stats    = { matched: 0, existing: 0, byTier: {1:0,2:0,3:0,4:0}, unmatched: [] };
   const jobs     = [];
   const usedFiles = new Set(Object.values(manifest).map(v => v.file));

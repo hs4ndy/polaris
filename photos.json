@@ -4367,42 +4367,320 @@
     "file": "boeing-737-800--ajet.png",
     "credit": "Jan Polet — helpathand.nl"
   },
-  "Air Canada|Airbus A321neo": { "file": "airbus-a321neo--air-canada.png", "credit": "Jan Polet — helpathand.nl" },
-  "Air New Zealand - All Blacks|Airbus A321neo": { "file": "airbus-a321neo--air-new-zealand.png", "credit": "Jan Polet — helpathand.nl" },
-  "Air Transat|Airbus A321neo": { "file": "airbus-a321neo--air-transat.png", "credit": "Jan Polet — helpathand.nl" },
-  "AirAsia|Airbus A321neo": { "file": "airbus-a321neo--airasia.png", "credit": "Jan Polet — helpathand.nl" },
-  "Airbus|Airbus A321neo": { "file": "airbus-a321neo--airbus.png", "credit": "Jan Polet — helpathand.nl" },
-  "American Airlines|Airbus A321neo": { "file": "airbus-a321neo--american-airlines.png", "credit": "Jan Polet — helpathand.nl" },
-  "British Airways|Airbus A321neo": { "file": "airbus-a321neo--british-airways.png", "credit": "Jan Polet — helpathand.nl" },
-  "Cathay Pacific|Airbus A321neo": { "file": "airbus-a321neo--cathay-pacific.png", "credit": "Jan Polet — helpathand.nl" },
-  "Cebu Pacific|Airbus A321neo": { "file": "airbus-a321neo--cebu-pacific.png", "credit": "Jan Polet — helpathand.nl" },
-  "China Southern|Airbus A321neo": { "file": "airbus-a321neo--china-southern.png", "credit": "Jan Polet — helpathand.nl" },
-  "Delta Air Lines|Airbus A321neo": { "file": "airbus-a321neo--delta-air-lines.png", "credit": "Jan Polet — helpathand.nl" },
-  "EasyJet|Airbus A321neo": { "file": "airbus-a321neo--easyjet.png", "credit": "Jan Polet — helpathand.nl" },
-  "EgyptAir|Airbus A321neo": { "file": "airbus-a321neo--egyptair.png", "credit": "Jan Polet — helpathand.nl" },
-  "Etihad Airways|Airbus A321neo": { "file": "airbus-a321neo--etihad.png", "credit": "Jan Polet — helpathand.nl" },
-  "Generic|Airbus A321neo": { "file": "airbus-a321neo--generic.png", "credit": "Jan Polet — helpathand.nl" },
-  "Iberia|Airbus A321neo": { "file": "airbus-a321neo--iberia.png", "credit": "Jan Polet — helpathand.nl" },
-  "Icelandair|Airbus A321neo": { "file": "airbus-a321neo--icelandair.png", "credit": "Jan Polet — helpathand.nl" },
-  "IndiGo|Airbus A321neo": { "file": "airbus-a321neo--indigo.png", "credit": "Jan Polet — helpathand.nl" },
-  "Jet2|Airbus A321neo": { "file": "airbus-a321neo--jet2.png", "credit": "Jan Polet — helpathand.nl" },
-  "Jetstar|Airbus A321neo": { "file": "airbus-a321neo--jetstar.png", "credit": "Jan Polet — helpathand.nl" },
-  "KLM|Airbus A321neo": { "file": "airbus-a321neo--klm.png", "credit": "Jan Polet — helpathand.nl" },
-  "Korean Air|Airbus A321neo": { "file": "airbus-a321neo--korean-air.png", "credit": "Jan Polet — helpathand.nl" },
-  "LATAM|Airbus A321neo": { "file": "airbus-a321neo--latam.png", "credit": "Jan Polet — helpathand.nl" },
-  "Lufthansa|Airbus A321neo": { "file": "airbus-a321neo--lufthansa.png", "credit": "Jan Polet — helpathand.nl" },
-  "Peach Aviation|Airbus A321neo": { "file": "airbus-a321neo--peach-aviation.png", "credit": "Jan Polet — helpathand.nl" },
-  "Philippine Airlines|Airbus A321neo": { "file": "airbus-a321neo--philippine-airlines.png", "credit": "Jan Polet — helpathand.nl" },
-  "Qantas|Airbus A321neo": { "file": "airbus-a321neo--qantas.png", "credit": "Jan Polet — helpathand.nl" },
-  "Saudia|Airbus A321neo": { "file": "airbus-a321neo--saudia.png", "credit": "Jan Polet — helpathand.nl" },
-  "Swiss International Air Lines|Airbus A321neo": { "file": "airbus-a321neo--swiss-international-air-lines.png", "credit": "Jan Polet — helpathand.nl" },
-  "TAP Air Portugal|Airbus A321neo": { "file": "airbus-a321neo--tap-air-portugal.png", "credit": "Jan Polet — helpathand.nl" },
-  "Thai Airways|Airbus A321neo": { "file": "airbus-a321neo--thai-airways.png", "credit": "Jan Polet — helpathand.nl" },
-  "Transavia|Airbus A321neo": { "file": "airbus-a321neo--transavia.png", "credit": "Jan Polet — helpathand.nl" },
-  "Turkish Airlines|Airbus A321neo": { "file": "airbus-a321neo--turkish-airlines.png", "credit": "Jan Polet — helpathand.nl" },
-  "VietJet Air|Airbus A321neo": { "file": "airbus-a321neo--vietjet-air.png", "credit": "Jan Polet — helpathand.nl" },
-  "Wizz Air|Airbus A321neo": { "file": "airbus-a321neo--wizz-air.png", "credit": "Jan Polet — helpathand.nl" },
-  "Air China|Airbus A330-200": { "file": "airbus-a330-200--air-china.png", "credit": "Jan Polet — helpathand.nl" },
-  "Air Mauritius|Airbus A330-200": { "file": "airbus-a330-200--air-mauritius.png", "credit": "Jan Polet — helpathand.nl" },
-  "China Eastern - SkyTeam|Airbus A330-200": { "file": "airbus-a330-200--china-eastern-skyteam.png", "credit": "Jan Polet — helpathand.nl" }
+  "Air China|Airbus A330-200": {
+    "file": "airbus-a330-200--air-china.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Mauritius|Airbus A330-200": {
+    "file": "airbus-a330-200--air-mauritius.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Eastern - SkyTeam|Airbus A330-200": {
+    "file": "airbus-a330-200--china-eastern-skyteam.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Canada|Airbus A321 NEO": {
+    "file": "airbus-a321neo--air-canada.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air New Zealand - All Blacks|Airbus A321 NEO": {
+    "file": "airbus-a321neo--air-new-zealand.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Transat|Airbus A321 NEO": {
+    "file": "airbus-a321neo--air-transat.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "AirAsia|Airbus A321 NEO": {
+    "file": "airbus-a321neo--airasia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Airbus|Airbus A321 NEO": {
+    "file": "airbus-a321neo--airbus.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "American Airlines|Airbus A321 NEO": {
+    "file": "airbus-a321neo--american-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "British Airways|Airbus A321 NEO": {
+    "file": "airbus-a321neo--british-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Cathay Pacific|Airbus A321 NEO": {
+    "file": "airbus-a321neo--cathay-pacific.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Cebu Pacific|Airbus A321 NEO": {
+    "file": "airbus-a321neo--cebu-pacific.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Southern|Airbus A321 NEO": {
+    "file": "airbus-a321neo--china-southern.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Delta Air Lines|Airbus A321 NEO": {
+    "file": "airbus-a321neo--delta-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "EasyJet|Airbus A321 NEO": {
+    "file": "airbus-a321neo--easyjet.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "EgyptAir|Airbus A321 NEO": {
+    "file": "airbus-a321neo--egyptair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Etihad Airways|Airbus A321 NEO": {
+    "file": "airbus-a321neo--etihad.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Airbus A321 NEO": {
+    "file": "airbus-a321neo--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Iberia|Airbus A321 NEO": {
+    "file": "airbus-a321neo--iberia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Icelandair|Airbus A321 NEO": {
+    "file": "airbus-a321neo--icelandair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "IndiGo|Airbus A321 NEO": {
+    "file": "airbus-a321neo--indigo.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Jet2|Airbus A321 NEO": {
+    "file": "airbus-a321neo--jet2.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Jetstar|Airbus A321 NEO": {
+    "file": "airbus-a321neo--jetstar.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "KLM|Airbus A321 NEO": {
+    "file": "airbus-a321neo--klm.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Korean Air|Airbus A321 NEO": {
+    "file": "airbus-a321neo--korean-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "LATAM|Airbus A321 NEO": {
+    "file": "airbus-a321neo--latam.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lufthansa|Airbus A321 NEO": {
+    "file": "airbus-a321neo--lufthansa.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Peach Aviation|Airbus A321 NEO": {
+    "file": "airbus-a321neo--peach-aviation.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Philippine Airlines|Airbus A321 NEO": {
+    "file": "airbus-a321neo--philippine-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Qantas|Airbus A321 NEO": {
+    "file": "airbus-a321neo--qantas.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Saudia|Airbus A321 NEO": {
+    "file": "airbus-a321neo--saudia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Swiss International Air Lines|Airbus A321 NEO": {
+    "file": "airbus-a321neo--swiss-international-air-lines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "TAP Air Portugal|Airbus A321 NEO": {
+    "file": "airbus-a321neo--tap-air-portugal.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Thai Airways|Airbus A321 NEO": {
+    "file": "airbus-a321neo--thai-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Transavia|Airbus A321 NEO": {
+    "file": "airbus-a321neo--transavia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Turkish Airlines|Airbus A321 NEO": {
+    "file": "airbus-a321neo--turkish-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "VietJet Air|Airbus A321 NEO": {
+    "file": "airbus-a321neo--vietjet-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Wizz Air|Airbus A321 NEO": {
+    "file": "airbus-a321neo--wizz-air.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Jetstar|Airbus A320": {
+    "file": "airbus-a320--jetstar-2.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Bangkok Airways|Boeing 717-200": {
+    "file": "boeing-717-200--bangkok-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Jetstar|Boeing 787-8": {
+    "file": "boeing-787-8--jetstar-2.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Xiamen Airlines|Boeing 787-8": {
+    "file": "boeing-787-8--xiamen-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Air Force|F-22": {
+    "file": "f-22--us-air-force.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Eastern|Airbus A350-900": {
+    "file": "airbus-a350-900--china-eastern.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Eastern|Airbus A320": {
+    "file": "airbus-a320--china-eastern.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Eastern|Airbus A330-300": {
+    "file": "airbus-a330-300--china-eastern.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Xiamen Airlines|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--xiamen-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Eastern|Boeing 777-300ER": {
+    "file": "boeing-777-300er--china-eastern.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Orbis|DC-10": {
+    "file": "dc-10--orbis.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Generic|Airbus A350-1000": {
+    "file": "airbus-a350-1000--generic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "AJet|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--ajet.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Japan Airlines|Airbus A350-1000": {
+    "file": "airbus-a350-1000--japan-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Philippine Airlines - 85 Years|Airbus A350-1000": {
+    "file": "airbus-a350-1000--philippine-airlines-85-years.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Qatar Airways|Airbus A350-1000": {
+    "file": "airbus-a350-1000--qatar-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "British Airways|Airbus A350-1000": {
+    "file": "airbus-a350-1000--british-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Cathay Pacific|Airbus A350-1000": {
+    "file": "airbus-a350-1000--cathay-pacific.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "FrenchBee|Airbus A350-1000": {
+    "file": "airbus-a350-1000--frenchbee.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Virgin Atlantic|Airbus A350-1000": {
+    "file": "airbus-a350-1000--virgin-atlantic.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Ethiopian Airlines|Airbus A350-1000": {
+    "file": "airbus-a350-1000--ethiopian-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Etihad Airways|Airbus A350-1000": {
+    "file": "airbus-a350-1000--etihad-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Caraibes|Airbus A350-1000": {
+    "file": "airbus-a350-1000--air-caraibes.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Sunclass Airlines|Airbus A330-900": {
+    "file": "airbus-a330-900--sunclass-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Starlux Airlines|Airbus A350-1000": {
+    "file": "airbus-a350-1000--starlux-airlines.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Qantas|Airbus A350-1000": {
+    "file": "airbus-a350-1000--qantas.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "FlySafair|Boeing 737-800": {
+    "file": "boeing-737-800--flysafair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Icelandair|Bombardier Dash 8-Q400": {
+    "file": "bombardier-dash-8-q400--icelandair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Grant Aviation|Cessna 208": {
+    "file": "cessna-208--grant-aviation.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "EgyptAir|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--egyptair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Azul|Airbus A330-200": {
+    "file": "airbus-a330-200--azul.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "ITA Airways|Airbus A330-900": {
+    "file": "airbus-a330-900--ita-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Cabo Verde|Boeing 737-8 MAX": {
+    "file": "boeing-737-8-max--cabo-verde.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Iberia|Airbus A330-200": {
+    "file": "airbus-a330-200--iberia.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lufthansa - 100 Years|Airbus A350-900": {
+    "file": "airbus-a350-900--lufthansa-100-years.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "RwandAir|Airbus A330-200": {
+    "file": "airbus-a330-200--rwandair.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Qatar Airways|Airbus A330-200": {
+    "file": "airbus-a330-200--qatar-airways.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "China Eastern - Skyteam|Airbus A330-200": {
+    "file": "airbus-a330-200--china-eastern-skyteam-2.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Air Peace|Boeing 777-200ER": {
+    "file": "boeing-777-200er--air-peace.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "Lufthansa 100 Years|Airbus A350-900": {
+    "file": "airbus-a350-900--lufthansa-100-years-2.png",
+    "credit": "Jan Polet — helpathand.nl"
+  },
+  "US Air Force - KC-10 Extender|DC-10F": {
+    "file": "dc-10f--us-air-force-kc-10-extender.png",
+    "credit": "Jan Polet — helpathand.nl"
+  }
 }
