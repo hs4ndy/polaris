@@ -30,9 +30,6 @@
       --purple:   #a855f7;
       --green:    #3fb950;
       --red:      #f85149;
-      --glow-accent:  rgba(79, 142, 247, 0.22);
-      --glow-amber:   rgba(245, 166, 35, 0.22);
-      --glow-purple:  rgba(168, 85, 247, 0.22);
       --sidebar-w: 300px;
       --detail-w:  392px;   /* ~12% wider than the original 350px */
     }
@@ -95,10 +92,8 @@
       background: transparent !important;
       border: none !important;
       border-bottom: 1px solid rgba(255,255,255,0.06) !important;
-      transition: background 0.18s;
     }
     .maplibregl-ctrl-group button:last-child { border-bottom: none !important; }
-    .maplibregl-ctrl-group button:hover { background: rgba(79,142,247,0.18) !important; }
     /* Recolor the default dark icons to our light text color */
     .maplibregl-ctrl-group button .maplibregl-ctrl-icon { filter: invert(0.85); }
 
@@ -171,17 +166,13 @@
       flex-direction: column;
     }
 
-    /* Prism rainbow top edge */
+    /* Single-color top edge */
     #left-sb::after {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 1.5px;
-      background: linear-gradient(90deg,
-        rgba(79,142,247,0.55), rgba(139,92,246,0.65),
-        rgba(56,189,248,0.5),  rgba(52,211,153,0.4),
-        rgba(251,191,36,0.35), rgba(239,68,68,0.25), transparent
-      );
+      background: rgba(79,142,247,0.55);
       border-radius: 14px 14px 0 0;
       pointer-events: none;
       z-index: 2;
@@ -246,14 +237,11 @@
       padding: 5px 0;
       border-radius: 5px;
       cursor: pointer;
-      transition: color 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
       letter-spacing: 0.03em;
     }
     .sf-btn:hover { color: var(--text2); background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.12); }
-    .sf-btn.active[data-server="all"]      { background: rgba(79,142,247,0.14);  border-color: rgba(79,142,247,0.4);  color: var(--accent);  box-shadow: 0 0 12px rgba(79,142,247,0.2); }
-    .sf-btn.active[data-server="expert"]   { background: rgba(79,142,247,0.14);  border-color: rgba(79,142,247,0.4);  color: var(--accent);  box-shadow: 0 0 12px rgba(79,142,247,0.2); }
-    .sf-btn.active[data-server="training"] { background: rgba(245,166,35,0.12);  border-color: rgba(245,166,35,0.4);  color: var(--amber);   box-shadow: 0 0 12px rgba(245,166,35,0.2); }
-    .sf-btn.active[data-server="casual"]   { background: rgba(168,85,247,0.12);  border-color: rgba(168,85,247,0.4);  color: var(--purple);  box-shadow: 0 0 12px rgba(168,85,247,0.2); }
+    .sf-btn.active { background: rgba(79,142,247,0.14); border-color: rgba(79,142,247,0.4); color: var(--accent); }
 
     /* Count + speed toggle */
     #sb-meta {
@@ -286,15 +274,6 @@
       background: rgba(79,142,247,0.1);
       border-left: 2px solid var(--accent);
       padding-left: 12px;
-      box-shadow: inset 4px 0 16px rgba(79,142,247,0.1);
-    }
-    .fl-item.selected::after {
-      content: '';
-      position: absolute;
-      inset: 0; left: auto;
-      width: 28px;
-      background: linear-gradient(to left, #09152c, transparent);
-      pointer-events: none;
     }
 
     .fl-r1 { display: flex; align-items: center; gap: 7px; }
@@ -356,17 +335,13 @@
     }
     #right-sb.open { transform: translateX(0); }
 
-    /* Prism edge — reversed */
+    /* Match the sidebar's single-color edge */
     #right-sb::after {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 1.5px;
-      background: linear-gradient(90deg,
-        transparent, rgba(239,68,68,0.25), rgba(251,191,36,0.35),
-        rgba(52,211,153,0.4), rgba(56,189,248,0.5),
-        rgba(139,92,246,0.65), rgba(79,142,247,0.55)
-      );
+      background: rgba(79,142,247,0.55);
       border-radius: 14px 14px 0 0;
       pointer-events: none;
       z-index: 2;
@@ -409,9 +384,7 @@
       display: flex; align-items: center; justify-content: center;
       cursor: pointer;
       font-size: 12px;
-      transition: color 0.15s, border-color 0.15s, background 0.15s;
     }
-    #d-close:hover { color: var(--text); border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.1); }
 
     /* Callsign row — callsign + small aircraft-type chip */
     .d-cs-row {
@@ -484,12 +457,12 @@
       width: 38px;
       height: 38px;
       border-radius: 50%;
-      background: rgba(245, 166, 35, 0.16);
-      border: 1px solid rgba(245, 166, 35, 0.4);
+      background: rgba(79, 142, 247, 0.16);
+      border: 1px solid rgba(79, 142, 247, 0.4);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--amber);
+      color: var(--accent);
       flex-shrink: 0;
     }
     /* plane.svg has the nose pointing UP — rotate 90° so it flies left→right
@@ -560,9 +533,7 @@
       border: 1px solid rgba(255,255,255,0.07);
       border-radius: 7px;
       padding: 12px 12px;
-      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
     }
-    .dg-card:hover { border-color: rgba(255,255,255,0.12); background: rgba(255,255,255,0.06); box-shadow: inset 0 1px 0 rgba(255,255,255,0.06); }
     .dg-lbl { font-size: 9px; color: var(--text2); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; }
     .dg-val { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; }
 
@@ -726,9 +697,7 @@
       border-radius: 7px;
       cursor: pointer;
       letter-spacing: 0.04em;
-      transition: background 0.2s, border-color 0.2s;
     }
-    #idle-resume:hover { background: rgba(79,142,247,0.25); border-color: rgba(79,142,247,0.6); }
 
     /* Mobile */
     @media (max-width: 768px) {
@@ -766,7 +735,7 @@
             <circle cx="6.5" cy="6.5" r="4"/><line x1="10" y1="10" x2="14" y2="14"/>
           </svg>
         </span>
-        <input id="search-input" type="text" placeholder="Search callsign, pilot, or route (JFK-LAX)"
+        <input id="search-input" type="text" placeholder="Search"
                oninput="filterSearch(this.value)" autocomplete="off" spellcheck="false">
       </div>
     </div>
@@ -908,12 +877,6 @@ const PROXY_BASE = location.hostname === 'localhost'
   ? 'http://localhost:3001'
   : 'https://polaris-proxy-u3fw.onrender.com';
 
-const SERVER_COLOR = {
-  expert:   '#4f8ef7',
-  training: '#f5a623',
-  casual:   '#a855f7',
-};
-
 const FLIGHT_STATE = {
   0: { label: 'Unknown',   color: '#5a6270' },
   1: { label: 'Preflight', color: '#5a6270' },
@@ -959,7 +922,7 @@ const esc = s => String(s || '')
   .replace(/&/g,'&amp;').replace(/</g,'&lt;')
   .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
-const sColor = s => SERVER_COLOR[s] || '#5a6270';
+const sColor = () => '#4f8ef7';
 // Returns state object only for meaningful states (2-7); null for Unknown/Preflight
 const sState = n => (n >= 2 && n <= 7) ? FLIGHT_STATE[n] : null;
 
@@ -1022,16 +985,13 @@ function svgToImageData(svgStr, px) {
   });
 }
 
-// Add one server-colored plane image per server to the map (retina @2x).
+// All servers share the same blue plane image (retina @2x).
 async function buildPlaneImages() {
   const PX = 96;  // rendered at 2x; addImage pixelRatio 2 → 48 logical px
-  for (const [server, color] of Object.entries(SERVER_COLOR)) {
-    const id = `plane-${server}`;
-    const data = await svgToImageData(planeSvgString(color, PX), PX);
-    if (!data) continue;
-    if (map.hasImage(id)) map.updateImage(id, data);
-    else map.addImage(id, data, { pixelRatio: 2 });
-  }
+  const data = await svgToImageData(planeSvgString(sColor(), PX), PX);
+  if (!data) return;
+  if (map.hasImage('plane')) map.updateImage('plane', data);
+  else map.addImage('plane', data, { pixelRatio: 2 });
 }
 
 /* ── Great-circle projection ─────────────────────────────────────────────────── */
@@ -1344,7 +1304,7 @@ async function onStyleLoad() {
   } catch {}
 
   await ensurePlaneSvg();      // make sure plane.svg fetch attempt has finished
-  await buildPlaneImages();    // server-colored plane icons → map images
+  await buildPlaneImages();    // blue plane icon for every server
   addMapSourcesAndLayers();
   mapReady = true;
 
@@ -1359,7 +1319,7 @@ function addMapSourcesAndLayers() {
   map.addSource('projection', { type: 'geojson', data: emptyFC() });
   map.addSource('flights',    { type: 'geojson', data: emptyFC() });
 
-  // Trail: dark halo under a server-colored gradient line
+  // Trail: dark halo under the constant blue line
   map.addLayer({
     id: 'trail-halo', type: 'line', source: 'trail',
     layout: { 'line-cap': 'round', 'line-join': 'round' },
@@ -1410,8 +1370,7 @@ function addMapSourcesAndLayers() {
     filter: ['==', ['get', 'onGround'], true],
     paint: {
       'circle-radius': ['case', ['get', 'selected'], 5, 3.4],
-      'circle-color': ['match', ['get', 'server'],
-        'expert', '#4f8ef7', 'training', '#f5a623', 'casual', '#a855f7', '#7a8694'],
+      'circle-color': sColor(),
       'circle-opacity': ['case', ['get', 'dimmed'], 0.4, 0.92],
       'circle-stroke-width': ['case', ['get', 'selected'], 1.5, 0],
       'circle-stroke-color': '#05070d',
@@ -1423,7 +1382,7 @@ function addMapSourcesAndLayers() {
     id: 'planes', type: 'symbol', source: 'flights',
     filter: ['!', ['==', ['get', 'onGround'], true]],
     layout: {
-      'icon-image': ['concat', 'plane-', ['get', 'server']],
+      'icon-image': 'plane',
       'icon-rotate': ['get', 'track'],
       'icon-rotation-alignment': 'map',
       'icon-allow-overlap': true,
