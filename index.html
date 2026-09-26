@@ -1701,6 +1701,14 @@ function loadPlan(id, attempt = 0) {
 /* ── Short aircraft code (e.g. "Airbus A321-200" → "A321") ──────────────────── */
 function aircraftChip(name) {
   if (!name) return '';
+  const model = String(name).replace(/^Boeing\s*/i, '').replace(/^B(?=737)/i, '');
+  // Use distinct ICAO-style chips for the 737 variants. Check MAX before the
+  // classic 737 series so its "737" number doesn't collapse to a generic tag.
+  if (/\b737[\s-]*MAX[\s-]*8\b/i.test(model)) return 'B38M';
+  if (/\b737[\s-]*700\b/i.test(model) && /\bBBJ\b/i.test(model)) return 'B377';
+  if (/\b737[\s-]*700\b/i.test(model)) return 'B377';
+  if (/\b737[\s-]*800\b/i.test(model)) return 'B378';
+  if (/\b737[\s-]*900\b/i.test(model)) return 'B379';
   // Keep the A321neo distinct from the standard A321 in list/detail chips.
   if (/\bA-?321[\s-]*(?:neo|NX)\b/i.test(name)) return 'A321NX';
   // First "A/B/CRJ/MD-style + digits" token
