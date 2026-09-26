@@ -1907,16 +1907,16 @@ function refreshRouteFields() {
     return;
   }
 
-  // Distances in km (FR24 uses km in the screenshot)
-  const flownKm = prog.flown * 1.852;
-  const togoKm  = prog.togo  * 1.852;
+  // Route progress uses nautical miles, matching the flight data units.
+  const flownNm = prog.flown;
+  const togoNm  = prog.togo;
 
   setW('d-pb-fill',   prog.progress);
   setL('d-pb-marker', prog.progress);
 
   // Left stat: distance flown + (when known) elapsed time since first seen
   const firstTs = selectedTrail.length ? selectedTrail[0].ts : null;
-  let leftText = `${Math.round(flownKm).toLocaleString()} km`;
+  let leftText = `${Math.round(flownNm).toLocaleString()} nm`;
   if (firstTs) {
     const elapsedMin = (Date.now() - firstTs) / 60_000;
     if (elapsedMin > 0 && elapsedMin < 24 * 60) {
@@ -1926,7 +1926,7 @@ function refreshRouteFields() {
   set('d-pb-left', leftText);
 
   // Right stat: remaining distance + ETA
-  let rightText = `${Math.round(togoKm).toLocaleString()} km`;
+  let rightText = `${Math.round(togoNm).toLocaleString()} nm`;
   if (f.speed > 10) {
     const remainMin = (prog.togo / f.speed) * 60;
     rightText += `, in ${fmtDuration(remainMin)}`;
