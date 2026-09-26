@@ -23,6 +23,10 @@ let   pollIdleLogged = false; // one-shot "paused" log so we don't spam every 15
 let   aircraftNames = {};   // aircraftId (GUID) → human-readable name, e.g. "Airbus A320"
 let   liveryNames   = {};   // liveryId  (GUID) → human-readable livery, e.g. "American Airlines"
 let   liveryPairs   = [];   // [{aircraft, livery}] — full catalog for tooling/matching
+let   metaLastAttempt = 0;
+let   metaLastSuccess = 0;
+let   metaLastError   = '';
+let   metaRefreshInFlight = false;
 
 // Departure/destination ICAO per flight, for route search ("DFW-BZN"). Built
 // incrementally from the bulk flight-plans endpoint (POST, max 10 IDs/call) a
@@ -218,24 +222,39 @@ async function enrichPlans(updated) {
 //  silently 404'd, leaving liveryNames empty so no flight ever showed an
 //  airline, while the /aircraft fallback still filled aircraft types.
 async function refreshMeta() {
-  if (!API_KEY) return;
+  if (metaRefreshInFlight) return;
+  metaLastAttempt = Date.now();
+  if (!API_KEY) {
+    metaLastError = 'IF_API_KEY is not configured';
+    return;
+  }
+  metaRefreshInFlight = true;
 
   try {
     const res  = await apiGet('/aircraft/liveries');
     const list = Array.isArray(res?.result) ? res.result : [];
+    if (!list.length) throw new Error(`Empty livery catalog (errorCode: ${res?.errorCode ?? 'unknown'})`);
+    const nextAircraftNames = {};
+    const nextLiveryNames = {};
     const pairs = [];
     for (const l of list) {
       const acId = l.aircraftID || l.aircraftId;
       const acNm = l.aircraftName || l.aircraft;
       const lvId = l.id || l.liveryID || l.liveryId;
       const lvNm = l.liveryName || l.livery || l.name;
-      if (acId && acNm) aircraftNames[acId] = acNm;
-      if (lvId && lvNm) liveryNames[lvId]   = lvNm;
+      if (acId && acNm) nextAircraftNames[acId] = acNm;
+      if (lvId && lvNm) nextLiveryNames[lvId]   = lvNm;
       if (acNm && lvNm) pairs.push({ aircraft: acNm, livery: lvNm });
     }
-    if (pairs.length) liveryPairs = pairs;
+    if (!pairs.length) throw new Error('Livery catalog had no usable entries');
+    aircraftNames = nextAircraftNames;
+    liveryNames = nextLiveryNames;
+    liveryPairs = pairs;
+    metaLastSuccess = Date.now();
+    metaLastError = '';
     console.log(`[meta] /aircraft/liveries: ${list.length} rows → ${Object.keys(aircraftNames).length} aircraft, ${Object.keys(liveryNames).length} liveries`);
   } catch (e) {
+    metaLastError = e.message;
     console.error('[meta] /aircraft/liveries failed:', e.message);
   }
 
@@ -254,6 +273,7 @@ async function refreshMeta() {
       console.error('[meta] /aircraft fallback failed:', e.message);
     }
   }
+  metaRefreshInFlight = false;
 }
 
 // One-shot diagnostic: log the field shape of the first flight we ever see.
@@ -457,6 +477,19 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  if (req.url === '/meta/status') {
+    res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
+    res.end(JSON.stringify({
+      aircraft: Object.keys(aircraftNames).length,
+      liveries: Object.keys(liveryNames).length,
+      pairs: liveryPairs.length,
+      lastAttempt: metaLastAttempt,
+      lastSuccess: metaLastSuccess,
+      lastError: metaLastError,
+    }));
+    return;
+  }
+
 
 
   // Full flown track: GET /path/:flightId
@@ -591,6 +624,9 @@ server.listen(PORT, () => {
   console.log(`Polaris proxy listening on :${PORT}`);
   refreshMeta();
   setInterval(refreshMeta, 6 * 60 * 60 * 1000);  // refresh every 6 h
+  setInterval(() => {
+    if (!liveryPairs.length) refreshMeta();
+  }, 60_000);  // retry transient catalog failures without waiting 6 h
   poll();
   setInterval(() => poll(), POLL_BASE + Math.random() * 2000);
 });
