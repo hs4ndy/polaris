@@ -166,18 +166,6 @@
       flex-direction: column;
     }
 
-    /* Single-color top edge */
-    #left-sb::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1.5px;
-      background: rgba(79,142,247,0.55);
-      border-radius: 14px 14px 0 0;
-      pointer-events: none;
-      z-index: 2;
-    }
-
     /* Header */
     #sb-hdr {
       padding: 8px 14px;
@@ -334,18 +322,6 @@
       transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     }
     #right-sb.open { transform: translateX(0); }
-
-    /* Match the sidebar's single-color edge */
-    #right-sb::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1.5px;
-      background: rgba(79,142,247,0.55);
-      border-radius: 14px 14px 0 0;
-      pointer-events: none;
-      z-index: 2;
-    }
 
     #detail-inner {
       width: 100%;
