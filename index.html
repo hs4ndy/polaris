@@ -2342,7 +2342,12 @@ function resumeFromIdle() {
 /* ── Boot ────────────────────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
   ensurePlaneSvg();      // start the plane.svg fetch (initMap awaits the same promise)
-  ensurePhotoManifest(); // load community photo manifest in the background
+  ensurePhotoManifest().then(() => {
+    // A restored/quickly selected flight may render before the manifest is
+    // ready. Repaint its photo once the lookup table has loaded.
+    const selectedFlight = selectedId && flightData[selectedId];
+    if (selectedFlight) renderPhoto(selectedFlight);
+  });
   ensureAirports();      // ICAO→IATA map for real-world airport codes
   initMap();
   connectWS();
