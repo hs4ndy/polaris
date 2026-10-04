@@ -2,6 +2,14 @@
   "cleanUrls": true,
   "rewrites": [
     {
+      "source": "/",
+      "destination": "/landing.html"
+    },
+    {
+      "source": "/tracker",
+      "destination": "/index.html"
+    },
+    {
       "source": "/((?!.*\\.(?:json|svg|png|jpg|jpeg|webp|gif|ico|css|js|map|txt|woff2?)$).*)",
       "destination": "/index.html"
     }
