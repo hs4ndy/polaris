@@ -3,15 +3,15 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/landing.html"
+      "destination": "/index.html"
     },
     {
       "source": "/tracker",
-      "destination": "/index.html"
+      "destination": "/tracker.html"
     },
     {
       "source": "/((?!.*\\.(?:json|svg|png|jpg|jpeg|webp|gif|ico|css|js|map|txt|woff2?)$).*)",
-      "destination": "/index.html"
+      "destination": "/tracker.html"
     }
   ]
 }

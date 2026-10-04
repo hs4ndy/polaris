@@ -3,13 +3,13 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const root = path.resolve(__dirname, '..');
-const html = fs.readFileSync(path.join(root, 'landing.html'), 'utf8');
+const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const config = JSON.parse(fs.readFileSync(path.join(root, 'vercel.json'), 'utf8'));
 
 test('landing and tracker have distinct routes, ahead of the existing fallback', () => {
-  assert.deepEqual(config.rewrites[0], { source: '/', destination: '/landing.html' });
-  assert.deepEqual(config.rewrites[1], { source: '/tracker', destination: '/index.html' });
-  assert.ok(fs.existsSync(path.join(root, 'index.html')));
+  assert.deepEqual(config.rewrites[0], { source: '/', destination: '/index.html' });
+  assert.deepEqual(config.rewrites[1], { source: '/tracker', destination: '/tracker.html' });
+  assert.ok(fs.existsSync(path.join(root, 'tracker.html')));
 });
 
 test('both tracker calls to action point to the local tracker route', () => {
