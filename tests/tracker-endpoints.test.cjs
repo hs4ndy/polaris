@@ -37,11 +37,12 @@ test('start matches the recorded trail and finish matches the airport, not appen
   assert.equal(endpoints(wps, [], 'KLAX', 'KDFW').features[0].geometry.coordinates[0], -118.4);
 });
 
-test('solid dots are map-aligned, slightly larger and independently recolorable', () => {
+test('opaque black dots have blue rings and stay map-aligned', () => {
   const layer = html.match(/id: 'route-endpoint-dots'[\s\S]*?\n  \}\);/)[0];
   assert.match(layer, /'circle-radius': 4/);
-  assert.match(layer, /'circle-color': ENDPOINT_COLOR/);
+  assert.match(layer, /'circle-color': '#000000'/);
+  assert.match(layer, /'circle-stroke-color': ENDPOINT_COLOR/);
+  assert.match(layer, /'circle-stroke-width': 1.3/);
   assert.match(layer, /'circle-pitch-alignment': 'map'/);
   assert.match(layer, /'circle-pitch-scale': 'map'/);
-  assert.doesNotMatch(layer, /circle-stroke/);
 });
