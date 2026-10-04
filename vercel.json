@@ -10,6 +10,18 @@
       "destination": "/tracker.html"
     },
     {
+      "source": "/privacy",
+      "destination": "/privacy.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/terms.html"
+    },
+    {
+      "source": "/cookies",
+      "destination": "/cookies.html"
+    },
+    {
       "source": "/((?!.*\\.(?:json|svg|png|jpg|jpeg|webp|gif|ico|css|js|map|txt|woff2?)$).*)",
       "destination": "/tracker.html"
     }
